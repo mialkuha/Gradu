@@ -1,0 +1,68 @@
+# depslib dependency file v1.0
+1415373085 source:c:\users\mikko\code\numeric\cubature-1.0.2\hcubature.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	<limits.h>
+	<float.h>
+	"cubature.h"
+	"converged.h"
+	"vwrapper.h"
+
+1415373085 c:\users\mikko\code\numeric\cubature-1.0.2\cubature.h
+	<stdlib.h>
+
+1415373085 c:\users\mikko\code\numeric\cubature-1.0.2\converged.h
+
+1415373085 c:\users\mikko\code\numeric\cubature-1.0.2\vwrapper.h
+
+1415373085 source:c:\users\mikko\code\numeric\cubature-1.0.2\pcubature.c
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	"cubature.h"
+	"clencurt.h"
+	"converged.h"
+	"vwrapper.h"
+
+1415373085 c:\users\mikko\code\numeric\cubature-1.0.2\clencurt.h
+
+1415373085 source:c:\users\mikko\code\gradu\cubature-1.0.2\hcubature.c
+	<stdio.h>
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	<limits.h>
+	<float.h>
+	"cubature.h"
+	"converged.h"
+	"vwrapper.h"
+
+1415373085 c:\users\mikko\code\gradu\cubature-1.0.2\cubature.h
+	<stdlib.h>
+
+1415373085 c:\users\mikko\code\gradu\cubature-1.0.2\converged.h
+
+1415373085 c:\users\mikko\code\gradu\cubature-1.0.2\vwrapper.h
+
+1415373085 source:c:\users\mikko\code\gradu\cubature-1.0.2\pcubature.c
+	<stdlib.h>
+	<string.h>
+	<math.h>
+	"cubature.h"
+	"clencurt.h"
+	"converged.h"
+	"vwrapper.h"
+
+1415373085 c:\users\mikko\code\gradu\cubature-1.0.2\clencurt.h
+
+1473432513 source:c:\users\mikko\code\gradu\main.cpp
+	<iostream>
+	<stdio.h>
+	"cubature.h"
+	<gsl/gsl_math.h>
+
+1415373085 c:\users\mikko\code\gradu\cubature.h
+	<stdlib.h>
+
