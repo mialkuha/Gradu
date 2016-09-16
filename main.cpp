@@ -15,8 +15,8 @@ const unsigned g_dim = 3;
 ///PROTOTYPES///
 
 int integrand_function(unsigned, const double*, void*, unsigned, double*);
-int phasespace_integral(const double[], const double[], double*, double*);
-int calculate_sigma_jet(double*, double*);
+int phasespace_integral(const double[], const double[], double * const, double * const);
+int calculate_sigma_jet(double * const, double * const);
 
 
 
@@ -28,7 +28,7 @@ int integrand_function(unsigned ndim,     //Variable dimension
                        unsigned fdim,     //Output dimension
                        double *p_fval) {  //Pointer to output
 
-    double sigma = *((double *) p_fdata);
+    const double sigma = *((double *) p_fdata);
     double sum = 0;
     unsigned i;
 
@@ -40,13 +40,13 @@ int integrand_function(unsigned ndim,     //Variable dimension
 
 int phasespace_integral(const double upper_limits [3],
                         const double lower_limits [3],
-                        double *p_value,
-                        double *p_error){
+                        double * const p_value,
+                        double * const p_error){
 
-    unsigned fdim=1;
+    const unsigned fdim=1;
     double fdata= 0.5;
 
-    int success = pcubature(fdim, //Integrand dimension
+    int not_success = pcubature(fdim, //Integrand dimension
               integrand_function, //Integrand function
               &fdata,              //Pointer to additional arguments
               g_dim,              //Variable dimension
@@ -59,19 +59,19 @@ int phasespace_integral(const double upper_limits [3],
               p_value,             //Pointer to output
               p_error);            //Pointer to error output
 
-    if(success) {cout<<"Problem with integration"<<endl; return 1;}
+    if(not_success) {cout<<"Problem with integration"<<endl; return 1;}
     else {
             printf("Computed integral = %0.10g +/- %g\n", *p_value, *p_error);
             return 0;
     }
 }
 
-int calculate_sigma_jet(double *p_value, double *p_error){
-    int success;
-    double upper_limits [3] = {2,2,2}, lower_limits [3] = {-2,-2,-2};
+int calculate_sigma_jet(double * const p_value, double * const p_error){
+    int not_success;
+    const double upper_limits [3] = {2,2,2}, lower_limits [3] = {-2,-2,-2};
 
-    success = phasespace_integral(upper_limits, lower_limits, p_value, p_error);
-    return success;
+    not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error);
+    return not_success;
 }
 
 
@@ -79,12 +79,12 @@ int calculate_sigma_jet(double *p_value, double *p_error){
 
 int main()
 {
-    int success;
+    int not_success;
     double sigma_jet, error;
 
-    success = calculate_sigma_jet(&sigma_jet, &error);
+    not_success = calculate_sigma_jet(&sigma_jet, &error);
 
-    if(success) {cout<<"Bad stuff happened"<<endl; return 1;}
+    if(not_success) {cout<<"Bad stuff happened"<<endl; return 1;}
     else {
             printf("Sigma_jet = %0.10g +/- %g\n", sigma_jet, error);
             return 0;
