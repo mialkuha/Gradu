@@ -26,31 +26,31 @@ int integrand_function(unsigned, const double*, void*, unsigned, double*);
 int phasespace_integral(const double[], const double[], double * const, double * const);
 int calculate_sigma_jet(double * const, double * const);
 double f_ses(const double * const, const double * const, const PDF*);
-double s_hat(const double * const, const double * const);
-double t_hat(const double * const, const double * const, const double * const);
-double u_hat(const double * const, const double * const, const double * const);
-double sigma_gg_gg(const double * const, const double * const, const double * const);
+complex<double> s_hat(const double * const, const double * const);
+complex<double> t_hat(const double * const, const double * const, const double * const);
+complex<double> u_hat(const double * const, const double * const, const double * const);
+complex<double> sigma_gg_gg(const complex<double> * const, const complex<double> * const, const complex<double> * const);
 
 
 ///FUNCTIONS///
-double sigma_gg_gg(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat){
-    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat;
-    return 4.5*(3-(u*t)/(s*s)-(u*s)/(t*t)-(s*t)/(u*u));
+complex<double> sigma_gg_gg(const complex<double> * const p_s_hat, const complex<double> * const p_t_hat, const complex<double> * const p_u_hat){
+    const complex<double> s = *p_s_hat, t = *p_t_hat, u = *p_u_hat, constant = 3;
+    return 4.5*(constant-(u*t)/(s*s)-(u*s)/(t*t)-(s*t)/(u*u));
 }
 
-double u_hat(const double * const p_x1, const double * const p_x2, const double * const p_kt2){
+complex<double> u_hat(const double * const p_x1, const double * const p_x2, const double * const p_kt2){
     const double x1 = *p_x1, x2 = *p_x2, kt2 = *p_kt2;
-    const double dummy = x1*x2*(x1*x2 -4*(kt2/g_s));
+    const complex<double> dummy = x1*x2*(x1*x2 -4*(kt2/g_s));
     return -0.5*g_s*(sqrt(dummy) +x1*x2);
 }
 
-double t_hat(const double * const p_x1, const double * const p_x2, const double * const p_kt2){
+complex<double> t_hat(const double * const p_x1, const double * const p_x2, const double * const p_kt2){
     const double x1 = *p_x1, x2 = *p_x2, kt2 = *p_kt2;
-    const double dummy = x1*x2*(x1*x2 -4*(kt2/g_s));
+    const complex<double> dummy = x1*x2*(x1*x2 -4*(kt2/g_s));
     return 0.5*g_s*(sqrt(dummy) -x1*x2);
 }
 
-double s_hat(const double * const p_x1, const double * const p_x2){ return *p_x1 * *p_x2 * g_s; }
+complex<double> s_hat(const double * const p_x1, const double * const p_x2){ return *p_x1 * *p_x2 * g_s; }
 
 double f_ses(const double * const p_x, const double * const p_q2, const PDF* p_pdf){
     double sum = 0;
@@ -74,13 +74,15 @@ int integrand_function(unsigned ndim,     //Variable dimension
     const auto t = t_hat(&x1, &x2, &kt2);
     const auto u = u_hat(&x1, &x2, &kt2);
     const auto subprocess_cs = sigma_gg_gg(&s, &t, &u);
-    const auto jacobian = - 1/sqrt(x1*x2*(x1*x2 -4*(kt2/g_s)));
+
+    const complex<double> dummy = x1*x2*(x1*x2 -4*(kt2/g_s));
+    const auto jacobian = - abs(pow(sqrt(dummy),-1));
 
     p_fval[0] = 0.5 * x1 * f_ses(&x1, &kt2, p_pdf)
                     * x2 * f_ses(&x2, &kt2, p_pdf)
-                    * subprocess_cs * jacobian;
+                    * real(subprocess_cs * jacobian);
 
-    cout<<"kt2="<<kt2<<", x1="<<x1<<", x2="<<x2<<", s="<<s<<", t="<<t<<", u="<<u<<", cs="<<subprocess_cs<<", J="<<jacobian<<", I="<<p_fval[0]<<endl;
+    //cout<<"kt2="<<kt2<<", x1="<<x1<<", x2="<<x2<<", s="<<s<<", t="<<t<<", u="<<u<<", cs="<<subprocess_cs<<", J="<<jacobian<<", I="<<p_fval[0]<<endl;
     return 0; // success
 }
 
