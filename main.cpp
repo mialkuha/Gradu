@@ -22,7 +22,7 @@ const string g_pdfsetname = "HERAPDF20_LO_EIG";  //Name of the used pdf-set from
 const int g_pdfsetmember = 1;                    //Member ID of the pdf in the set
 const double g_s = 100;                           //Mandelstam variable s
 const double g_kt2_lower_cutoff = 1;              //Lower cutoff kt used in integration
-const double g_error_tolerance = 1e-3;           //Global error tolerance
+const double g_error_tolerance = 1e-5;           //Global error tolerance
 
 
 
@@ -254,11 +254,15 @@ int integrand_function_xs(unsigned ndim, const double *p_x, void *p_fdata, unsig
 
     const auto jacobian = ((g_s/4) - g_kt2_lower_cutoff) * (x1_upper - x1_lower) * (x2_upper - x2_lower);
 
+    const auto jacobian_from_ys_to_xs = 1/sqrt(x1*x2*(x1*x2-4*kt2/g_s));
+
     if (x2_upper < x2_lower || x1_upper < x1_lower) p_fval[0]=0;
     else{
-    p_fval[0] = 0.5 * x1 * f_ses(&x1, &kt2, p_pdf)
+    p_fval[0] = 2  //MAGIC NUMBER TODO
+                * 0.5 * x1 * f_ses(&x1, &kt2, p_pdf)
                 * x2 * f_ses(&x2, &kt2, p_pdf)
-                * subprocess_cs * jacobian;
+                * subprocess_cs * jacobian
+                * jacobian_from_ys_to_xs;
     }
 
     //cout <<subprocess_cs<<' ';
