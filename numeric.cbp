@@ -20,8 +20,6 @@
 				<Option object_output="obj/Release/" />
 				<Option type="1" />
 				<Option compiler="gcc" />
-				<Option projectCompilerOptionsRelation="0" />
-				<Option projectLinkerOptionsRelation="0" />
 				<Option projectIncludeDirsRelation="0" />
 				<Option projectResourceIncludeDirsRelation="0" />
 				<Option projectLibDirsRelation="0" />
@@ -34,8 +32,8 @@
 					<Add option="`lhapdf-config --cflags --ldflags`" />
 				</Compiler>
 				<Linker>
-					<Add option="-m64" />
 					<Add option="-s" />
+					<Add option="-m64" />
 					<Add option="`lhapdf-config --cflags --ldflags`" />
 				</Linker>
 				<MakeCommands>

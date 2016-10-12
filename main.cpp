@@ -18,10 +18,10 @@ using namespace LHAPDF;
 
 
 const unsigned g_dim = 3;                        //Dimension fo the integrals
-const string g_pdfsetname = "HERAPDF20_LO_EIG";  //Name of the used pdf-set from LHAPDF
-const int g_pdfsetmember = 1;                    //Member ID of the pdf in the set
-const double g_s = 100;                           //Mandelstam variable s
-const double g_kt2_lower_cutoff = 1;              //Lower cutoff kt used in integration
+const string g_pdfsetname = "CT14lo";  //Name of the used pdf-set from LHAPDF
+const int g_pdfsetmember = 0;                   //Member ID of the pdf in the set
+const double g_s = 10000;                           //Mandelstam variable s
+const double g_kt2_lower_cutoff = 2;              //Lower cutoff kt used in integration
 const double g_error_tolerance = 1e-5;           //Global error tolerance
 
 
@@ -40,7 +40,7 @@ double u_hat_from_ys(const double * const, const double * const, const double * 
 double s_hat_from_xs(const double * const, const double * const);
 double t_hat_from_xs(const double * const, const double * const, const double * const);
 double u_hat_from_xs(const double * const, const double * const, const double * const);
-double sigma_gg_gg(const double * const, const double * const, const double * const);
+double sigma_gg_gg(const double * const, const double * const, const double * const, const double);
 
 
 
@@ -188,16 +188,18 @@ int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsig
     const auto s_hat         = s_hat_from_ys(&y1, &y2, &kt2);
     const auto t_hat         = t_hat_from_ys(&y1, &y2, &kt2);
     const auto u_hat         = u_hat_from_ys(&y1, &y2, &kt2);
-    const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat);
+    const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
 
     const auto jacobian = ((g_s/4) - g_kt2_lower_cutoff) * (2*y1_upper) * (y2_upper - y2_lower);
 
     if (y2_upper < y2_lower || y1_upper < -y1_upper) p_fval[0]=0;
     else{
-    p_fval[0] = 0.5 * x1 * f_ses(&x1, &kt2, p_pdf)
-                * x2 * f_ses(&x2, &kt2, p_pdf)
+    p_fval[0] = 0.5 * f_ses(&x1, &kt2, p_pdf)
+                * f_ses(&x2, &kt2, p_pdf)
                 * subprocess_cs * jacobian;
     }
+
+/*
     //cout <<subprocess_cs<<' ';
 
     ofstream data;
@@ -214,6 +216,7 @@ int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsig
     data.close();
 
     //cout<<"kt2="<<kt2<<", x1="<<x1<<", x2="<<x2<<", s="<<s<<", t="<<t<<", u="<<u<<", cs="<<subprocess_cs<<", J="<<jacobian<<", I="<<p_fval[0]<<endl;
+*/
     return 0; // success
 }
 
@@ -244,27 +247,31 @@ int integrand_function_xs(unsigned ndim, const double *p_x, void *p_fdata, unsig
     const auto x1       = x1_lower + z2 * (x1_upper - x1_lower);
 
     const auto x2_upper = 1;
-    const auto x2_lower = (4 * kt2 / g_s) / x1;
+    const auto x2_lower = (4 * kt2 / g_s) / x1 +g_error_tolerance*g_error_tolerance; //shift by epsilon to avoid singularity in jacobian_from_ys_to_xs
     const auto x2       = x2_lower + z3 * (x2_upper - x2_lower);
 
     const auto s_hat         = s_hat_from_xs(&x1, &x2);
     const auto t_hat         = t_hat_from_xs(&x1, &x2, &kt2);
     const auto u_hat         = u_hat_from_xs(&x1, &x2, &kt2);
-    const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat);
+    const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
 
     const auto jacobian = ((g_s/4) - g_kt2_lower_cutoff) * (x1_upper - x1_lower) * (x2_upper - x2_lower);
 
-    const auto jacobian_from_ys_to_xs = 1/sqrt(x1*x2*(x1*x2-4*kt2/g_s));
+    auto dummy = x1*x2-4*kt2/g_s;
+    const auto dummy2 = x1*x2*dummy;
+    const auto jacobian_from_ys_to_xs = 1/sqrt(dummy2);
 
     if (x2_upper < x2_lower || x1_upper < x1_lower) p_fval[0]=0;
     else{
     p_fval[0] = 2  //MAGIC NUMBER TODO
-                * 0.5 * x1 * f_ses(&x1, &kt2, p_pdf)
-                * x2 * f_ses(&x2, &kt2, p_pdf)
+                * 0.5 * f_ses(&x1, &kt2, p_pdf)
+                * f_ses(&x2, &kt2, p_pdf)
                 * subprocess_cs * jacobian
                 * jacobian_from_ys_to_xs;
     }
 
+
+/*
     //cout <<subprocess_cs<<' ';
 
 
@@ -279,11 +286,16 @@ int integrand_function_xs(unsigned ndim, const double *p_x, void *p_fdata, unsig
     data << kt2 << ' ' << y1 << ' ' << y2 << '\n';
     data.close();
 
+    data.open ("xs_all.dat",ios::app);
+    data<<dummy<<dummy2<<"kt2="<<kt2<<", x1="<<x1<<", x2="<<x2<<", s="<<s_hat<<", t="<<t_hat<<", u="<<u_hat<<", cs="<<subprocess_cs<<", J="<<jacobian<<", J2="<<jacobian_from_ys_to_xs<<", pdf1="<<f_ses(&x1, &kt2, p_pdf)<<", pdf2="<<f_ses(&x2, &kt2, p_pdf)<<", I="<<p_fval[0]<<'\n';
+    data.close();
+
     data.open ("xs_kt2x1x2.dat",ios::app);
     data << kt2 << ' ' << x1 << ' ' << x2 << '\n';
     data.close();
 
-    //cout<<"kt2="<<kt2<<", x1="<<x1<<", x2="<<x2<<", s="<<s<<", t="<<t<<", u="<<u<<", cs="<<subprocess_cs<<", J="<<jacobian<<", I="<<p_fval[0]<<endl;
+    //cout<<"kt2="<<kt2<<", x1="<<x1<<", x2="<<x2<<", s="<<s_hat<<", t="<<t_hat<<", u="<<u_hat<<", cs="<<subprocess_cs<<", J="<<jacobian<<", J2="<<jacobian_from_ys_to_xs<<", pdf1="<<f_ses(&x1, &kt2, p_pdf)<<", pdf2="<<f_ses(&x2, &kt2, p_pdf)<<", I="<<p_fval[0]<<endl;
+    */
     return 0; // success
 }
 
@@ -398,9 +410,10 @@ double f_ses(const double * const p_x, const double * const p_q2, const PDF* p_p
 ///\param p_s_hat = pointer to subprocess mandelstam variable s
 ///\param p_t_hat = pointer to subprocess mandelstam variable t
 ///\param p_u_hat = pointer to subprocess mandelstam variable u
+///\param p_alpha_s = pointer to strong interaction constant
 ///
-double sigma_gg_gg(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat)
+double sigma_gg_gg(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat, const double alpha_s)
 {
-    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat, constant = 3;
-    return 4.5*(constant-(u*t)/(s*s)-(u*s)/(t*t)-(s*t)/(u*u));
+    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat;
+    return (M_PI * alpha_s * alpha_s / (s * s))*4.5*(3.0-(u*t)/(s*s)-(u*s)/(t*t)-(s*t)/(u*u));
 }
