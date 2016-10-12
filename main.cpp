@@ -20,7 +20,6 @@ using namespace LHAPDF;
 const unsigned g_dim = 3;                        //Dimension fo the integrals
 const string g_pdfsetname = "CT14lo";  //Name of the used pdf-set from LHAPDF
 const int g_pdfsetmember = 0;                   //Member ID of the pdf in the set
-const double g_s = 10000;                           //Mandelstam variable s
 const double g_kt2_lower_cutoff = 2;              //Lower cutoff kt used in integration
 const double g_error_tolerance = 1e-5;           //Global error tolerance
 
@@ -31,15 +30,15 @@ const double g_error_tolerance = 1e-5;           //Global error tolerance
 
 int integrand_function_ys(unsigned, const double*, void*, unsigned, double*);
 int integrand_function_xs(unsigned, const double*, void*, unsigned, double*);
-int phasespace_integral(const double[], const double[], double * const, double * const, int);
-int calculate_sigma_jet(double * const, double * const, int);
+int phasespace_integral(const double[], const double[], double * const, double * const, int, const double * const);
+int calculate_sigma_jet(double * const, double * const, int, const double * const);
 double f_ses(const double * const, const double * const, const PDF*);
 double s_hat_from_ys(const double * const, const double * const, const double * const);
 double t_hat_from_ys(const double * const, const double * const, const double * const);
 double u_hat_from_ys(const double * const, const double * const, const double * const);
-double s_hat_from_xs(const double * const, const double * const);
-double t_hat_from_xs(const double * const, const double * const, const double * const);
-double u_hat_from_xs(const double * const, const double * const, const double * const);
+double s_hat_from_xs(const double * const, const double * const, const double * const);
+double t_hat_from_xs(const double * const, const double * const, const double * const, const double * const);
+double u_hat_from_xs(const double * const, const double * const, const double * const, const double * const);
 double sigma_gg_gg(const double * const, const double * const, const double * const, const double);
 
 
@@ -54,8 +53,10 @@ int main()
     double sigma_jet_xs, error_xs;
     double sigma_jet_ys, error_ys;
 
-    not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &error_xs, 0);
-    not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &error_ys, 1);
+    const double mand_s = 10000;
+
+    not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &error_xs, 0, &mand_s);
+    not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &error_ys, 1, &mand_s);
 
     if(not_success_xs||not_success_ys)
     {
@@ -81,16 +82,18 @@ int main()
 ///
 ///\param p_value = pointer to the destination of the value of the sigma_jet
 ///\param p_error = pointer to the destination of the error output from cubature
+///\param y_space = flag, 0 = integrate in x-space, 1 = integrate in y-space
+///\param p_mand_s = pointer to the mandelstam variable s
 ///
 ///\return 0 on successful run
 ///
-int calculate_sigma_jet(double * const p_value, double * const p_error, int y_space)
+int calculate_sigma_jet(double * const p_value, double * const p_error, int y_space, const double * const p_mand_s)
 {
     int not_success;
     const double upper_limits [3] = {1, 1, 1};
     const double lower_limits [3] = {0, 0, 0};
 
-    not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error, y_space);
+    not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error, y_space, p_mand_s);
     return not_success;
 }
 
@@ -102,20 +105,24 @@ int calculate_sigma_jet(double * const p_value, double * const p_error, int y_sp
 ///\param lower_limits = list of the lower limits of the integral. Order: kt2, x1, x2
 ///\param p_value = pointer to the destination of the value of the integral
 ///\param p_error = pointer to the destination of the error output from cubature
+///\param y_space = flag, 0 = integrate in x-space, 1 = integrate in y-space
+///\param p_mand_s = pointer to the mandelstam variable s
 ///
 ///\return 0 on successful run
 ///
-int phasespace_integral(const double upper_limits [3], const double lower_limits [3], double * const p_value, double * const p_error, int y_space)
+int phasespace_integral(const double upper_limits [3], const double lower_limits [3], double * const p_value, double * const p_error, int y_space, const double * const p_mand_s)
 {
 
     const unsigned fdim=1;
     PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
+    pair<PDF*,const double * const> fdata = { p_pdf , p_mand_s };
+
     int not_success;
 
     if(y_space){
     not_success = hcubature(fdim,               //Integrand dimension
                                 integrand_function_ys, //Integrand function
-                                p_pdf,              //Pointer to additional arguments
+                                &fdata,              //Pointer to additional arguments
                                 g_dim,              //Variable dimension
                                 lower_limits,       //Variables minimum
                                 upper_limits,       //Variables maximum
@@ -129,7 +136,7 @@ int phasespace_integral(const double upper_limits [3], const double lower_limits
     else{
     not_success = hcubature(fdim,               //Integrand dimension
                                 integrand_function_xs, //Integrand function
-                                p_pdf,              //Pointer to additional arguments
+                                &fdata,              //Pointer to additional arguments
                                 g_dim,              //Variable dimension
                                 lower_limits,       //Variables minimum
                                 upper_limits,       //Variables maximum
@@ -167,12 +174,13 @@ int phasespace_integral(const double upper_limits [3], const double lower_limits
 ///
 int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsigned fdim, double *p_fval)
 {
-
-    const PDF* p_pdf = (PDF *) p_fdata;
+    pair<PDF*,const double * const> fdata = *(pair<PDF*,const double * const>*) p_fdata;
+    const PDF* p_pdf = fdata.first;
+    const double * const p_mand_s = fdata.second;
     const auto z1 = p_x[0], z2 = p_x[1], z3 = p_x[2];
 
-    const auto kt2           = g_kt2_lower_cutoff + z1 * ((g_s/4) - g_kt2_lower_cutoff);
-    const auto sqrt_s_per_kt = sqrt(g_s/kt2);
+    const auto kt2           = g_kt2_lower_cutoff + z1 * ((*p_mand_s/4) - g_kt2_lower_cutoff);
+    const auto sqrt_s_per_kt = sqrt(*p_mand_s/kt2);
 
     const auto y1_upper = acosh(sqrt_s_per_kt/2);
     //const auto y1_lower = -y1_upper;
@@ -190,7 +198,7 @@ int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsig
     const auto u_hat         = u_hat_from_ys(&y1, &y2, &kt2);
     const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
 
-    const auto jacobian = ((g_s/4) - g_kt2_lower_cutoff) * (2*y1_upper) * (y2_upper - y2_lower);
+    const auto jacobian = ((*p_mand_s/4) - g_kt2_lower_cutoff) * (2*y1_upper) * (y2_upper - y2_lower);
 
     if (y2_upper < y2_lower || y1_upper < -y1_upper) p_fval[0]=0;
     else{
@@ -237,27 +245,29 @@ int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsig
 int integrand_function_xs(unsigned ndim, const double *p_x, void *p_fdata, unsigned fdim, double *p_fval)
 {
 
-    const PDF* p_pdf = (PDF *) p_fdata;
+    pair<PDF*,const double * const> fdata = *(pair<PDF*,const double * const>*) p_fdata;
+    const PDF* p_pdf = fdata.first;
+    const double * const p_mand_s = fdata.second;
     const auto z1 = p_x[0], z2 = p_x[1], z3 = p_x[2];
 
-    const auto kt2 = g_kt2_lower_cutoff + z1 * ((g_s/4) - g_kt2_lower_cutoff);
+    const auto kt2 = g_kt2_lower_cutoff + z1 * ((*p_mand_s/4) - g_kt2_lower_cutoff);
 
     const auto x1_upper = 1;
-    const auto x1_lower = 4 * kt2 / g_s;
+    const auto x1_lower = 4 * kt2 / *p_mand_s;
     const auto x1       = x1_lower + z2 * (x1_upper - x1_lower);
 
     const auto x2_upper = 1;
-    const auto x2_lower = (4 * kt2 / g_s) / x1 +g_error_tolerance*g_error_tolerance; //shift by epsilon to avoid singularity in jacobian_from_ys_to_xs
+    const auto x2_lower = (4 * kt2 / *p_mand_s) / x1 +g_error_tolerance*g_error_tolerance; //shift by epsilon to avoid singularity in jacobian_from_ys_to_xs
     const auto x2       = x2_lower + z3 * (x2_upper - x2_lower);
 
-    const auto s_hat         = s_hat_from_xs(&x1, &x2);
-    const auto t_hat         = t_hat_from_xs(&x1, &x2, &kt2);
-    const auto u_hat         = u_hat_from_xs(&x1, &x2, &kt2);
+    const auto s_hat         = s_hat_from_xs(&x1, &x2, p_mand_s);
+    const auto t_hat         = t_hat_from_xs(&x1, &x2, &kt2, p_mand_s);
+    const auto u_hat         = u_hat_from_xs(&x1, &x2, &kt2, p_mand_s);
     const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
 
-    const auto jacobian = ((g_s/4) - g_kt2_lower_cutoff) * (x1_upper - x1_lower) * (x2_upper - x2_lower);
+    const auto jacobian = ((*p_mand_s/4) - g_kt2_lower_cutoff) * (x1_upper - x1_lower) * (x2_upper - x2_lower);
 
-    auto dummy = x1*x2-4*kt2/g_s;
+    auto dummy = x1*x2-4*kt2/ *p_mand_s;
     const auto dummy2 = x1*x2*dummy;
     const auto jacobian_from_ys_to_xs = 1/sqrt(dummy2);
 
@@ -347,10 +357,11 @@ double u_hat_from_ys(const double * const p_y1, const double * const p_y2, const
 ///
 ///\param p_x1 = pointer to momentum fraction of the first particle
 ///\param p_x2 = pointer to momentum fraction of the other particle
+///\param p_mand_s = pointer to mandelstam variable s
 ///
-double s_hat_from_xs(const double * const p_x1, const double * const p_x2)
+double s_hat_from_xs(const double * const p_x1, const double * const p_x2, const double * const p_mand_s)
 {
-    return *p_x1 * *p_x2 * g_s;
+    return *p_x1 * *p_x2 * *p_mand_s;
 }
 
 
@@ -360,12 +371,13 @@ double s_hat_from_xs(const double * const p_x1, const double * const p_x2)
 ///\param p_x1 = pointer to momentum fraction of the first particle
 ///\param p_x2 = pointer to momentum fraction of the other particle
 ///\param p_kt2 = pointer to the transverse momentum squared
+///\param p_mand_s = pointer to mandelstam variable s
 ///
-double t_hat_from_xs(const double * const p_x1, const double * const p_x2, const double * const p_kt2)
+double t_hat_from_xs(const double * const p_x1, const double * const p_x2, const double * const p_kt2, const double * const p_mand_s)
 {
     const double x1 = *p_x1, x2 = *p_x2, kt2 = *p_kt2;
-    const double dummy = x1*x2*(x1*x2 -4*(kt2/g_s));
-    return 0.5*g_s*(sqrt(dummy) -x1*x2);
+    const double dummy = x1*x2*(x1*x2 -4*(kt2/ *p_mand_s));
+    return 0.5* *p_mand_s *(sqrt(dummy) -x1*x2);
 }
 
 
@@ -375,12 +387,13 @@ double t_hat_from_xs(const double * const p_x1, const double * const p_x2, const
 ///\param p_x1 = pointer to momentum fraction of the first particle
 ///\param p_x2 = pointer to momentum fraction of the other particle
 ///\param p_kt2 = pointer to the transverse momentum squared
+///\param p_mand_s = pointer to mandelstam variable s
 ///
-double u_hat_from_xs(const double * const p_x1, const double * const p_x2, const double * const p_kt2)
+double u_hat_from_xs(const double * const p_x1, const double * const p_x2, const double * const p_kt2, const double * const p_mand_s)
 {
     const double x1 = *p_x1, x2 = *p_x2, kt2 = *p_kt2;
-    const double dummy = x1*x2*(x1*x2 -4*(kt2/g_s));
-    return -0.5*g_s*(sqrt(dummy) +x1*x2);
+    const double dummy = x1*x2*(x1*x2 -4*(kt2/ *p_mand_s));
+    return -0.5* *p_mand_s *(sqrt(dummy) +x1*x2);
 }
 
 
