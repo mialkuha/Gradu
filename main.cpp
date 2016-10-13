@@ -53,20 +53,35 @@ int main()
     double sigma_jet_xs, error_xs;
     double sigma_jet_ys, error_ys;
 
-    const double mand_s = 10000;
+    ofstream xs_data_sigma_jet, ys_data_sigma_jet;
 
-    not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &error_xs, 0, &mand_s);
-    not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &error_ys, 1, &mand_s);
+    xs_data_sigma_jet.open ("xs_sigma_jet.dat");
+    ys_data_sigma_jet.open ("ys_sigma_jet.dat");
+    xs_data_sigma_jet << "# sigma_jet calculated in x-space, p_0=" << sqrt(g_kt2_lower_cutoff) << '\n';
+    xs_data_sigma_jet << "# sqrt(s) sigma_jet error" << '\n';
+    ys_data_sigma_jet << "# sigma_jet calculated in y-space, p_0=" << sqrt(g_kt2_lower_cutoff) << '\n';
+    ys_data_sigma_jet << "# sqrt(s) sigma_jet error" << '\n';
 
-    if(not_success_xs||not_success_ys)
-    {
+
+    for(double mand_s = 100; mand_s <= 10000000000; mand_s *=100){
+
+        not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &error_xs, 0, &mand_s);
+        not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &error_ys, 1, &mand_s);
+
+        xs_data_sigma_jet << sqrt(mand_s) << ' ' << sigma_jet_xs << ' ' << error_xs << '\n';
+        ys_data_sigma_jet << sqrt(mand_s) << ' ' << sigma_jet_ys << ' ' << error_ys << '\n';
+    }
+
+    xs_data_sigma_jet.close();
+    ys_data_sigma_jet.close();
+
+    if(not_success_xs||not_success_ys){
+
         cout<<"Bad stuff happened"<<endl;
+
         return 1;
     }
-    else
-    {
-        printf("Sigma_jet_xs = %0.10g +/- %g\n", sigma_jet_xs, error_xs);
-        printf("Sigma_jet_ys = %0.10g +/- %g\n", sigma_jet_ys, error_ys);
+    else{
         return 0;
     }
 }
