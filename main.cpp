@@ -20,7 +20,7 @@ using namespace LHAPDF;
 const unsigned g_dim = 3;                        //Dimension fo the integrals
 const string g_pdfsetname = "CT14lo";  //Name of the used pdf-set from LHAPDF
 const int g_pdfsetmember = 0;                   //Member ID of the pdf in the set
-const double g_kt2_lower_cutoff = 2;              //Lower cutoff kt used in integration
+const double g_kt2_lower_cutoff = 4;              //Lower cutoff kt used in integration
 const double g_error_tolerance = 1e-5;           //Global error tolerance
 
 
@@ -33,12 +33,20 @@ int integrand_function_xs(unsigned, const double*, void*, unsigned, double*);
 int phasespace_integral(const double[], const double[], double * const, double * const, int, const double * const);
 int calculate_sigma_jet(double * const, double * const, int, const double * const);
 double f_ses(const double * const, const double * const, const PDF*);
+double diff_sigma_jet(const double * const, const double * const, const double * const, const PDF*, const double * const, const double * const, const double * const);
 double s_hat_from_ys(const double * const, const double * const, const double * const);
 double t_hat_from_ys(const double * const, const double * const, const double * const);
 double u_hat_from_ys(const double * const, const double * const, const double * const);
 double s_hat_from_xs(const double * const, const double * const, const double * const);
 double t_hat_from_xs(const double * const, const double * const, const double * const, const double * const);
 double u_hat_from_xs(const double * const, const double * const, const double * const, const double * const);
+double sigma_qiqj_qiqj(const double * const, const double * const, const double * const, const double);
+double sigma_qiqi_qiqi(const double * const, const double * const, const double * const, const double);
+double sigma_qiaqi_qjaqj(const double * const, const double * const, const double * const, const double);
+double sigma_qiaqi_qiaqi(const double * const, const double * const, const double * const, const double);
+double sigma_qiaqi_gg(const double * const, const double * const, const double * const, const double);
+double sigma_gg_qaq(const double * const, const double * const, const double * const, const double);
+double sigma_gq_gq(const double * const, const double * const, const double * const, const double);
 double sigma_gg_gg(const double * const, const double * const, const double * const, const double);
 
 
@@ -52,6 +60,7 @@ int main()
     int not_success_xs, not_success_ys;
     double sigma_jet_xs, error_xs;
     double sigma_jet_ys, error_ys;
+    double mand_s;
 
     ofstream xs_data_sigma_jet, ys_data_sigma_jet;
 
@@ -63,13 +72,14 @@ int main()
     ys_data_sigma_jet << "# sqrt(s) sigma_jet error" << '\n';
 
 
-    for(double mand_s = 100; mand_s <= 10000000000; mand_s *=100){
+    for(double sqrt_mand_s = 10; sqrt_mand_s <= 5000; sqrt_mand_s *=1.2){
+        mand_s = sqrt_mand_s*sqrt_mand_s;
 
         not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &error_xs, 0, &mand_s);
         not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &error_ys, 1, &mand_s);
 
-        xs_data_sigma_jet << sqrt(mand_s) << ' ' << sigma_jet_xs << ' ' << error_xs << '\n';
-        ys_data_sigma_jet << sqrt(mand_s) << ' ' << sigma_jet_ys << ' ' << error_ys << '\n';
+        xs_data_sigma_jet << sqrt_mand_s << ' ' << sigma_jet_xs << ' ' << error_xs << '\n';
+        ys_data_sigma_jet << sqrt_mand_s << ' ' << sigma_jet_ys << ' ' << error_ys << '\n';
     }
 
     xs_data_sigma_jet.close();
@@ -217,9 +227,14 @@ int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsig
 
     if (y2_upper < y2_lower || y1_upper < -y1_upper) p_fval[0]=0;
     else{
+    //SES
+    /*
     p_fval[0] = 0.5 * f_ses(&x1, &kt2, p_pdf)
                 * f_ses(&x2, &kt2, p_pdf)
-                * subprocess_cs * jacobian;
+                * subprocess_cs * jacobian; */
+    //FULL SUMMATION
+    p_fval[0] = 0.5 * diff_sigma_jet(&x1,&x2,&kt2,p_pdf,&s_hat,&t_hat,&u_hat)
+                * jacobian;
     }
 
 /*
@@ -288,11 +303,18 @@ int integrand_function_xs(unsigned ndim, const double *p_x, void *p_fdata, unsig
 
     if (x2_upper < x2_lower || x1_upper < x1_lower) p_fval[0]=0;
     else{
+    //SES
+    /*
     p_fval[0] = 2  //MAGIC NUMBER TODO
                 * 0.5 * f_ses(&x1, &kt2, p_pdf)
                 * f_ses(&x2, &kt2, p_pdf)
                 * subprocess_cs * jacobian
-                * jacobian_from_ys_to_xs;
+                * jacobian_from_ys_to_xs; */
+    //FULL SUMMATION
+    p_fval[0] = 2  //MAGIC NUMBER TODO
+                * 0.5 * diff_sigma_jet(&x1,&x2,&kt2,p_pdf,&s_hat,&t_hat,&u_hat)
+                * jacobian * jacobian_from_ys_to_xs;
+
     }
 
 
@@ -429,6 +451,171 @@ double f_ses(const double * const p_x, const double * const p_q2, const PDF* p_p
     }
     //cout<<"x="<<*p_x<<", q2="<<*p_q2<<" SES="<<sum<<endl;
     return sum;
+}
+
+
+///diff_sigma_jet
+///Calculates and returns the differential cross section.
+///
+///\param p_x1 = pointer to momentum fraction of the first particle in question
+///\param p_x2 = pointer to momentum fraction of the first particle in question
+///\param p_q2 = pointer to momentum exchange squared
+///\param p_pdf = pointer to a member of the PDF class from LHAPDF
+///\param p_s_hat = pointer to subprocess mandelstam variable s
+///\param p_t_hat = pointer to subprocess mandelstam variable t
+///\param p_u_hat = pointer to subprocess mandelstam variable u
+///
+double diff_sigma_jet(const double * const p_x1, const double * const p_x2, const double * const p_q2, const PDF* p_pdf, const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat)
+{
+    const double x1 = *p_x1, x2 = *p_x2, q2 = *p_q2;
+    double sum = 0;
+
+    sum += 0.5 * p_pdf->xfxQ2(0, x1, q2) * p_pdf->xfxQ2(0, x2, q2) * sigma_gg_gg(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2))
+           + 6 * p_pdf->xfxQ2(0, x1, q2) * p_pdf->xfxQ2(0, x2, q2) * sigma_gg_qaq(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+
+    for (int flavour=1; flavour<=6; ++flavour)
+    {
+        sum += p_pdf->xfxQ2(0, x1, q2) * p_pdf->xfxQ2(flavour, x2, q2) * sigma_gq_gq(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+        sum += p_pdf->xfxQ2(0, x1, q2) * p_pdf->xfxQ2(-flavour, x2, q2) * sigma_gq_gq(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+        sum += p_pdf->xfxQ2(flavour, x1, q2) * p_pdf->xfxQ2(0, x2, q2) * sigma_gq_gq(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+        sum += p_pdf->xfxQ2(-flavour, x1, q2) * p_pdf->xfxQ2(0, x2, q2) * sigma_gq_gq(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+    }
+
+    for (int flavour=1; flavour<=6; ++flavour)
+    {
+        sum += 0.5 * p_pdf->xfxQ2(flavour, x1, q2) * p_pdf->xfxQ2(flavour, x2, q2) * sigma_qiqi_qiqi(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+        sum += 0.5 * p_pdf->xfxQ2(-flavour, x1, q2) * p_pdf->xfxQ2(-flavour, x2, q2) * sigma_qiqi_qiqi(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+    }
+
+    for (int flavour1=1; flavour1<=6; ++flavour1)
+    {
+    for (int flavour2=1; flavour2<=6; ++flavour2)
+    {
+    if (flavour1 != flavour2){
+        sum += p_pdf->xfxQ2(flavour1, x1, q2) * p_pdf->xfxQ2(flavour2, x2, q2) * sigma_qiqj_qiqj(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+        sum += p_pdf->xfxQ2(-flavour1, x1, q2) * p_pdf->xfxQ2(-flavour2, x2, q2) * sigma_qiqj_qiqj(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+        sum += p_pdf->xfxQ2(flavour1, x1, q2) * p_pdf->xfxQ2(-flavour2, x2, q2) * sigma_qiqj_qiqj(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+        sum += p_pdf->xfxQ2(-flavour1, x1, q2) * p_pdf->xfxQ2(flavour2, x2, q2) * sigma_qiqj_qiqj(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2));
+    }}}
+
+    for (int flavour=1; flavour<=6; ++flavour)
+    {
+        sum += p_pdf->xfxQ2(flavour, x1, q2) * p_pdf->xfxQ2(-flavour, x2, q2)
+             *(sigma_qiaqi_qiaqi(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2))
+             + 0.5*sigma_qiaqi_gg(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2))
+             + 5*sigma_qiaqi_qjaqj(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2)));
+        sum += p_pdf->xfxQ2(-flavour, x1, q2) * p_pdf->xfxQ2(flavour, x2, q2)
+             *(sigma_qiaqi_qiaqi(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2))
+             + 0.5*sigma_qiaqi_gg(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2))
+             + 5*sigma_qiaqi_qjaqj(p_s_hat,p_t_hat,p_u_hat, p_pdf->alphasQ2(q2)));
+    }
+
+    return sum;
+}
+
+
+///sigma_qiqj_qiqj
+///Calculates and returns the cross section of the subprocess qiqj->qiqj. Return value should be real.
+///
+///\param p_s_hat = pointer to subprocess mandelstam variable s
+///\param p_t_hat = pointer to subprocess mandelstam variable t
+///\param p_u_hat = pointer to subprocess mandelstam variable u
+///\param p_alpha_s = pointer to strong interaction constant
+///
+double sigma_qiqj_qiqj(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat, const double alpha_s)
+{
+    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat;
+    return (M_PI * alpha_s * alpha_s / (s * s))*4*((s*s+u*u)/(t*t))/9;
+}
+
+
+///sigma_qiqi_qiqi
+///Calculates and returns the cross section of the subprocess qiqi->qiqi. Return value should be real.
+///
+///\param p_s_hat = pointer to subprocess mandelstam variable s
+///\param p_t_hat = pointer to subprocess mandelstam variable t
+///\param p_u_hat = pointer to subprocess mandelstam variable u
+///\param p_alpha_s = pointer to strong interaction constant
+///
+double sigma_qiqi_qiqi(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat, const double alpha_s)
+{
+    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat;
+    return (M_PI * alpha_s * alpha_s / (s * s))*4*((s*s+u*u)/(t*t)+(s*s+t*t)/(u*u)-(2*s*s)/(3*t*u))/9;
+}
+
+
+///sigma_qiaqi_qjaqj
+///Calculates and returns the cross section of the subprocess qiaqi->qjaqj. Return value should be real.
+///
+///\param p_s_hat = pointer to subprocess mandelstam variable s
+///\param p_t_hat = pointer to subprocess mandelstam variable t
+///\param p_u_hat = pointer to subprocess mandelstam variable u
+///\param p_alpha_s = pointer to strong interaction constant
+///
+double sigma_qiaqi_qjaqj(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat, const double alpha_s)
+{
+    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat;
+    return (M_PI * alpha_s * alpha_s / (s * s))*4*((t*t+u*u)/(s*s))/9;
+}
+
+
+///sigma_qiaqi_qiaqi
+///Calculates and returns the cross section of the subprocess qiaqi->qiaqi. Return value should be real.
+///
+///\param p_s_hat = pointer to subprocess mandelstam variable s
+///\param p_t_hat = pointer to subprocess mandelstam variable t
+///\param p_u_hat = pointer to subprocess mandelstam variable u
+///\param p_alpha_s = pointer to strong interaction constant
+///
+double sigma_qiaqi_qiaqi(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat, const double alpha_s)
+{
+    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat;
+    return (M_PI * alpha_s * alpha_s / (s * s))*4*((s*s+u*u)/(t*t)+(t*t+u*u)/(s*s)-(2*u*u)/(3*s*t))/9;
+}
+
+
+///sigma_qiaqi_gg
+///Calculates and returns the cross section of the subprocess qiaqi->gg. Return value should be real.
+///
+///\param p_s_hat = pointer to subprocess mandelstam variable s
+///\param p_t_hat = pointer to subprocess mandelstam variable t
+///\param p_u_hat = pointer to subprocess mandelstam variable u
+///\param p_alpha_s = pointer to strong interaction constant
+///
+double sigma_qiaqi_gg(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat, const double alpha_s)
+{
+    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat;
+    return (M_PI * alpha_s * alpha_s / (s * s))*8*(t*t+u*u)*(4/(9*t*u)-1/(s*s))/3;
+}
+
+
+///sigma_gg_qaq
+///Calculates and returns the cross section of the subprocess gg->qaq. Return value should be real.
+///
+///\param p_s_hat = pointer to subprocess mandelstam variable s
+///\param p_t_hat = pointer to subprocess mandelstam variable t
+///\param p_u_hat = pointer to subprocess mandelstam variable u
+///\param p_alpha_s = pointer to strong interaction constant
+///
+double sigma_gg_qaq(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat, const double alpha_s)
+{
+    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat;
+    return (M_PI * alpha_s * alpha_s / (s * s))*3*(t*t+u*u)*(4/(9*t*u)-1/(s*s))/8;
+}
+
+
+///sigma_gq_gq
+///Calculates and returns the cross section of the subprocess gg->gg. Return value should be real.
+///
+///\param p_s_hat = pointer to subprocess mandelstam variable s
+///\param p_t_hat = pointer to subprocess mandelstam variable t
+///\param p_u_hat = pointer to subprocess mandelstam variable u
+///\param p_alpha_s = pointer to strong interaction constant
+///
+double sigma_gq_gq(const double * const p_s_hat, const double * const p_t_hat, const double * const p_u_hat, const double alpha_s)
+{
+    const double s = *p_s_hat, t = *p_t_hat, u = *p_u_hat;
+    return (M_PI * alpha_s * alpha_s / (s * s))*(s*s+u*u)*(1/(t*t)-4/(9*s*u));
 }
 
 
