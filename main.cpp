@@ -4,6 +4,7 @@
 
 #include <complex>
 #include <gsl/gsl_math.h>
+#include <gsl/gsl_sf_expint.h>
 
 #include "cubature.h"
 #include "LHAPDF/LHAPDF.h"
@@ -20,8 +21,10 @@ using namespace LHAPDF;
 const unsigned g_dim = 3;                        //Dimension fo the integrals
 const string g_pdfsetname = "CT14lo";  //Name of the used pdf-set from LHAPDF
 const int g_pdfsetmember = 0;                   //Member ID of the pdf in the set
-const double g_error_tolerance = 1e-5;           //Global error tolerance
-
+const double g_error_tolerance = 1e-4;           //Global error tolerance
+const pair<const double, const double > g_sqrt_s_and_sigma_inel [3] = { { 58 , 1804 } , //sqrt_s - sigma_inel pairs from data
+                                                                        { 72.5 , 7000 } ,
+                                                                        { 74.5 , 8000 } };
 
 
 ///PROTOTYPES///
@@ -30,6 +33,7 @@ const double g_error_tolerance = 1e-5;           //Global error tolerance
 int integrand_function_ys(unsigned, const double*, void*, unsigned, double*);
 int integrand_function_xs(unsigned, const double*, void*, unsigned, double*);
 int phasespace_integral(const double[], const double[], double * const, double * const, int, const double * const, const double * const);
+int calculate_sigma_inel(double * const, double * const);
 int calculate_sigma_jet(double * const, double * const, int, const double * const, const double * const);
 double f_ses(const double * const, const double * const, const PDF*);
 double diff_sigma_jet(const double * const, const double * const, const double * const, const PDF*, const double * const, const double * const, const double * const);
@@ -56,14 +60,16 @@ double sigma_gg_gg(const double * const, const double * const, const double * co
 
 int main()
 {
-    int not_success_xs, not_success_ys;
-    double sigma_jet_xs, error_xs;
-    double sigma_jet_ys, error_ys;
+    int not_success_xs=0, not_success_ys=0;
+    double sigma_jet_xs, sigma_jet_error_xs;
+    double sigma_jet_ys, sigma_jet_error_ys;
+    double sigma_inel_xs;
+    double sigma_inel_ys;
     double mand_s, kt2_lower_cutoff;
     ofstream xs_data_sigma_jet, ys_data_sigma_jet;
 
-    mand_s = 100;
-    kt2_lower_cutoff = 4;
+    mand_s = 1804*1804;
+    kt2_lower_cutoff = 6;
 
     xs_data_sigma_jet.open ("xs_sigma_jet.dat");
     ys_data_sigma_jet.open ("ys_sigma_jet.dat");
@@ -75,15 +81,21 @@ int main()
     //for(double sqrt_mand_s = 10; sqrt_mand_s <= 5000; sqrt_mand_s *=1.2){
     //    mand_s = sqrt_mand_s*sqrt_mand_s;
 
-        not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &error_xs, 0, &mand_s, &kt2_lower_cutoff);
-        not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &error_ys, 1, &mand_s, &kt2_lower_cutoff);
+    //    not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &sigma_jet_error_xs, 0, &mand_s, &kt2_lower_cutoff);
+        not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &sigma_jet_error_ys, 1, &mand_s, &kt2_lower_cutoff);
 
-        xs_data_sigma_jet << mand_s << ' ' << sigma_jet_xs << ' ' << error_xs << '\n';
-        ys_data_sigma_jet << mand_s << ' ' << sigma_jet_ys << ' ' << error_ys << '\n';
+    //    xs_data_sigma_jet << mand_s << ' ' << sigma_jet_xs << ' ' << sigma_jet_error_xs << '\n';
+        ys_data_sigma_jet << mand_s << ' ' << sigma_jet_ys << ' ' << sigma_jet_error_ys << '\n';
     //}
 
     xs_data_sigma_jet.close();
     ys_data_sigma_jet.close();
+
+    //not_success_xs = calculate_sigma_inel(&sigma_inel_xs, &sigma_jet_xs);
+    not_success_ys = calculate_sigma_inel(&sigma_inel_ys, &sigma_jet_ys);
+
+    cout << sigma_inel_ys <<endl;
+
 
     if(not_success_xs||not_success_ys){
 
@@ -100,6 +112,31 @@ int main()
 
 ///FUNCTIONS///
 
+
+
+///calculate_sigma_inel
+///Function that does the calculation of the sigma_inel based on sigma_jet.
+///
+///\param p_value = pointer to the destination of the value of the sigma_inel
+///\param p_sigma_jet = pointer to the value of sigma_jet
+///
+///\return 0 on successful run
+///
+int calculate_sigma_inel(double * const p_value, double * const p_sigma_jet)
+{
+    int not_success = 0;
+
+    double variation = 4.72;
+    double dummy = *p_sigma_jet / (4 * M_PI * variation);
+    double gamma = 0.577216;// Euler-Mascheroni constant
+
+    const double upper_limits = dummy;
+    const double lower_limits = 0;
+
+    *p_value = (4 * M_PI * variation) * (M_EULER + log(dummy) + gsl_sf_expint_E1(dummy)) ;
+
+    return not_success;
+}
 
 
 ///calculate_sigma_jet
