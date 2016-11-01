@@ -1,6 +1,7 @@
 #include <iostream>
 #include <fstream>
 #include <stdio.h>
+#include <string>
 
 #include <complex>
 #include <gsl/gsl_math.h>
@@ -30,12 +31,14 @@ const pair<const double, const double > g_sqrt_s_and_sigma_inel [3] = { { 1804 ,
 ///PROTOTYPES///
 
 
+int eikonal_integrand(unsigned, const double*, void*, unsigned, double*);
 int integrand_function_ys(unsigned, const double*, void*, unsigned, double*);
 int integrand_function_xs(unsigned, const double*, void*, unsigned, double*);
-double find_kt2_lower_cutoff(const double * const, const double * const);
+double find_kt2_lower_cutoff(const double * const, const double * const, PDF*);
 int phasespace_integral(const double[], const double[], double * const, double * const, int, const double * const, const double * const, PDF*);
 int calculate_sigma_inel(double * const, double * const);
 int calculate_sigma_jet(double * const, double * const, int, const double * const, const double * const, PDF*);
+void find_eikonal_sum_contributions(const double * const, const double * const, const double * const, double [10] , PDF*);
 double f_ses(const double * const, const double * const, const PDF*);
 double diff_sigma_jet(const double * const, const double * const, const double * const, const PDF*, const double * const, const double * const, const double * const);
 double s_hat_from_ys(const double * const, const double * const, const double * const);
@@ -62,18 +65,36 @@ double sigma_gg_gg(const double * const, const double * const, const double * co
 int main()
 {
     double kt2_lower_cutoff [3];
+    double eikonal_sum_contributions [3][10];
     double sqrt_s;
     double data_sigma_inel;
+    ofstream data;
+
+    PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
+
 
     for(int i=0; i<3;i++){
 
         sqrt_s = g_sqrt_s_and_sigma_inel[i].first;
         data_sigma_inel = g_sqrt_s_and_sigma_inel[i].second;
 
-        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&sqrt_s, &data_sigma_inel);
-    }
+        ostringstream fn;
+        fn << "data_sqrt(s)=" << sqrt_s << ".dat";
 
-    cout << kt2_lower_cutoff[0] << ' ' << kt2_lower_cutoff[1] << ' ' << kt2_lower_cutoff[2] << endl;
+        data.open(fn.str().c_str());
+
+        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&sqrt_s, &data_sigma_inel, p_pdf);
+
+        data << "#kt² lower cutoff: " << kt2_lower_cutoff[i] << '\n';
+        data << "#eikonal sum term contributions:" << '\n';
+
+        find_eikonal_sum_contributions(&sqrt_s, &data_sigma_inel, kt2_lower_cutoff+i, eikonal_sum_contributions[i] , p_pdf);
+
+        for(int j=0; j<10; ++j){
+            data << j+1 << ". " << eikonal_sum_contributions[i][j] << '%' << '\n';
+        }
+        data.close();
+    }
 
     return 0;
 }
@@ -84,15 +105,63 @@ int main()
 
 
 
+///find_eikonal_sum_contributions
+///Function that finds the lower cutoff for kt2 that fits the data with secant method.
+///
+///\param p_sqrt_s = pointer to the sqrt_s
+///\param p_data_sigma_inel = pointer to the sigma_inel from data
+///\param p_data_sigma_inel = pointer to the p_kt2_lower_cutoff
+///\param p_pdf = pointer to the PDF object
+///
+void find_eikonal_sum_contributions(const double * const p_sqrt_s, const double * const p_data_sigma_inel, const double * const p_kt2_lower_cutoff, double eikonal_sum_contributions [10], PDF* p_pdf)
+{
+    int not_success_xs=0, not_success_ys=0;
+    double sigma_jet_xs, sigma_jet_error_xs;
+    double sigma_jet_ys, sigma_jet_error_ys;
+    double eikonal_sum_errors [10];
+    double mand_s;
+//    ofstream xs_data_sigma_jet, ys_data_sigma_jet;
+
+    mand_s = *p_sqrt_s * *p_sqrt_s;
+
+    //    not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &sigma_jet_error_xs, 0, &mand_s, &kt2_lower_cutoff);
+    not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &sigma_jet_error_ys, 1, &mand_s, p_kt2_lower_cutoff, p_pdf);
+
+    const double upper_limits = 1;
+    const double lower_limits = 0;
+
+    for(int i=0; i<10; i++){
+
+            pair< double , int > fdata = { sigma_jet_ys , i+1 };
+
+            hcubature(1,               //Integrand dimension
+                      eikonal_integrand, //Integrand function
+                      &fdata,              //Pointer to additional arguments
+                      1,              //Variable dimension
+                      &lower_limits,       //Variables minimum
+                      &upper_limits,       //Variables maximum
+                      0,                  //Max n:o of function evaluations
+                      0,                  //Required absolute error
+                      g_error_tolerance,  //Required relative error
+                      ERROR_INDIVIDUAL,   //Enumerate of which norm is used on errors
+                      eikonal_sum_contributions +i,            //Pointer to output
+                      eikonal_sum_errors +i);           //Pointer to error output
+
+            eikonal_sum_contributions[i] = 100 * eikonal_sum_contributions[i]/ *p_data_sigma_inel;
+    }
+}
+
+
 ///find_kt2_lower_cutoff
 ///Function that finds the lower cutoff for kt2 that fits the data with secant method.
 ///
 ///\param p_sqrt_s = pointer to the sqrt_s
 ///\param p_data_sigma_inel = pointer to the sigma_inel from data
+///\param p_pdf = pointer to the PDF object
 ///
 ///\return kt2 lower cutoff that fits the data
 ///
-double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const p_data_sigma_inel)
+double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const p_data_sigma_inel,PDF* p_pdf)
 {
     int not_success_xs=0, not_success_ys=0;
     double sigma_jet_xs [20], sigma_jet_error_xs [20];
@@ -102,8 +171,6 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
     double error [20];
     double mand_s , kt2_lower_cutoff [20];
 //    ofstream xs_data_sigma_jet, ys_data_sigma_jet;
-
-    PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
 
     mand_s = *p_sqrt_s * *p_sqrt_s;
 
@@ -167,9 +234,6 @@ int calculate_sigma_inel(double * const p_value, double * const p_sigma_jet)
     double variation = 4.72;
     double dummy = *p_sigma_jet / (4 * M_PI * variation);
     double gamma = 0.577216;// Euler-Mascheroni constant
-
-    const double upper_limits = dummy;
-    const double lower_limits = 0;
 
     *p_value = (4 * M_PI * variation) * (M_EULER + log(dummy) + gsl_sf_expint_E1(dummy)) ;
 
@@ -263,6 +327,39 @@ int phasespace_integral(const double upper_limits [3], const double lower_limits
         //printf("Computed integral = %0.10g +/- %g\n", *p_value, *p_error);
         return 0;
     }
+}
+
+///eikonal_integrand
+///Function to be integrated by cubature algorithm.
+///
+///\param ndim = dimension of the integral variable
+///\param p_x = pointer to the integral variable
+///\param p_fdata = pointer to the additional arguments (constants in integration)
+///\param fdim = dimension of the output
+///\param p_fval = pointer to the output destination
+///
+///\return 0 on successful run
+///
+int eikonal_integrand(unsigned ndim, const double *p_x, void *p_fdata, unsigned fdim, double *p_fval)
+{
+    pair< double , int > fdata = *(pair< double , int > *) p_fdata;
+    double sigma_jet = fdata.first;
+    int k = fdata.second;
+
+    double variation = 4.72;
+    double dummy = sigma_jet / (4 * M_PI * variation);
+
+    int factorial = 1;
+
+    double x = *p_x/(1- *p_x);
+    double jacobian = 1/pow(1- *p_x,2);
+
+    for(int i=1; i<=k; i++){
+        factorial *=i;
+    }
+    p_fval[0] = (4 * M_PI * variation)*exp(-dummy*exp(-x)) *(pow(dummy*exp(-x),k)/factorial) * jacobian;
+
+    return 0; // success
 }
 
 ///integrand_function_ys
