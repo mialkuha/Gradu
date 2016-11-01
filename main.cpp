@@ -33,9 +33,9 @@ const pair<const double, const double > g_sqrt_s_and_sigma_inel [3] = { { 1804 ,
 int integrand_function_ys(unsigned, const double*, void*, unsigned, double*);
 int integrand_function_xs(unsigned, const double*, void*, unsigned, double*);
 double find_kt2_lower_cutoff(const double * const, const double * const);
-int phasespace_integral(const double[], const double[], double * const, double * const, int, const double * const, const double * const);
+int phasespace_integral(const double[], const double[], double * const, double * const, int, const double * const, const double * const, PDF*);
 int calculate_sigma_inel(double * const, double * const);
-int calculate_sigma_jet(double * const, double * const, int, const double * const, const double * const);
+int calculate_sigma_jet(double * const, double * const, int, const double * const, const double * const, PDF*);
 double f_ses(const double * const, const double * const, const PDF*);
 double diff_sigma_jet(const double * const, const double * const, const double * const, const PDF*, const double * const, const double * const, const double * const);
 double s_hat_from_ys(const double * const, const double * const, const double * const);
@@ -61,12 +61,19 @@ double sigma_gg_gg(const double * const, const double * const, const double * co
 
 int main()
 {
-    double kt2_lower_cutoff;
-    double sqrt_s = g_sqrt_s_and_sigma_inel[0].first;
-    double data_sigma_inel = g_sqrt_s_and_sigma_inel[0].second;
+    double kt2_lower_cutoff [3];
+    double sqrt_s;
+    double data_sigma_inel;
 
-    kt2_lower_cutoff = find_kt2_lower_cutoff(&sqrt_s, &data_sigma_inel);
-    cout << kt2_lower_cutoff<<endl;
+    for(int i=0; i<3;i++){
+
+        sqrt_s = g_sqrt_s_and_sigma_inel[i].first;
+        data_sigma_inel = g_sqrt_s_and_sigma_inel[i].second;
+
+        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&sqrt_s, &data_sigma_inel);
+    }
+
+    cout << kt2_lower_cutoff[0] << ' ' << kt2_lower_cutoff[1] << ' ' << kt2_lower_cutoff[2] << endl;
 
     return 0;
 }
@@ -96,10 +103,12 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
     double mand_s , kt2_lower_cutoff [20];
 //    ofstream xs_data_sigma_jet, ys_data_sigma_jet;
 
+    PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
+
     mand_s = *p_sqrt_s * *p_sqrt_s;
 
-    kt2_lower_cutoff[0] = 2;
-    kt2_lower_cutoff[1] = 3;
+    kt2_lower_cutoff[0] = 5;
+    kt2_lower_cutoff[1] = 6;
 
     for(int i=0; i<20; ++i)
     {
@@ -119,7 +128,7 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
         //    mand_s = sqrt_mand_s*sqrt_mand_s;
 
         //    not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &sigma_jet_error_xs, 0, &mand_s, &kt2_lower_cutoff);
-        not_success_ys = calculate_sigma_jet(sigma_jet_ys+i, sigma_jet_error_ys+i, 1, &mand_s, kt2_lower_cutoff+i);
+        not_success_ys = calculate_sigma_jet(sigma_jet_ys+i, sigma_jet_error_ys+i, 1, &mand_s, kt2_lower_cutoff+i, p_pdf);
 
         //    xs_data_sigma_jet << mand_s << ' ' << sigma_jet_xs << ' ' << sigma_jet_error_xs << '\n';
         //    ys_data_sigma_jet << mand_s << ' ' << sigma_jet_ys << ' ' << sigma_jet_error_ys << '\n';
@@ -176,16 +185,17 @@ int calculate_sigma_inel(double * const p_value, double * const p_sigma_jet)
 ///\param y_space = flag, 0 = integrate in x-space, 1 = integrate in y-space
 ///\param p_mand_s = pointer to the mandelstam variable s
 ///\param p_kt2_lower_cutoff = pointer to the lower cutoff of kt²
+///\param p_pdf = pointer to the PDF object
 ///
 ///\return 0 on successful run
 ///
-int calculate_sigma_jet(double * const p_value, double * const p_error, int y_space, const double * const p_mand_s, const double * const p_kt2_lower_cutoff)
+int calculate_sigma_jet(double * const p_value, double * const p_error, int y_space, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf)
 {
     int not_success;
     const double upper_limits [3] = {1, 1, 1};
     const double lower_limits [3] = {0, 0, 0};
 
-    not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error, y_space, p_mand_s, p_kt2_lower_cutoff);
+    not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error, y_space, p_mand_s, p_kt2_lower_cutoff, p_pdf);
     return not_success;
 }
 
@@ -200,14 +210,14 @@ int calculate_sigma_jet(double * const p_value, double * const p_error, int y_sp
 ///\param y_space = flag, 0 = integrate in x-space, 1 = integrate in y-space
 ///\param p_mand_s = pointer to the mandelstam variable s
 ///\param p_kt2_lower_cutoff = pointer to the lower cutoff of kt²
+///\param p_pdf = pointer to the PDF object
 ///
 ///\return 0 on successful run
 ///
-int phasespace_integral(const double upper_limits [3], const double lower_limits [3], double * const p_value, double * const p_error, int y_space, const double * const p_mand_s, const double * const p_kt2_lower_cutoff)
+int phasespace_integral(const double upper_limits [3], const double lower_limits [3], double * const p_value, double * const p_error, int y_space, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf)
 {
 
     const unsigned fdim=1;
-    PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
     pair<PDF*,pair<const double * const,const double * const> > fdata = { p_pdf , { p_mand_s , p_kt2_lower_cutoff } };
 
     int not_success;
@@ -250,7 +260,7 @@ int phasespace_integral(const double upper_limits [3], const double lower_limits
     }
     else
     {
-        printf("Computed integral = %0.10g +/- %g\n", *p_value, *p_error);
+        //printf("Computed integral = %0.10g +/- %g\n", *p_value, *p_error);
         return 0;
     }
 }
