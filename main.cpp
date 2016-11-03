@@ -23,6 +23,8 @@ const unsigned g_dim = 3;                        //Dimension fo the integrals
 const string g_pdfsetname = "CT14lo";  //Name of the used pdf-set from LHAPDF
 const int g_pdfsetmember = 0;                   //Member ID of the pdf in the set
 const double g_error_tolerance = 1e-4;           //Global error tolerance
+const int g_eikonal_sum_term_count = 11;         //N:o of eikonal sum terms to study
+const int g_data_point_count = 3;                //N:o of data point constants
 const pair<const double, const double > g_sqrt_s_and_sigma_inel [3] = { { 1804 , 58 } , //sqrt_s - sigma_inel pairs from data
                                                                         { 7000 , 72.5 } ,
                                                                         { 8000 , 74.5 }};
@@ -38,7 +40,7 @@ double find_kt2_lower_cutoff(const double * const, const double * const, PDF*);
 int phasespace_integral(const double[], const double[], double * const, double * const, int, const double * const, const double * const, PDF*);
 int calculate_sigma_inel(double * const, double * const);
 int calculate_sigma_jet(double * const, double * const, int, const double * const, const double * const, PDF*);
-void find_eikonal_sum_contributions(const double * const, const double * const, const double * const, double [10] , PDF*);
+void find_eikonal_sum_contributions(const double * const, const double * const, const double * const, double [] , PDF*);
 double f_ses(const double * const, const double * const, const PDF*);
 double diff_sigma_jet(const double * const, const double * const, const double * const, const PDF*, const double * const, const double * const, const double * const);
 double s_hat_from_ys(const double * const, const double * const, const double * const);
@@ -64,8 +66,8 @@ double sigma_gg_gg(const double * const, const double * const, const double * co
 
 int main()
 {
-    double kt2_lower_cutoff [3];
-    double eikonal_sum_contributions [3][10];
+    double kt2_lower_cutoff [g_data_point_count];
+    double eikonal_sum_contributions [g_data_point_count][g_eikonal_sum_term_count];
     double sqrt_s;
     double data_sigma_inel;
     ofstream data;
@@ -73,7 +75,7 @@ int main()
     PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
 
 
-    for(int i=0; i<3;i++){
+    for(int i=0; i<g_data_point_count;i++){
 
         sqrt_s = g_sqrt_s_and_sigma_inel[i].first;
         data_sigma_inel = g_sqrt_s_and_sigma_inel[i].second;
@@ -90,7 +92,7 @@ int main()
 
         find_eikonal_sum_contributions(&sqrt_s, &data_sigma_inel, kt2_lower_cutoff+i, eikonal_sum_contributions[i] , p_pdf);
 
-        for(int j=0; j<10; ++j){
+        for(int j=0; j<g_eikonal_sum_term_count; ++j){
             data << j+1 << ". " << eikonal_sum_contributions[i][j] << '%' << '\n';
         }
         data.close();
@@ -113,12 +115,12 @@ int main()
 ///\param p_data_sigma_inel = pointer to the p_kt2_lower_cutoff
 ///\param p_pdf = pointer to the PDF object
 ///
-void find_eikonal_sum_contributions(const double * const p_sqrt_s, const double * const p_data_sigma_inel, const double * const p_kt2_lower_cutoff, double eikonal_sum_contributions [10], PDF* p_pdf)
+void find_eikonal_sum_contributions(const double * const p_sqrt_s, const double * const p_data_sigma_inel, const double * const p_kt2_lower_cutoff, double eikonal_sum_contributions [g_eikonal_sum_term_count], PDF* p_pdf)
 {
     int not_success_xs=0, not_success_ys=0;
     double sigma_jet_xs, sigma_jet_error_xs;
     double sigma_jet_ys, sigma_jet_error_ys;
-    double eikonal_sum_errors [10];
+    double eikonal_sum_errors [g_eikonal_sum_term_count];
     double mand_s;
 //    ofstream xs_data_sigma_jet, ys_data_sigma_jet;
 
@@ -130,7 +132,7 @@ void find_eikonal_sum_contributions(const double * const p_sqrt_s, const double 
     const double upper_limits = 1;
     const double lower_limits = 0;
 
-    for(int i=0; i<10; i++){
+    for(int i=0; i<g_eikonal_sum_term_count; i++){
 
             pair< double , int > fdata = { sigma_jet_ys , i+1 };
 
