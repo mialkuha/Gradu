@@ -26,8 +26,9 @@ const double g_error_tolerance = 1e-4;           //Global error tolerance
 const int g_eikonal_sum_term_count = 11;         //N:o of eikonal sum terms to study
 const int g_data_point_count = 3;                //N:o of data point constants
 const pair<const double, const double > g_sqrt_s_and_sigma_inel [3] = { { 1804 , 58 } , //sqrt_s - sigma_inel pairs from data
-                                                                        { 7000 , 72.5 } ,
-                                                                        { 8000 , 74.5 }};
+    { 7000 , 72.5 } ,
+    { 8000 , 74.5 }
+};
 
 
 ///PROTOTYPES///
@@ -35,11 +36,12 @@ const pair<const double, const double > g_sqrt_s_and_sigma_inel [3] = { { 1804 ,
 
 int eikonal_integrand(unsigned, const double*, void*, unsigned, double*);
 int integrand_function_ys(unsigned, const double*, void*, unsigned, double*);
-double find_kt2_lower_cutoff(const double * const, const double * const, PDF*);
+double find_kt2_lower_cutoff(const double * const, const double * const, double *, double *, PDF*);
 int phasespace_integral(const double[], const double[], double * const, double * const, const double * const, const double * const, PDF*);
 int calculate_sigma_inel(double * const, double * const);
+int calculate_sigma_tot(double * const, double * const);
 int calculate_sigma_jet(double * const, double * const, const double * const, const double * const, PDF*);
-void find_eikonal_sum_contributions(const double * const, const double * const, const double * const, double [] , PDF*);
+void find_eikonal_sum_contributions(const double * const, double [], const double, const double, PDF*);
 double f_ses(const double * const, const double * const, const PDF*);
 double diff_sigma_jet(const double * const, const double * const, const double * const, const PDF*, const double * const, const double * const, const double * const);
 double s_hat_from_ys(const double * const, const double * const, const double * const);
@@ -66,12 +68,14 @@ int main()
     double eikonal_sum_contributions [g_data_point_count][g_eikonal_sum_term_count];
     double sqrt_s;
     double data_sigma_inel;
+    double sigma_jet, sigma_inel, sigma_el, sigma_tot;
     ofstream data;
 
     PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
 
 
-    for(int i=0; i<g_data_point_count;i++){
+    for(int i=0; i<g_data_point_count; i++)
+    {
 
         sqrt_s = g_sqrt_s_and_sigma_inel[i].first;
         data_sigma_inel = g_sqrt_s_and_sigma_inel[i].second;
@@ -81,14 +85,23 @@ int main()
 
         data.open(fn.str().c_str());
 
-        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&sqrt_s, &data_sigma_inel, p_pdf);
+        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&sqrt_s, &data_sigma_inel, &sigma_jet, &sigma_inel, p_pdf);
 
         data << "#kt² lower cutoff: " << kt2_lower_cutoff[i] << '\n';
+        data << "#data_sqrt(s): " << sqrt_s << '\n';
+
+        find_eikonal_sum_contributions(kt2_lower_cutoff+i, eikonal_sum_contributions[i], sigma_inel, sigma_jet, p_pdf);
+
+        calculate_sigma_tot(&sigma_tot, &sigma_jet);
+        sigma_el = sigma_tot - sigma_inel;
+
+        data << "#sigma_tot: " << sigma_tot << '\n';
+        data << "#sigma_el: " << sigma_el << '\n';
+        data << "#sigma_inel: " << sigma_inel << '\n';
+        data << "#sigma_jet: " << sigma_jet << '\n';
         data << "#eikonal sum term contributions:" << '\n';
-
-        find_eikonal_sum_contributions(&sqrt_s, &data_sigma_inel, kt2_lower_cutoff+i, eikonal_sum_contributions[i] , p_pdf);
-
-        for(int j=0; j<g_eikonal_sum_term_count; ++j){
+        for(int j=0; j<g_eikonal_sum_term_count; ++j)
+        {
             data << j+1 << ". " << eikonal_sum_contributions[i][j] << '%' << '\n';
         }
         data.close();
@@ -106,46 +119,39 @@ int main()
 ///find_eikonal_sum_contributions
 ///Function that finds the lower cutoff for kt2 that fits the data with secant method.
 ///
-///\param p_sqrt_s = pointer to the sqrt_s
-///\param p_data_sigma_inel = pointer to the sigma_inel from data
-///\param p_data_sigma_inel = pointer to the p_kt2_lower_cutoff
+///\param p_kt2_lower_cutoff = pointer to the p_kt2_lower_cutoff
+///\param eikonal_sum_contributions = array to be filled wtih eikonal_sum_contributions
+///\param sigma_inel = calculated sigma_inel
+///\param sigma_jet = calculated sigma_jet
 ///\param p_pdf = pointer to the PDF object
 ///
-void find_eikonal_sum_contributions(const double * const p_sqrt_s, const double * const p_data_sigma_inel, const double * const p_kt2_lower_cutoff, double eikonal_sum_contributions [g_eikonal_sum_term_count], PDF* p_pdf)
+void find_eikonal_sum_contributions(const double * const p_kt2_lower_cutoff, double eikonal_sum_contributions [g_eikonal_sum_term_count], const double sigma_inel, const double sigma_jet, PDF* p_pdf)
 {
-    int not_success_ys=0;
-    double sigma_jet_ys, sigma_jet_error_ys;
     double eikonal_sum_errors [g_eikonal_sum_term_count];
-    double mand_s;
 //    ofstream ys_data_sigma_jet;
-
-    mand_s = *p_sqrt_s * *p_sqrt_s;
-
-    not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &sigma_jet_error_ys, &mand_s, p_kt2_lower_cutoff, p_pdf);
-
-    if (not_success_ys) cout << "error in calculating sigma_jet" <<endl;
 
     const double upper_limits = 1;
     const double lower_limits = 0;
 
-    for(int i=0; i<g_eikonal_sum_term_count; i++){
+    for(int i=0; i<g_eikonal_sum_term_count; i++)
+    {
 
-            pair< double , int > fdata = { sigma_jet_ys , i+1 };
+        pair< double , int > fdata = { sigma_jet, i+1 };
 
-            hcubature(1,               //Integrand dimension
-                      eikonal_integrand, //Integrand function
-                      &fdata,              //Pointer to additional arguments
-                      1,              //Variable dimension
-                      &lower_limits,       //Variables minimum
-                      &upper_limits,       //Variables maximum
-                      0,                  //Max n:o of function evaluations
-                      0,                  //Required absolute error
-                      g_error_tolerance,  //Required relative error
-                      ERROR_INDIVIDUAL,   //Enumerate of which norm is used on errors
-                      eikonal_sum_contributions +i,            //Pointer to output
-                      eikonal_sum_errors +i);           //Pointer to error output
+        hcubature(1,               //Integrand dimension
+                  eikonal_integrand, //Integrand function
+                  &fdata,              //Pointer to additional arguments
+                  1,              //Variable dimension
+                  &lower_limits,       //Variables minimum
+                  &upper_limits,       //Variables maximum
+                  0,                  //Max n:o of function evaluations
+                  0,                  //Required absolute error
+                  g_error_tolerance,  //Required relative error
+                  ERROR_INDIVIDUAL,   //Enumerate of which norm is used on errors
+                  eikonal_sum_contributions +i,            //Pointer to output
+                  eikonal_sum_errors +i);           //Pointer to error output
 
-            eikonal_sum_contributions[i] = 100 * eikonal_sum_contributions[i]/ *p_data_sigma_inel;
+        eikonal_sum_contributions[i] = 100 * eikonal_sum_contributions[i]/ sigma_inel;
     }
 }
 
@@ -155,11 +161,13 @@ void find_eikonal_sum_contributions(const double * const p_sqrt_s, const double 
 ///
 ///\param p_sqrt_s = pointer to the sqrt_s
 ///\param p_data_sigma_inel = pointer to the sigma_inel from data
+///\param p_sigma_jet_res = pointer to the destination of sigma jet
+///\param p_sigma_inel_res = pointer to the destination of sigma inel
 ///\param p_pdf = pointer to the PDF object
 ///
 ///\return kt2 lower cutoff that fits the data
 ///
-double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const p_data_sigma_inel,PDF* p_pdf)
+double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const p_data_sigma_inel, double * p_sigma_jet_res, double * p_sigma_inel_res, PDF* p_pdf)
 {
     int not_success_ys=0;
     double sigma_jet_ys [20], sigma_jet_error_ys [20];
@@ -168,14 +176,15 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
     double mand_s , kt2_lower_cutoff [20];
 //    ofstream ys_data_sigma_jet;
 
-    mand_s = *p_sqrt_s * *p_sqrt_s;
+    mand_s = *p_sqrt_s **p_sqrt_s;
 
     kt2_lower_cutoff[0] = 5;
     kt2_lower_cutoff[1] = 6;
 
     for(int i=0; i<20; ++i)
     {
-        if (i>1){
+        if (i>1)
+        {
             kt2_lower_cutoff[i] = (kt2_lower_cutoff[i-2] * error[i-1] - kt2_lower_cutoff[i-1] * error[i-2])
                                   / (error[i-1]-error[i-2]);
         }
@@ -203,10 +212,15 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
 
         if (not_success_ys) cout << "error at i="<<i<<" kt2_lower_cutoff=" <<kt2_lower_cutoff[i]<<endl;
 
-        if ( ( error[i] / *p_data_sigma_inel) <= 1e-3) return kt2_lower_cutoff[i];
-
+        if ( ( error[i] / *p_data_sigma_inel) <= 1e-3){
+            *p_sigma_inel_res = sigma_inel_ys[i];
+            *p_sigma_jet_res = sigma_jet_ys[i];
+            return kt2_lower_cutoff[i];
+        }
     }
 
+    *p_sigma_inel_res = sigma_inel_ys[19];
+    *p_sigma_jet_res = sigma_jet_ys[19];
     return kt2_lower_cutoff[19];
 }
 
@@ -227,6 +241,27 @@ int calculate_sigma_inel(double * const p_value, double * const p_sigma_jet)
     double dummy = *p_sigma_jet / (4 * M_PI * variation);
 
     *p_value = (4 * M_PI * variation) * (M_EULER + log(dummy) + gsl_sf_expint_E1(dummy)) ;
+
+    return not_success;
+}
+
+
+///calculate_sigma_tot
+///Function that does the calculation of the sigma_tot based on sigma_jet.
+///
+///\param p_value = pointer to the destination of the value of the sigma_tot
+///\param p_sigma_jet = pointer to the value of sigma_jet
+///
+///\return 0 on successful run
+///
+int calculate_sigma_tot(double * const p_value, double * const p_sigma_jet)
+{
+    int not_success = 0;
+
+    double variation = 4.72;
+    double dummy = *p_sigma_jet / (2 * M_PI * variation);
+
+    *p_value = (8 * M_PI * variation) * (M_EULER + log(dummy) + gsl_sf_expint_E1(dummy)) ;
 
     return not_success;
 }
@@ -276,18 +311,18 @@ int phasespace_integral(const double upper_limits [3], const double lower_limits
     int not_success;
 
 
-        not_success = hcubature(fdim,               //Integrand dimension
-                                integrand_function_ys, //Integrand function
-                                &fdata,              //Pointer to additional arguments
-                                g_dim,              //Variable dimension
-                                lower_limits,       //Variables minimum
-                                upper_limits,       //Variables maximum
-                                0,                  //Max n:o of function evaluations
-                                0,                  //Required absolute error
-                                g_error_tolerance,  //Required relative error
-                                ERROR_INDIVIDUAL,   //Enumerate of which norm is used on errors
-                                p_value,            //Pointer to output
-                                p_error);           //Pointer to error output
+    not_success = hcubature(fdim,               //Integrand dimension
+                            integrand_function_ys, //Integrand function
+                            &fdata,              //Pointer to additional arguments
+                            g_dim,              //Variable dimension
+                            lower_limits,       //Variables minimum
+                            upper_limits,       //Variables maximum
+                            0,                  //Max n:o of function evaluations
+                            0,                  //Required absolute error
+                            g_error_tolerance,  //Required relative error
+                            ERROR_INDIVIDUAL,   //Enumerate of which norm is used on errors
+                            p_value,            //Pointer to output
+                            p_error);           //Pointer to error output
 
 
     if(not_success)
@@ -327,7 +362,8 @@ int eikonal_integrand(unsigned ndim, const double *p_x, void *p_fdata, unsigned 
     double x = *p_x/(1- *p_x);
     double jacobian = 1/pow(1- *p_x,2);
 
-    for(int i=1; i<=k; i++){
+    for(int i=1; i<=k; i++)
+    {
         factorial *=i;
     }
     p_fval[0] = (4 * M_PI * variation)*exp(-dummy*exp(-x)) *(pow(dummy*exp(-x),k)/factorial) * jacobian;
