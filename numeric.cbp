@@ -12,8 +12,14 @@
 				<Option type="1" />
 				<Option compiler="gcc" />
 				<Compiler>
+					<Add option="-std=c++11" />
 					<Add option="-g" />
 				</Compiler>
+				<Linker>
+					<Add option="-lgsl" />
+					<Add option="-lgslcblas" />
+					<Add option="-lm" />
+				</Linker>
 			</Target>
 			<Target title="Release">
 				<Option output="bin/Release/numeric" prefix_auto="1" extension_auto="1" />
@@ -35,6 +41,9 @@
 					<Add option="-s" />
 					<Add option="-m64" />
 					<Add option="`lhapdf-config --cflags --ldflags`" />
+					<Add option="-lgsl" />
+					<Add option="-lgslcblas" />
+					<Add option="-lm" />
 				</Linker>
 				<MakeCommands>
 					<Build command="" />

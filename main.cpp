@@ -23,7 +23,7 @@ const unsigned g_dim = 3;                        //Dimension fo the integrals
 const string g_pdfsetname = "CT14lo";  //Name of the used pdf-set from LHAPDF
 const int g_pdfsetmember = 0;                   //Member ID of the pdf in the set
 const double g_error_tolerance = 1e-4;           //Global error tolerance
-const int g_eikonal_sum_term_count = 11;         //N:o of eikonal sum terms to study
+const int g_eikonal_sum_term_count = 10;         //N:o of eikonal sum terms to study
 const int g_data_point_count = 3;                //N:o of data point constants
 const pair<const double, const double > g_sqrt_s_and_sigma_inel [3] = { { 1804 , 58 } , //sqrt_s - sigma_inel pairs from data
                                                                         { 7000 , 72.5 } ,
