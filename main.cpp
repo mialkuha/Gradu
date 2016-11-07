@@ -35,20 +35,16 @@ const pair<const double, const double > g_sqrt_s_and_sigma_inel [3] = { { 1804 ,
 
 int eikonal_integrand(unsigned, const double*, void*, unsigned, double*);
 int integrand_function_ys(unsigned, const double*, void*, unsigned, double*);
-int integrand_function_xs(unsigned, const double*, void*, unsigned, double*);
 double find_kt2_lower_cutoff(const double * const, const double * const, PDF*);
-int phasespace_integral(const double[], const double[], double * const, double * const, int, const double * const, const double * const, PDF*);
+int phasespace_integral(const double[], const double[], double * const, double * const, const double * const, const double * const, PDF*);
 int calculate_sigma_inel(double * const, double * const);
-int calculate_sigma_jet(double * const, double * const, int, const double * const, const double * const, PDF*);
+int calculate_sigma_jet(double * const, double * const, const double * const, const double * const, PDF*);
 void find_eikonal_sum_contributions(const double * const, const double * const, const double * const, double [] , PDF*);
 double f_ses(const double * const, const double * const, const PDF*);
 double diff_sigma_jet(const double * const, const double * const, const double * const, const PDF*, const double * const, const double * const, const double * const);
 double s_hat_from_ys(const double * const, const double * const, const double * const);
 double t_hat_from_ys(const double * const, const double * const, const double * const);
 double u_hat_from_ys(const double * const, const double * const, const double * const);
-double s_hat_from_xs(const double * const, const double * const, const double * const);
-double t_hat_from_xs(const double * const, const double * const, const double * const, const double * const);
-double u_hat_from_xs(const double * const, const double * const, const double * const, const double * const);
 double sigma_qiqj_qiqj(const double * const, const double * const, const double * const, const double);
 double sigma_qiqi_qiqi(const double * const, const double * const, const double * const, const double);
 double sigma_qiaqi_qjaqj(const double * const, const double * const, const double * const, const double);
@@ -117,17 +113,17 @@ int main()
 ///
 void find_eikonal_sum_contributions(const double * const p_sqrt_s, const double * const p_data_sigma_inel, const double * const p_kt2_lower_cutoff, double eikonal_sum_contributions [g_eikonal_sum_term_count], PDF* p_pdf)
 {
-    int not_success_xs=0, not_success_ys=0;
-    double sigma_jet_xs, sigma_jet_error_xs;
+    int not_success_ys=0;
     double sigma_jet_ys, sigma_jet_error_ys;
     double eikonal_sum_errors [g_eikonal_sum_term_count];
     double mand_s;
-//    ofstream xs_data_sigma_jet, ys_data_sigma_jet;
+//    ofstream ys_data_sigma_jet;
 
     mand_s = *p_sqrt_s * *p_sqrt_s;
 
-    //    not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &sigma_jet_error_xs, 0, &mand_s, &kt2_lower_cutoff);
-    not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &sigma_jet_error_ys, 1, &mand_s, p_kt2_lower_cutoff, p_pdf);
+    not_success_ys = calculate_sigma_jet(&sigma_jet_ys, &sigma_jet_error_ys, &mand_s, p_kt2_lower_cutoff, p_pdf);
+
+    if (not_success_ys) cout << "error in calculating sigma_jet" <<endl;
 
     const double upper_limits = 1;
     const double lower_limits = 0;
@@ -165,14 +161,12 @@ void find_eikonal_sum_contributions(const double * const p_sqrt_s, const double 
 ///
 double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const p_data_sigma_inel,PDF* p_pdf)
 {
-    int not_success_xs=0, not_success_ys=0;
-    double sigma_jet_xs [20], sigma_jet_error_xs [20];
+    int not_success_ys=0;
     double sigma_jet_ys [20], sigma_jet_error_ys [20];
-    double sigma_inel_xs [20];
     double sigma_inel_ys [20];
     double error [20];
     double mand_s , kt2_lower_cutoff [20];
-//    ofstream xs_data_sigma_jet, ys_data_sigma_jet;
+//    ofstream ys_data_sigma_jet;
 
     mand_s = *p_sqrt_s * *p_sqrt_s;
 
@@ -186,32 +180,28 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
                                   / (error[i-1]-error[i-2]);
         }
 
-        /*    xs_data_sigma_jet.open ("xs_sigma_jet.dat");
+        /*
             ys_data_sigma_jet.open ("ys_sigma_jet.dat");
-            xs_data_sigma_jet << "# sigma_jet calculated in x-space, p_0=" << sqrt(kt2_lower_cutoff) << '\n';
-            xs_data_sigma_jet << "# sqrt(s) sigma_jet error" << '\n';
             ys_data_sigma_jet << "# sigma_jet calculated in y-space, p_0=" << sqrt(kt2_lower_cutoff) << '\n';
             ys_data_sigma_jet << "# sqrt(s) sigma_jet error" << '\n';*/
 
         //for(double sqrt_mand_s = 10; sqrt_mand_s <= 5000; sqrt_mand_s *=1.2){
         //    mand_s = sqrt_mand_s*sqrt_mand_s;
 
-        //    not_success_xs = calculate_sigma_jet(&sigma_jet_xs, &sigma_jet_error_xs, 0, &mand_s, &kt2_lower_cutoff);
-        not_success_ys = calculate_sigma_jet(sigma_jet_ys+i, sigma_jet_error_ys+i, 1, &mand_s, kt2_lower_cutoff+i, p_pdf);
+        not_success_ys = calculate_sigma_jet(sigma_jet_ys+i, sigma_jet_error_ys+i, &mand_s, kt2_lower_cutoff+i, p_pdf);
 
-        //    xs_data_sigma_jet << mand_s << ' ' << sigma_jet_xs << ' ' << sigma_jet_error_xs << '\n';
         //    ys_data_sigma_jet << mand_s << ' ' << sigma_jet_ys << ' ' << sigma_jet_error_ys << '\n';
         //}
 
-        //xs_data_sigma_jet.close();
         //ys_data_sigma_jet.close();
 
-        //not_success_xs = calculate_sigma_inel(&sigma_inel_xs, &sigma_jet_xs);
         not_success_ys = calculate_sigma_inel(sigma_inel_ys+i, sigma_jet_ys+i);
 
         cout << kt2_lower_cutoff[i] << ' ' << sigma_inel_ys[i] << ' ' << *p_data_sigma_inel << endl;
 
         error[i] = (sigma_inel_ys[i] - *p_data_sigma_inel);
+
+        if (not_success_ys) cout << "error at i="<<i<<" kt2_lower_cutoff=" <<kt2_lower_cutoff[i]<<endl;
 
         if ( ( error[i] / *p_data_sigma_inel) <= 1e-3) return kt2_lower_cutoff[i];
 
@@ -235,7 +225,6 @@ int calculate_sigma_inel(double * const p_value, double * const p_sigma_jet)
 
     double variation = 4.72;
     double dummy = *p_sigma_jet / (4 * M_PI * variation);
-    double gamma = 0.577216;// Euler-Mascheroni constant
 
     *p_value = (4 * M_PI * variation) * (M_EULER + log(dummy) + gsl_sf_expint_E1(dummy)) ;
 
@@ -248,20 +237,19 @@ int calculate_sigma_inel(double * const p_value, double * const p_sigma_jet)
 ///
 ///\param p_value = pointer to the destination of the value of the sigma_jet
 ///\param p_error = pointer to the destination of the error output from cubature
-///\param y_space = flag, 0 = integrate in x-space, 1 = integrate in y-space
 ///\param p_mand_s = pointer to the mandelstam variable s
 ///\param p_kt2_lower_cutoff = pointer to the lower cutoff of kt²
 ///\param p_pdf = pointer to the PDF object
 ///
 ///\return 0 on successful run
 ///
-int calculate_sigma_jet(double * const p_value, double * const p_error, int y_space, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf)
+int calculate_sigma_jet(double * const p_value, double * const p_error, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf)
 {
     int not_success;
     const double upper_limits [3] = {1, 1, 1};
     const double lower_limits [3] = {0, 0, 0};
 
-    not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error, y_space, p_mand_s, p_kt2_lower_cutoff, p_pdf);
+    not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error, p_mand_s, p_kt2_lower_cutoff, p_pdf);
     return not_success;
 }
 
@@ -273,14 +261,13 @@ int calculate_sigma_jet(double * const p_value, double * const p_error, int y_sp
 ///\param lower_limits = list of the lower limits of the integral. Order: kt2, x1, x2
 ///\param p_value = pointer to the destination of the value of the integral
 ///\param p_error = pointer to the destination of the error output from cubature
-///\param y_space = flag, 0 = integrate in x-space, 1 = integrate in y-space
 ///\param p_mand_s = pointer to the mandelstam variable s
 ///\param p_kt2_lower_cutoff = pointer to the lower cutoff of kt²
 ///\param p_pdf = pointer to the PDF object
 ///
 ///\return 0 on successful run
 ///
-int phasespace_integral(const double upper_limits [3], const double lower_limits [3], double * const p_value, double * const p_error, int y_space, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf)
+int phasespace_integral(const double upper_limits [3], const double lower_limits [3], double * const p_value, double * const p_error, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf)
 {
 
     const unsigned fdim=1;
@@ -288,8 +275,7 @@ int phasespace_integral(const double upper_limits [3], const double lower_limits
 
     int not_success;
 
-    if(y_space)
-    {
+
         not_success = hcubature(fdim,               //Integrand dimension
                                 integrand_function_ys, //Integrand function
                                 &fdata,              //Pointer to additional arguments
@@ -302,22 +288,7 @@ int phasespace_integral(const double upper_limits [3], const double lower_limits
                                 ERROR_INDIVIDUAL,   //Enumerate of which norm is used on errors
                                 p_value,            //Pointer to output
                                 p_error);           //Pointer to error output
-    }
-    else
-    {
-        not_success = hcubature(fdim,               //Integrand dimension
-                                integrand_function_xs, //Integrand function
-                                &fdata,              //Pointer to additional arguments
-                                g_dim,              //Variable dimension
-                                lower_limits,       //Variables minimum
-                                upper_limits,       //Variables maximum
-                                0,                  //Max n:o of function evaluations
-                                0,                  //Required absolute error
-                                g_error_tolerance,  //Required relative error
-                                ERROR_INDIVIDUAL,   //Enumerate of which norm is used on errors
-                                p_value,            //Pointer to output
-                                p_error);           //Pointer to error output
-    }
+
 
     if(not_success)
     {
@@ -401,7 +372,7 @@ int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsig
     const auto s_hat         = s_hat_from_ys(&y1, &y2, &kt2);
     const auto t_hat         = t_hat_from_ys(&y1, &y2, &kt2);
     const auto u_hat         = u_hat_from_ys(&y1, &y2, &kt2);
-    const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
+    //const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
 
     const auto jacobian = ((*p_mand_s/4) - *p_kt2_lower_cutoff) * (2*y1_upper) * (y2_upper - y2_lower);
 
@@ -438,97 +409,6 @@ int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsig
     */
     return 0; // success
 }
-
-
-
-///integrand_function_xs
-///Function to be integrated by cubature algorithm. Calculates the value of the integrand in a
-///phasespace point according to single effective subprocess approximation. TODO
-///
-///\param ndim = dimension of the integral variable
-///\param p_x = pointer to the integral variable
-///\param p_fdata = pointer to the additional arguments (constants in integration)
-///\param fdim = dimension of the output
-///\param p_fval = pointer to the output destination
-///
-///\return 0 on successful run
-///
-int integrand_function_xs(unsigned ndim, const double *p_x, void *p_fdata, unsigned fdim, double *p_fval)
-{
-
-    pair<PDF*,pair<const double * const,const double * const> >  fdata = *(pair<PDF*,pair<const double * const,const double * const> > *) p_fdata;
-    const PDF* p_pdf = fdata.first;
-    const double * const p_mand_s = fdata.second.first;
-    const double * const p_kt2_lower_cutoff = fdata.second.second;
-    const auto z1 = p_x[0], z2 = p_x[1], z3 = p_x[2];
-
-    const auto kt2 = *p_kt2_lower_cutoff + z1 * ((*p_mand_s/4) - *p_kt2_lower_cutoff);
-
-    const auto x1_upper = 1;
-    const auto x1_lower = 4 * kt2 / *p_mand_s;
-    const auto x1       = x1_lower + z2 * (x1_upper - x1_lower);
-
-    const auto x2_upper = 1;
-    const auto x2_lower = (4 * kt2 / *p_mand_s) / x1 +g_error_tolerance*g_error_tolerance; //shift by epsilon to avoid singularity in jacobian_from_ys_to_xs
-    const auto x2       = x2_lower + z3 * (x2_upper - x2_lower);
-
-    const auto s_hat         = s_hat_from_xs(&x1, &x2, p_mand_s);
-    const auto t_hat         = t_hat_from_xs(&x1, &x2, &kt2, p_mand_s);
-    const auto u_hat         = u_hat_from_xs(&x1, &x2, &kt2, p_mand_s);
-    const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
-
-    const auto jacobian = ((*p_mand_s/4) - *p_kt2_lower_cutoff) * (x1_upper - x1_lower) * (x2_upper - x2_lower);
-
-    auto dummy = x1*x2-4*kt2/ *p_mand_s;
-    const auto dummy2 = x1*x2*dummy;
-    const auto jacobian_from_ys_to_xs = 1/sqrt(dummy2);
-
-    if (x2_upper < x2_lower || x1_upper < x1_lower) p_fval[0]=0;
-    else
-    {
-        //SES
-        /*
-        p_fval[0] = 2  //MAGIC NUMBER TODO
-                    * 0.5 * f_ses(&x1, &kt2, p_pdf)
-                    * f_ses(&x2, &kt2, p_pdf)
-                    * subprocess_cs * jacobian
-                    * jacobian_from_ys_to_xs; */
-        //FULL SUMMATION
-        p_fval[0] = 2  //MAGIC NUMBER TODO
-                    * 0.5 * diff_sigma_jet(&x1,&x2,&kt2,p_pdf,&s_hat,&t_hat,&u_hat)
-                    * jacobian * jacobian_from_ys_to_xs;
-
-    }
-
-
-    /*
-        //cout <<subprocess_cs<<' ';
-
-
-        ofstream data;
-        data.open ("xs_mandelstams.dat",ios::app);
-        data << s_hat << ' ' << t_hat << ' ' << u_hat << '\n';
-        data.close();
-
-        auto y1 = log((x1+sqrt(x1*x2*(-4*sqrt(kt2/g_s)*sqrt(kt2/g_s)+x1*x2))/x2)/(2*sqrt(kt2/g_s)));
-        auto y2 = log((x1-sqrt(x1*x2*(-4*sqrt(kt2/g_s)*sqrt(kt2/g_s)+x1*x2))/x2)/(2*sqrt(kt2/g_s)));
-        data.open ("xs_kt2y1y2.dat",ios::app);
-        data << kt2 << ' ' << y1 << ' ' << y2 << '\n';
-        data.close();
-
-        data.open ("xs_all.dat",ios::app);
-        data<<dummy<<dummy2<<"kt2="<<kt2<<", x1="<<x1<<", x2="<<x2<<", s="<<s_hat<<", t="<<t_hat<<", u="<<u_hat<<", cs="<<subprocess_cs<<", J="<<jacobian<<", J2="<<jacobian_from_ys_to_xs<<", pdf1="<<f_ses(&x1, &kt2, p_pdf)<<", pdf2="<<f_ses(&x2, &kt2, p_pdf)<<", I="<<p_fval[0]<<'\n';
-        data.close();
-
-        data.open ("xs_kt2x1x2.dat",ios::app);
-        data << kt2 << ' ' << x1 << ' ' << x2 << '\n';
-        data.close();
-
-        //cout<<"kt2="<<kt2<<", x1="<<x1<<", x2="<<x2<<", s="<<s_hat<<", t="<<t_hat<<", u="<<u_hat<<", cs="<<subprocess_cs<<", J="<<jacobian<<", J2="<<jacobian_from_ys_to_xs<<", pdf1="<<f_ses(&x1, &kt2, p_pdf)<<", pdf2="<<f_ses(&x2, &kt2, p_pdf)<<", I="<<p_fval[0]<<endl;
-        */
-    return 0; // success
-}
-
 
 ///s_hat_from_ys
 ///Calculates and returns the subprocess mandelstam variable s. Return value can be complex.
@@ -569,51 +449,6 @@ double u_hat_from_ys(const double * const p_y1, const double * const p_y2, const
 {
     const double y1 = *p_y1, y2 = *p_y2, kt2 = *p_kt2;
     return -kt2 * (1 + exp(y1 - y2));
-}
-
-
-///s_hat_from_xs
-///Calculates and returns the subprocess mandelstam variable s. Return value can be complex.
-///
-///\param p_x1 = pointer to momentum fraction of the first particle
-///\param p_x2 = pointer to momentum fraction of the other particle
-///\param p_mand_s = pointer to mandelstam variable s
-///
-double s_hat_from_xs(const double * const p_x1, const double * const p_x2, const double * const p_mand_s)
-{
-    return *p_x1 **p_x2 **p_mand_s;
-}
-
-
-///t_hat_from_xs
-///Calculates and returns the subprocess mandelstam variable t. Return value can be complex.
-///
-///\param p_x1 = pointer to momentum fraction of the first particle
-///\param p_x2 = pointer to momentum fraction of the other particle
-///\param p_kt2 = pointer to the transverse momentum squared
-///\param p_mand_s = pointer to mandelstam variable s
-///
-double t_hat_from_xs(const double * const p_x1, const double * const p_x2, const double * const p_kt2, const double * const p_mand_s)
-{
-    const double x1 = *p_x1, x2 = *p_x2, kt2 = *p_kt2;
-    const double dummy = x1*x2*(x1*x2 -4*(kt2/ *p_mand_s));
-    return 0.5* *p_mand_s *(sqrt(dummy) -x1*x2);
-}
-
-
-///u_hat_from_xs
-///Calculates and returns the subprocess mandelstam variable u. Return value can be complex.
-///
-///\param p_x1 = pointer to momentum fraction of the first particle
-///\param p_x2 = pointer to momentum fraction of the other particle
-///\param p_kt2 = pointer to the transverse momentum squared
-///\param p_mand_s = pointer to mandelstam variable s
-///
-double u_hat_from_xs(const double * const p_x1, const double * const p_x2, const double * const p_kt2, const double * const p_mand_s)
-{
-    const double x1 = *p_x1, x2 = *p_x2, kt2 = *p_kt2;
-    const double dummy = x1*x2*(x1*x2 -4*(kt2/ *p_mand_s));
-    return -0.5* *p_mand_s *(sqrt(dummy) +x1*x2);
 }
 
 
