@@ -24,11 +24,8 @@ const string g_pdfsetname = "CT14lo";  //Name of the used pdf-set from LHAPDF
 const int g_pdfsetmember = 0;                   //Member ID of the pdf in the set
 const double g_error_tolerance = 1e-4;           //Global error tolerance
 const int g_eikonal_sum_term_count = 11;         //N:o of eikonal sum terms to study
-const int g_data_point_count = 3;                //N:o of data point constants
-const pair<const double, const double > g_sqrt_s_and_sigma_inel [3] = { { 1804 , 58 } , //sqrt_s - sigma_inel pairs from data
-    { 7000 , 72.5 } ,
-    { 8000 , 74.5 }
-};
+const int g_data_point_count = 13;                //N:o of data point constants
+const double g_sqrt_s_list [g_data_point_count] = {100, 200, 400, 550, 1000, 1800, 4000, 7000, 8000, 13000, 25000, 50000, 100000};
 
 
 ///PROTOTYPES///
@@ -66,7 +63,6 @@ int main()
 {
     double kt2_lower_cutoff [g_data_point_count];
     double eikonal_sum_contributions [g_data_point_count][g_eikonal_sum_term_count];
-    double sqrt_s;
     double data_sigma_inel;
     double sigma_jet, sigma_inel, sigma_el, sigma_tot;
     ofstream data;
@@ -76,23 +72,28 @@ int main()
 
     for(int i=0; i<g_data_point_count; i++)
     {
-
-        sqrt_s = g_sqrt_s_and_sigma_inel[i].first;
-        data_sigma_inel = g_sqrt_s_and_sigma_inel[i].second;
+        data_sigma_inel = 42.6*pow(g_sqrt_s_list[i],-0.92)
+                         -33.4*pow(g_sqrt_s_list[i],-1.09)
+                         +0.307*pow(log(pow(g_sqrt_s_list[i],2)/29.1),2)
+                         +35.5 -(//FIT BY COMPETE FOR SIGMA_TOT
+                         11.7 -1.59*log(pow(g_sqrt_s_list[i],2))
+                         +0.134*pow(log(pow(g_sqrt_s_list[i],2)),2));//FIT BY TOTEM FOR SIGMA_EL
 
         ostringstream fn;
-        fn << "data_sqrt(s)=" << sqrt_s << ".dat";
+        fn << "data_sqrt(s)=" << g_sqrt_s_list[i] << ".dat";
 
         data.open(fn.str().c_str());
 
-        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&sqrt_s, &data_sigma_inel, &sigma_jet, &sigma_inel, p_pdf);
+        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&g_sqrt_s_list[i], &data_sigma_inel, &sigma_jet, &sigma_inel, p_pdf);
 
         data << "#kt² lower cutoff: " << kt2_lower_cutoff[i] << '\n';
-        data << "#data_sqrt(s): " << sqrt_s << '\n';
+        data << "#data_sqrt(s): " << g_sqrt_s_list[i] << '\n';
+
+
+        calculate_sigma_tot(&sigma_tot, &sigma_jet);
 
         find_eikonal_sum_contributions(kt2_lower_cutoff+i, eikonal_sum_contributions[i], sigma_inel, sigma_jet, p_pdf);
 
-        calculate_sigma_tot(&sigma_tot, &sigma_jet);
         sigma_el = sigma_tot - sigma_inel;
 
         data << "#sigma_tot: " << sigma_tot << '\n';
@@ -178,8 +179,8 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
 
     mand_s = *p_sqrt_s **p_sqrt_s;
 
-    kt2_lower_cutoff[0] = 5;
-    kt2_lower_cutoff[1] = 6;
+    kt2_lower_cutoff[0] = 2;
+    kt2_lower_cutoff[1] = 4;
 
     for(int i=0; i<20; ++i)
     {
@@ -188,6 +189,7 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
             kt2_lower_cutoff[i] = (kt2_lower_cutoff[i-2] * error[i-1] - kt2_lower_cutoff[i-1] * error[i-2])
                                   / (error[i-1]-error[i-2]);
         }
+        if (kt2_lower_cutoff[i] <= 0) kt2_lower_cutoff[i] = 0.5;
 
         /*
             ys_data_sigma_jet.open ("ys_sigma_jet.dat");
@@ -212,7 +214,7 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
 
         if (not_success_ys) cout << "error at i="<<i<<" kt2_lower_cutoff=" <<kt2_lower_cutoff[i]<<endl;
 
-        if ( ( error[i] / *p_data_sigma_inel) <= 1e-3){
+        if ( abs(error[i] / *p_data_sigma_inel) <= 1e-3){
             *p_sigma_inel_res = sigma_inel_ys[i];
             *p_sigma_jet_res = sigma_jet_ys[i];
             return kt2_lower_cutoff[i];
@@ -259,7 +261,7 @@ int calculate_sigma_tot(double * const p_value, double * const p_sigma_jet)
     int not_success = 0;
 
     double variation = 4.72;
-    double dummy = *p_sigma_jet / (2 * M_PI * variation);
+    double dummy = *p_sigma_jet / (8 * M_PI * variation);
 
     *p_value = (8 * M_PI * variation) * (M_EULER + log(dummy) + gsl_sf_expint_E1(dummy)) ;
 
