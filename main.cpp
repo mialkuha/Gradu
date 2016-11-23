@@ -6,6 +6,9 @@
 #include <complex>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_sf_expint.h>
+#include <gsl/gsl_integration.h>
+#include <gsl/gsl_monte.h>
+#include <gsl/gsl_monte_vegas.h>
 
 #include "cubature.h"
 #include "LHAPDF/LHAPDF.h"
@@ -52,7 +55,8 @@ double sigma_qiaqi_gg(const double * const, const double * const, const double *
 double sigma_gg_qaq(const double * const, const double * const, const double * const, const double);
 double sigma_gq_gq(const double * const, const double * const, const double * const, const double);
 double sigma_gg_gg(const double * const, const double * const, const double * const, const double);
-
+double sigma_jet_product_integrand(double *, size_t, void *);
+int calculate_sigma_jet_product(double *, double *, const double * const, const double * const, PDF*, int);
 
 
 ///MAIN///
@@ -61,14 +65,45 @@ double sigma_gg_gg(const double * const, const double * const, const double * co
 
 int main()
 {
+/*
+
+    double res, err;
+
+    double xl[3] = {0,0,0};
+    double xu[3] = {M_PI,M_PI,M_PI};
+
+    const gsl_rng_type *T;
+    gsl_rng *r;
+
+    gsl_monte_function G = { &g, 3, 0};
+
+    size_t calls = 500000;
+
+    gsl_rng_env_setup();
+
+    T=gsl_rng_default;
+    r=gsl_rng_alloc(T);
+
+    gsl_monte_vegas_state *s =gsl_monte_vegas_alloc(3);
+
+    gsl_monte_vegas_integrate(&G, xl, xu, 3, 10000, r, s, &res, &err);
+
+    do{
+        gsl_monte_vegas_integrate(&G, xl, xu, 3, calls/5, r, s, &res, &err);
+        cout<<res<<' '<<err<<' '<<gsl_monte_vegas_chisq(s)<<endl;
+    }while(fabs(gsl_monte_vegas_chisq(s)-1.0) > 0.5);*/
+
+
+    /*
     double kt2_lower_cutoff [g_data_point_count];
     double eikonal_sum_contributions [g_data_point_count][g_eikonal_sum_term_count];
     double data_sigma_inel;
     double sigma_jet, sigma_inel, sigma_el, sigma_tot;
-    ofstream data;
+    ofstream data, histogram;
 
     PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
 
+    histogram.open("histogram_data.dat");
 
     for(int i=0; i<g_data_point_count; i++)
     {
@@ -96,6 +131,9 @@ int main()
 
         sigma_el = sigma_tot - sigma_inel;
 
+        double dummy = 0;
+        histogram << g_sqrt_s_list[i] << ' ';
+
         data << "#sigma_tot: " << sigma_tot << '\n';
         data << "#sigma_el: " << sigma_el << '\n';
         data << "#sigma_inel: " << sigma_inel << '\n';
@@ -104,17 +142,117 @@ int main()
         for(int j=0; j<g_eikonal_sum_term_count; ++j)
         {
             data << j+1 << ". " << eikonal_sum_contributions[i][j] << '%' << '\n';
+            dummy += eikonal_sum_contributions[i][j];
+            histogram << dummy << ' ';
         }
+        histogram << '\n';
         data.close();
     }
 
-    return 0;
+    histogram.close();
+
+    return 0;*/
 }
 
 
 
 ///FUNCTIONS///
 
+
+
+///sigma_jet_product_integrand
+///Integrand function for calculating products of sigma_jets with momentum conservation taken into account.
+///
+///\param k = pointer to the integration variable
+///\param fulldim = dimension of the integration variable
+///\param p_fdata = void pointer to the parameters of the function
+///
+double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
+
+    pair<PDF*,pair<const double * const,const double * const> >  fdata = *(pair<PDF*,pair<const double * const,const double * const> > *) p_fdata;
+
+    const PDF* p_pdf = fdata.first;
+    const double * const p_mand_s = fdata.second.first;
+    const double * const p_kt2_lower_cutoff = fdata.second.second;
+
+    const int dim = fulldim/3;
+    double z[3][dim];
+
+    double kt2[dim];
+    double sqrt_s_per_kt[dim];
+
+    double y1_upper[dim];
+    double y1[dim];
+
+    double y2_upper[dim];
+    double y2_lower[dim];
+    double y2[dim];
+
+    double x1[dim];
+    double x2[dim];
+
+    for(int i=0; i<dim; ++i){
+        z[0][i] = p_x[3*i];
+        z[1][i] = p_x[3*i +1];
+        z[2][i] = p_x[3*i +2];
+
+        kt2[i] = *p_kt2_lower_cutoff + z[0][i] * ((*p_mand_s/4) - *p_kt2_lower_cutoff);
+
+        sqrt_s_per_kt[i] = sqrt(*p_mand_s/kt2[i]);
+
+        y1_upper[i] = acosh(sqrt_s_per_kt[i]/2);
+        //y1_lower = -y1_upper;
+        y1[i] = ( -1 + (2 * z[1][i]) ) * y1_upper[i]; //y1_lower + z2 * (y1_upper - y1_lower)
+
+        y2_upper[i] = log(sqrt_s_per_kt[i] - exp(y1[i]));
+        y2_lower[i] = -log(sqrt_s_per_kt[i] - exp(-y1[i]));
+        y2[i] = y2_lower[i] + z[2][i] * (y2_upper[i] - y2_lower[i]);
+
+        x1[i] = (exp(y1[i]) + exp(y2[i])) / sqrt_s_per_kt[i];
+        x2[i] = (exp(-y1[i]) + exp(-y2[i])) / sqrt_s_per_kt[i];
+    }
+
+    auto sum_x1s=0;
+    auto sum_x2s=0;
+
+    for (auto x:x1) sum_x1s+=x;
+    for (auto x:x2) sum_x2s+=x;
+
+    if (sum_x1s>1 || sum_x2s>1) return 0; //MOMENTUM CONSERVATION
+
+
+
+    double s_hat[dim];
+    double t_hat[dim];
+    double u_hat[dim];
+    //double subprocess_cs[dim];
+    double jacobian[dim];
+    double sigma[dim];
+
+    for(int i=0; i<dim; ++i){
+        s_hat[i] = s_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
+        t_hat[i] = t_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
+        u_hat[i] = u_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
+
+        //subprocess_cs[i] = sigma_gg_gg(&s_hat[i], &t_hat[i], &u_hat[i], p_pdf->alphasQ2(kt2[i]));
+
+        jacobian[i] = ((*p_mand_s/4) - *p_kt2_lower_cutoff) * (2*y1_upper[i]) * (y2_upper[i] - y2_lower[i]);
+
+        //SES
+        /*
+        sigma[i] = 0.5 * f_ses(&x1[i], &kt2[i], p_pdf)
+                    * f_ses(&x2[i], &kt2[i], p_pdf)
+                    * subprocess_cs[i] * jacobian[i]; */
+        //FULL SUMMATION
+        sigma[i] = 0.5 * diff_sigma_jet(&x1[i],&x2[i],&kt2[i],p_pdf,&s_hat[i],&t_hat[i],&u_hat[i])
+                    * jacobian[i];
+    }
+
+    auto result = 1;
+    for (auto s:sigma) result*=s;
+
+    return result;
+}
 
 
 ///find_eikonal_sum_contributions
@@ -289,6 +427,60 @@ int calculate_sigma_jet(double * const p_value, double * const p_error, const do
     not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error, p_mand_s, p_kt2_lower_cutoff, p_pdf);
     return not_success;
 }
+
+
+///calculate_sigma_jet_product
+///Function that does the calculation of the sigma_jets with the momentum conservation limiting.
+///
+///\param p_value = pointer to the destination of the value of the sigma_jet
+///\param p_error = pointer to the destination of the error output from cubature
+///\param p_mand_s = pointer to the mandelstam variable s
+///\param p_kt2_lower_cutoff = pointer to the lower cutoff of kt²
+///\param p_pdf = pointer to the PDF object
+///\param nof_dijets = number of similar reactions, affects momentum conservation.
+///
+///\return 0 on successful run
+///
+int calculate_sigma_jet_product(double * p_value, double * p_error, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf, int nof_dijets)
+{
+    int dim = 3*nof_dijets;
+    pair<PDF*,pair<const double * const,const double * const> > fdata = { p_pdf , { p_mand_s , p_kt2_lower_cutoff } };
+
+    double xl[dim];
+    double xu[dim];
+
+    for (auto& x:xl) x=0;
+    for (auto& x:xu) x=1;
+
+    const gsl_rng_type *T;
+    gsl_rng *r;
+
+    gsl_monte_function G = { &sigma_jet_product_integrand, dim, &fdata};
+
+    size_t calls = 100000;
+
+    gsl_rng_env_setup();
+
+    T=gsl_rng_default;
+    r=gsl_rng_alloc(T);
+
+    gsl_monte_vegas_state *s =gsl_monte_vegas_alloc(dim);
+
+    gsl_monte_vegas_integrate(&G, xl, xu, dim, 10000, r, s, p_value, p_error);
+
+    do{
+        gsl_monte_vegas_integrate(&G, xl, xu, 3, calls, r, s, p_value, p_error);
+
+        cout<<p_value<<' '<<p_error<<' '<<gsl_monte_vegas_chisq(s)<<endl;
+
+    }while(fabs(gsl_monte_vegas_chisq(s)-1.0) > 0.5);
+
+    gsl_monte_vegas_free(s);
+
+//    not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error, p_mand_s, p_kt2_lower_cutoff, p_pdf);
+    return 0;
+}
+
 
 
 ///phasespace_integral
