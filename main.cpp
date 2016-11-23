@@ -8,6 +8,7 @@
 #include <gsl/gsl_sf_expint.h>
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_monte.h>
+#include <gsl/gsl_monte_miser.h>
 #include <gsl/gsl_monte_vegas.h>
 
 #include "cubature.h"
@@ -26,7 +27,7 @@ const unsigned g_dim = 3;                        //Dimension fo the integrals
 const string g_pdfsetname = "CT14lo";  //Name of the used pdf-set from LHAPDF
 const int g_pdfsetmember = 0;                   //Member ID of the pdf in the set
 const double g_error_tolerance = 1e-4;           //Global error tolerance
-const int g_eikonal_sum_term_count = 11;         //N:o of eikonal sum terms to study
+const int g_eikonal_sum_term_count = 3;         //N:o of eikonal sum terms to study
 const int g_data_point_count = 13;                //N:o of data point constants
 const double g_sqrt_s_list [g_data_point_count] = {100, 200, 400, 550, 1000, 1800, 4000, 7000, 8000, 13000, 25000, 50000, 100000};
 
@@ -310,9 +311,11 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
         //    mand_s = sqrt_mand_s*sqrt_mand_s;
 
         not_success_ys = calculate_sigma_jet(&sigma_jet_ys[i][0], &sigma_jet_error_ys[i][0], &mand_s, kt2_lower_cutoff+i, p_pdf);
+            cout<<0<<' '<<sigma_jet_ys[i][0]<<endl;
 
         for (int j=1; j<g_eikonal_sum_term_count+1; ++j){
             calculate_sigma_jet_product(&sigma_jet_ys[i][j], &sigma_jet_error_ys[i][j], &mand_s, kt2_lower_cutoff+i, p_pdf, j);
+            cout<<j<<' '<<sigma_jet_ys[i][j]<<endl;
         }
         //    ys_data_sigma_jet << mand_s << ' ' << sigma_jet_ys << ' ' << sigma_jet_error_ys << '\n';
         //}
@@ -374,7 +377,7 @@ double f_inel (double t, void * params){
     double jacobian = pow(1-t,-2);
     double sigma_jets[g_eikonal_sum_term_count+1];
     for(int i=0; i<g_eikonal_sum_term_count+1; i++){
-        sigma_jets[i] = *(double *) (params+i);
+        sigma_jets[i] = *((double *) params+i);
     }
     double variation = 4.72;
     double A = exp(-x/(4*variation))/ (4 * M_PI * variation);
@@ -425,7 +428,7 @@ double f_tot (double t, void * params){
     double jacobian = pow(1-t,-2);
     double sigma_jets[g_eikonal_sum_term_count+1];
     for(int i=0; i<g_eikonal_sum_term_count+1; i++){
-        sigma_jets[i] = *(double *) (params+i);
+        sigma_jets[i] = *((double *) params+i);
     }
     double variation = 4.72;
     double A = exp(-x/(4*variation))/ (8 * M_PI * variation);
@@ -520,7 +523,7 @@ int calculate_sigma_jet(double * const p_value, double * const p_error, const do
 ///
 int calculate_sigma_jet_product(double * p_value, double * p_error, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf, int nof_dijets)
 {
-    int dim = 3*nof_dijets;
+    size_t dim = 3*nof_dijets;
     pair<PDF*,pair<const double * const,const double * const> > fdata = { p_pdf , { p_mand_s , p_kt2_lower_cutoff } };
 
     double xl[dim];
@@ -534,23 +537,37 @@ int calculate_sigma_jet_product(double * p_value, double * p_error, const double
 
     gsl_monte_function G = { &sigma_jet_product_integrand, dim, &fdata};
 
-    size_t calls = 10000;
+    size_t calls = 100000;
 
     gsl_rng_env_setup();
 
     T=gsl_rng_default;
     r=gsl_rng_alloc(T);
 
+    gsl_monte_miser_state *s =gsl_monte_miser_alloc(dim);
+
+    gsl_monte_miser_integrate(&G, xl, xu, dim, calls, r, s, p_value, p_error);
+
+    cout<<*p_value<<endl;
+
+    gsl_monte_miser_free(s);
+
+    /*
+
     gsl_monte_vegas_state *s =gsl_monte_vegas_alloc(dim);
 
-    gsl_monte_vegas_integrate(&G, xl, xu, dim, 1000, r, s, p_value, p_error);
+    gsl_monte_vegas_integrate(&G, xl, xu, dim, 10000, r, s, p_value, p_error);
+
+    cout<<*p_value<<' '<<gsl_monte_vegas_chisq(s)<<endl;
 
     do{
         gsl_monte_vegas_integrate(&G, xl, xu, dim, calls, r, s, p_value, p_error);
 
-    }while(fabs(gsl_monte_vegas_chisq(s)-1.0) > 0.5);
+    cout<<*p_value<<' '<<gsl_monte_vegas_chisq(s)<<endl;
 
-    gsl_monte_vegas_free(s);
+    }while(fabs(gsl_monte_vegas_chisq(s) -1.0) > 0.1);
+
+    gsl_monte_vegas_free(s);*/
 
 //    not_success = phasespace_integral(upper_limits, lower_limits, p_value, p_error, p_mand_s, p_kt2_lower_cutoff, p_pdf);
     return 0;
