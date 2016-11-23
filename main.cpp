@@ -38,10 +38,12 @@ int eikonal_integrand(unsigned, const double*, void*, unsigned, double*);
 int integrand_function_ys(unsigned, const double*, void*, unsigned, double*);
 double find_kt2_lower_cutoff(const double * const, const double * const, double *, double *, PDF*);
 int phasespace_integral(const double[], const double[], double * const, double * const, const double * const, const double * const, PDF*);
-int calculate_sigma_inel(double * const, double * const);
-int calculate_sigma_tot(double * const, double * const);
+int calculate_sigma_inel_from_sigma_jet(double * const, double * const);
+int calculate_sigma_tot_from_sigma_jet(double * const, double * const);
+int calculate_sigma_inel_from_integral(double * const, double[]);
+int calculate_sigma_tot_from_integral(double * const, double[]);
 int calculate_sigma_jet(double * const, double * const, const double * const, const double * const, PDF*);
-void find_eikonal_sum_contributions(const double * const, double [], const double, const double, PDF*);
+void find_eikonal_sum_contributions(const double * const, double [], const double, double[], PDF*);
 double f_ses(const double * const, const double * const, const PDF*);
 double diff_sigma_jet(const double * const, const double * const, const double * const, const PDF*, const double * const, const double * const, const double * const);
 double s_hat_from_ys(const double * const, const double * const, const double * const);
@@ -65,40 +67,10 @@ int calculate_sigma_jet_product(double *, double *, const double * const, const 
 
 int main()
 {
-/*
-
-    double res, err;
-
-    double xl[3] = {0,0,0};
-    double xu[3] = {M_PI,M_PI,M_PI};
-
-    const gsl_rng_type *T;
-    gsl_rng *r;
-
-    gsl_monte_function G = { &g, 3, 0};
-
-    size_t calls = 500000;
-
-    gsl_rng_env_setup();
-
-    T=gsl_rng_default;
-    r=gsl_rng_alloc(T);
-
-    gsl_monte_vegas_state *s =gsl_monte_vegas_alloc(3);
-
-    gsl_monte_vegas_integrate(&G, xl, xu, 3, 10000, r, s, &res, &err);
-
-    do{
-        gsl_monte_vegas_integrate(&G, xl, xu, 3, calls/5, r, s, &res, &err);
-        cout<<res<<' '<<err<<' '<<gsl_monte_vegas_chisq(s)<<endl;
-    }while(fabs(gsl_monte_vegas_chisq(s)-1.0) > 0.5);*/
-
-
-    /*
     double kt2_lower_cutoff [g_data_point_count];
     double eikonal_sum_contributions [g_data_point_count][g_eikonal_sum_term_count];
     double data_sigma_inel;
-    double sigma_jet, sigma_inel, sigma_el, sigma_tot;
+    double sigma_jet[g_eikonal_sum_term_count+1], sigma_inel, sigma_el, sigma_tot;
     ofstream data, histogram;
 
     PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
@@ -119,13 +91,13 @@ int main()
 
         data.open(fn.str().c_str());
 
-        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&g_sqrt_s_list[i], &data_sigma_inel, &sigma_jet, &sigma_inel, p_pdf);
+        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&g_sqrt_s_list[i], &data_sigma_inel, sigma_jet, &sigma_inel, p_pdf);
 
         data << "#kt² lower cutoff: " << kt2_lower_cutoff[i] << '\n';
         data << "#data_sqrt(s): " << g_sqrt_s_list[i] << '\n';
 
 
-        calculate_sigma_tot(&sigma_tot, &sigma_jet);
+        calculate_sigma_tot_from_integral(&sigma_tot, sigma_jet);
 
         find_eikonal_sum_contributions(kt2_lower_cutoff+i, eikonal_sum_contributions[i], sigma_inel, sigma_jet, p_pdf);
 
@@ -137,7 +109,7 @@ int main()
         data << "#sigma_tot: " << sigma_tot << '\n';
         data << "#sigma_el: " << sigma_el << '\n';
         data << "#sigma_inel: " << sigma_inel << '\n';
-        data << "#sigma_jet: " << sigma_jet << '\n';
+        data << "#sigma_jet: " << sigma_jet[0] << '\n';
         data << "#eikonal sum term contributions:" << '\n';
         for(int j=0; j<g_eikonal_sum_term_count; ++j)
         {
@@ -151,7 +123,7 @@ int main()
 
     histogram.close();
 
-    return 0;*/
+    return 0;
 }
 
 
@@ -264,7 +236,7 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
 ///\param sigma_jet = calculated sigma_jet
 ///\param p_pdf = pointer to the PDF object
 ///
-void find_eikonal_sum_contributions(const double * const p_kt2_lower_cutoff, double eikonal_sum_contributions [g_eikonal_sum_term_count], const double sigma_inel, const double sigma_jet, PDF* p_pdf)
+void find_eikonal_sum_contributions(const double * const p_kt2_lower_cutoff, double eikonal_sum_contributions [g_eikonal_sum_term_count], const double sigma_inel, double sigma_jet[g_eikonal_sum_term_count+1], PDF* p_pdf)
 {
     double eikonal_sum_errors [g_eikonal_sum_term_count];
 //    ofstream ys_data_sigma_jet;
@@ -275,7 +247,7 @@ void find_eikonal_sum_contributions(const double * const p_kt2_lower_cutoff, dou
     for(int i=0; i<g_eikonal_sum_term_count; i++)
     {
 
-        pair< double , int > fdata = { sigma_jet, i+1 };
+        pair< double, pair< double , int > > fdata = {sigma_jet[0],{ sigma_jet[i+1], i+1 }};
 
         hcubature(1,               //Integrand dimension
                   eikonal_integrand, //Integrand function
@@ -309,7 +281,7 @@ void find_eikonal_sum_contributions(const double * const p_kt2_lower_cutoff, dou
 double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const p_data_sigma_inel, double * p_sigma_jet_res, double * p_sigma_inel_res, PDF* p_pdf)
 {
     int not_success_ys=0;
-    double sigma_jet_ys [20], sigma_jet_error_ys [20];
+    double sigma_jet_ys [20][g_eikonal_sum_term_count+1], sigma_jet_error_ys [20][g_eikonal_sum_term_count+1];
     double sigma_inel_ys [20];
     double error [20];
     double mand_s , kt2_lower_cutoff [20];
@@ -337,14 +309,17 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
         //for(double sqrt_mand_s = 10; sqrt_mand_s <= 5000; sqrt_mand_s *=1.2){
         //    mand_s = sqrt_mand_s*sqrt_mand_s;
 
-        not_success_ys = calculate_sigma_jet(sigma_jet_ys+i, sigma_jet_error_ys+i, &mand_s, kt2_lower_cutoff+i, p_pdf);
+        not_success_ys = calculate_sigma_jet(&sigma_jet_ys[i][0], &sigma_jet_error_ys[i][0], &mand_s, kt2_lower_cutoff+i, p_pdf);
 
+        for (int j=1; j<g_eikonal_sum_term_count+1; ++j){
+            calculate_sigma_jet_product(&sigma_jet_ys[i][j], &sigma_jet_error_ys[i][j], &mand_s, kt2_lower_cutoff+i, p_pdf, j);
+        }
         //    ys_data_sigma_jet << mand_s << ' ' << sigma_jet_ys << ' ' << sigma_jet_error_ys << '\n';
         //}
 
         //ys_data_sigma_jet.close();
 
-        not_success_ys = calculate_sigma_inel(sigma_inel_ys+i, sigma_jet_ys+i);
+        not_success_ys = calculate_sigma_inel_from_integral(sigma_inel_ys+i, sigma_jet_ys[i]);
 
         cout << kt2_lower_cutoff[i] << ' ' << sigma_inel_ys[i] << ' ' << *p_data_sigma_inel << endl;
 
@@ -354,18 +329,18 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
 
         if ( abs(error[i] / *p_data_sigma_inel) <= 1e-3){
             *p_sigma_inel_res = sigma_inel_ys[i];
-            *p_sigma_jet_res = sigma_jet_ys[i];
+            *p_sigma_jet_res = sigma_jet_ys[i][0];
             return kt2_lower_cutoff[i];
         }
     }
 
     *p_sigma_inel_res = sigma_inel_ys[19];
-    *p_sigma_jet_res = sigma_jet_ys[19];
+    *p_sigma_jet_res = sigma_jet_ys[19][0];
     return kt2_lower_cutoff[19];
 }
 
 
-///calculate_sigma_inel
+///calculate_sigma_inel_from_sigma_jet
 ///Function that does the calculation of the sigma_inel based on sigma_jet.
 ///
 ///\param p_value = pointer to the destination of the value of the sigma_inel
@@ -373,7 +348,7 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
 ///
 ///\return 0 on successful run
 ///
-int calculate_sigma_inel(double * const p_value, double * const p_sigma_jet)
+int calculate_sigma_inel_from_sigma_jet(double * const p_value, double * const p_sigma_jet)
 {
     int not_success = 0;
 
@@ -386,7 +361,109 @@ int calculate_sigma_inel(double * const p_value, double * const p_sigma_jet)
 }
 
 
-///calculate_sigma_tot
+///calculate_sigma_inel_from_integral
+///Function that does the calculation of the sigma_inel by integrating the series expansion.
+///
+///\param p_value = pointer to the destination of the value of the sigma_inel
+///\param sigma_jet = array of sigma_jet products
+///
+///\return 0 on successful run
+///
+double f_inel (double t, void * params){
+    double x = t/(1-t);
+    double jacobian = pow(1-t,-2);
+    double sigma_jets[g_eikonal_sum_term_count+1];
+    for(int i=0; i<g_eikonal_sum_term_count+1; i++){
+        sigma_jets[i] = *(double *) (params+i);
+    }
+    double variation = 4.72;
+    double A = exp(-x/(4*variation))/ (4 * M_PI * variation);
+    double dummy = exp(-A*sigma_jets[0]);
+
+    double res=0;
+
+    for(int i=1; i<=g_eikonal_sum_term_count; i++){
+        int factorial = 1;
+        for(int j=1; j<=i; j++){
+            factorial *=j;
+        }
+        res += sigma_jets[i]*pow(A,i)/factorial;
+    }
+    return M_PI*res*dummy*jacobian;
+}
+///
+int calculate_sigma_inel_from_integral(double * const p_value, double sigma_jet[g_eikonal_sum_term_count+1])
+{
+    int not_success = 0;
+
+    gsl_integration_workspace * w = gsl_integration_workspace_alloc(1000);
+
+    double error;
+
+    gsl_function F;
+    F.function = &f_inel;
+    F.params = sigma_jet;
+
+    gsl_integration_qags(&F, 0, 1, 0, g_error_tolerance, 1000, w, p_value, &error);
+
+    gsl_integration_workspace_free(w);
+
+    return not_success;
+}
+
+
+///calculate_sigma_tot_from_integral
+///Function that does the calculation of the sigma_inel by integrating the series expansion.
+///
+///\param p_value = pointer to the destination of the value of the sigma_inel
+///\param sigma_jet = array of sigma_jet products
+///
+///\return 0 on successful run
+///
+double f_tot (double t, void * params){
+    double x = t/(1-t);
+    double jacobian = pow(1-t,-2);
+    double sigma_jets[g_eikonal_sum_term_count+1];
+    for(int i=0; i<g_eikonal_sum_term_count+1; i++){
+        sigma_jets[i] = *(double *) (params+i);
+    }
+    double variation = 4.72;
+    double A = exp(-x/(4*variation))/ (8 * M_PI * variation);
+    double dummy = exp(-A*sigma_jets[0]);
+
+    double res=0;
+
+    for(int i=1; i<=g_eikonal_sum_term_count; i++){
+        int factorial = 1;
+        for(int j=1; j<=i; j++){
+            factorial *=j;
+        }
+        res += sigma_jets[i]*pow(A,i)/factorial;
+    }
+    return 2*M_PI*res*dummy*jacobian;
+}
+///
+int calculate_sigma_tot_from_integral(double * const p_value, double sigma_jet[g_eikonal_sum_term_count+1])
+{
+    int not_success = 0;
+
+    gsl_integration_workspace * w = gsl_integration_workspace_alloc(1000);
+
+    double error;
+
+    gsl_function F;
+    F.function = &f_tot;
+    F.params = sigma_jet;
+
+    gsl_integration_qags(&F, 0, 1, 0, g_error_tolerance, 1000, w, p_value, &error);
+
+    gsl_integration_workspace_free(w);
+
+    return not_success;
+}
+
+
+///calculate_sigma_tot_from_sigma_jet
 ///Function that does the calculation of the sigma_tot based on sigma_jet.
 ///
 ///\param p_value = pointer to the destination of the value of the sigma_tot
@@ -394,7 +471,7 @@ int calculate_sigma_inel(double * const p_value, double * const p_sigma_jet)
 ///
 ///\return 0 on successful run
 ///
-int calculate_sigma_tot(double * const p_value, double * const p_sigma_jet)
+int calculate_sigma_tot_from_sigma_jet(double * const p_value, double * const p_sigma_jet)
 {
     int not_success = 0;
 
@@ -457,7 +534,7 @@ int calculate_sigma_jet_product(double * p_value, double * p_error, const double
 
     gsl_monte_function G = { &sigma_jet_product_integrand, dim, &fdata};
 
-    size_t calls = 100000;
+    size_t calls = 10000;
 
     gsl_rng_env_setup();
 
@@ -466,12 +543,10 @@ int calculate_sigma_jet_product(double * p_value, double * p_error, const double
 
     gsl_monte_vegas_state *s =gsl_monte_vegas_alloc(dim);
 
-    gsl_monte_vegas_integrate(&G, xl, xu, dim, 10000, r, s, p_value, p_error);
+    gsl_monte_vegas_integrate(&G, xl, xu, dim, 1000, r, s, p_value, p_error);
 
     do{
-        gsl_monte_vegas_integrate(&G, xl, xu, 3, calls, r, s, p_value, p_error);
-
-        cout<<p_value<<' '<<p_error<<' '<<gsl_monte_vegas_chisq(s)<<endl;
+        gsl_monte_vegas_integrate(&G, xl, xu, dim, calls, r, s, p_value, p_error);
 
     }while(fabs(gsl_monte_vegas_chisq(s)-1.0) > 0.5);
 
@@ -544,9 +619,10 @@ int phasespace_integral(const double upper_limits [3], const double lower_limits
 ///
 int eikonal_integrand(unsigned ndim, const double *p_x, void *p_fdata, unsigned fdim, double *p_fval)
 {
-    pair< double , int > fdata = *(pair< double , int > *) p_fdata;
+    pair< double, pair< double , int > > fdata = *(pair< double, pair< double , int > > *) p_fdata;
     double sigma_jet = fdata.first;
-    int k = fdata.second;
+    double sigma_jet_product = fdata.second.first;
+    int k = fdata.second.second;
 
     double variation = 4.72;
     double dummy = sigma_jet / (4 * M_PI * variation);
@@ -560,7 +636,7 @@ int eikonal_integrand(unsigned ndim, const double *p_x, void *p_fdata, unsigned 
     {
         factorial *=i;
     }
-    p_fval[0] = (4 * M_PI * variation)*exp(-dummy*exp(-x)) *(pow(dummy*exp(-x),k)/factorial) * jacobian;
+    p_fval[0] = (4 * M_PI * variation)*exp(-dummy*exp(-x)) *(pow(exp(-x)/ (4 * M_PI * variation),k)/factorial) * sigma_jet_product * jacobian;
 
     return 0; // success
 }
