@@ -28,7 +28,7 @@ const unsigned g_dim = 3;                        //Dimension fo the integrals
 const string g_pdfsetname = "CT14lo";  //Name of the used pdf-set from LHAPDF
 const int g_pdfsetmember = 0;                   //Member ID of the pdf in the set
 const double g_error_tolerance = 1e-4;           //Global error tolerance
-const int g_eikonal_sum_term_count = 3;         //N:o of eikonal sum terms to study
+const int g_eikonal_sum_term_count = 10;         //N:o of eikonal sum terms to study
 const int g_data_point_count = 13;                //N:o of data point constants
 const double g_sqrt_s_list [g_data_point_count] = {100, 200, 400, 550, 1000, 1800, 4000, 7000, 8000, 13000, 25000, 50000, 100000};
 
@@ -172,7 +172,7 @@ int main()
 ///\param fulldim = dimension of the integration variable
 ///\param p_fdata = void pointer to the parameters of the function
 ///
-double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
+double sigma_jet_product_integrand_REAL(double *p_x, size_t fulldim, void *p_fdata){
 
     pair<PDF*,pair<const double * const,const double * const> >  fdata = *(pair<PDF*,pair<const double * const,const double * const> > *) p_fdata;
 
@@ -205,12 +205,12 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
         z[1][i] = p_x[3*i +1];
         z[2][i] = p_x[3*i +2];
 
-        if(i!=0){
-            X1 -= x1[i-1];
-            X2 -= x2[i-1];
-
-            if(X1<=g_error_tolerance || X2<=g_error_tolerance) return 0;
-        }
+//        if(i!=0){
+//            X1 -= x1[i-1];
+//            X2 -= x2[i-1];
+//
+//            if(X1<=g_error_tolerance || X2<=g_error_tolerance) return 0;
+//        }
 
         kt2_upper[i] = (*p_mand_s/4) * X1 * X2;
         kt2[i] = *p_kt2_lower_cutoff + z[0][i] * (kt2_upper[i] - *p_kt2_lower_cutoff);
@@ -237,13 +237,13 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
         //cout<<endl;
     }
 
-    double sum_x1s=0;
-    double sum_x2s=0;
-
-    for (auto x:x1) sum_x1s+=x;
-    for (auto x:x2) sum_x2s+=x;
-
-    if (sum_x1s>1 || sum_x2s>1) return 0; //MOMENTUM CONSERVATION
+//    double sum_x1s=0;
+//    double sum_x2s=0;
+//
+//    for (auto x:x1) sum_x1s+=x;
+//    for (auto x:x2) sum_x2s+=x;
+//
+//    if (sum_x1s>1 || sum_x2s>1) return 0; //MOMENTUM CONSERVATION
 
 
 
@@ -261,7 +261,7 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
 
         //subprocess_cs[i] = sigma_gg_gg(&s_hat[i], &t_hat[i], &u_hat[i], p_pdf->alphasQ2(kt2[i]));
 
-        jacobian[i] = ((*p_mand_s/4) - *p_kt2_lower_cutoff) * (2*y1_upper[i]) * (y2_upper[i] - y2_lower[i]);
+        jacobian[i] = (kt2_upper[i]  - *p_kt2_lower_cutoff) * (2*y1_upper[i]) * (y2_upper[i] - y2_lower[i]);
 
         //SES
         /*
@@ -275,6 +275,118 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
 
     double result = 1;
     for (auto s:sigma) result*=s;
+
+    return result;
+}
+double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
+
+    pair<PDF*,pair<const double * const,const double * const> >  fdata = *(pair<PDF*,pair<const double * const,const double * const> > *) p_fdata;
+    const PDF* p_pdf = fdata.first;
+    const double * const p_mand_s = fdata.second.first;
+    const double * const p_kt2_lower_cutoff = fdata.second.second;
+
+    const int dim = fulldim/3;
+    double z[3][dim];
+
+    double kt2_upper[dim];
+    double kt2[dim];
+
+    double y1_upper[dim];
+    double y1[dim];
+
+    double y2_upper[dim];
+    double y2_lower[dim];
+    double y2[dim];
+
+    double x1[dim];
+    double x2[dim];
+
+    double X1=1;
+    double X2=1;
+
+    for(int i=0; i<dim; ++i){
+        z[0][i] = p_x[3*i];
+        z[1][i] = p_x[3*i +1];
+        z[2][i] = p_x[3*i +2];
+    const auto z1 = p_x[0], z2 = p_x[1], z3 = p_x[2];
+
+    const auto kt2           = *p_kt2_lower_cutoff + z1 * ((*p_mand_s/4) - *p_kt2_lower_cutoff);
+    const auto sqrt_s_per_kt = sqrt(*p_mand_s/kt2);
+
+    const auto y1_upper = acosh(sqrt_s_per_kt/2);
+    //const auto y1_lower = -y1_upper;
+    const auto y1       = ( -1 + (2 * z2) ) * y1_upper; //y1_lower + z2 * (y1_upper - y1_lower)
+
+    const auto y2_upper = log(sqrt_s_per_kt - exp(y1));
+    const auto y2_lower = -log(sqrt_s_per_kt - exp(-y1));
+    const auto y2       = y2_lower + z3 * (y2_upper - y2_lower);
+
+    const auto x1 = (exp(y1) + exp(y2)) / sqrt_s_per_kt;
+    const auto x2 = (exp(-y1) + exp(-y2)) / sqrt_s_per_kt;
+
+    const auto s_hat         = s_hat_from_ys(&y1, &y2, &kt2);
+    const auto t_hat         = t_hat_from_ys(&y1, &y2, &kt2);
+    const auto u_hat         = u_hat_from_ys(&y1, &y2, &kt2);
+    //const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
+
+    const auto jacobian = ((*p_mand_s/4) - *p_kt2_lower_cutoff) * (2*y1_upper) * (y2_upper - y2_lower);
+
+    if (y2_upper < y2_lower || y1_upper < -y1_upper) p_fval[0]=0;
+    else
+    {
+        //SES
+        /*
+        p_fval[0] = 0.5 * f_ses(&x1, &kt2, p_pdf)
+                    * f_ses(&x2, &kt2, p_pdf)
+                    * subprocess_cs * jacobian; */
+        //FULL SUMMATION
+        p_fval[0] = 0.5 * diff_sigma_jet(&x1,&x2,&kt2,p_pdf,&s_hat,&t_hat,&u_hat)
+                    * jacobian;
+    }
+
+
+    }
+
+//    double sum_x1s=0;
+//    double sum_x2s=0;
+//
+//    for (auto x:x1) sum_x1s+=x;
+//    for (auto x:x2) sum_x2s+=x;
+//
+//    if (sum_x1s>1 || sum_x2s>1) return 0; //MOMENTUM CONSERVATION
+
+
+
+//    double s_hat[dim];
+//    double t_hat[dim];
+//    double u_hat[dim];
+//    //double subprocess_cs[dim];
+//    double jacobian[dim];
+//    double sigma[dim];
+    double result = 1;
+
+    for(int i=0; i<dim; ++i){
+//        s_hat[i] = s_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
+//        t_hat[i] = t_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
+//        u_hat[i] = u_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
+
+        //subprocess_cs[i] = sigma_gg_gg(&s_hat[i], &t_hat[i], &u_hat[i], p_pdf->alphasQ2(kt2[i]));
+
+//        jacobian[i] = (kt2_upper[i]  - *p_kt2_lower_cutoff) * (2*y1_upper[i]) * (y2_upper[i] - y2_lower[i]);
+
+        //SES
+        /*
+        sigma[i] = 0.5 * f_ses(&x1[i], &kt2[i], p_pdf)
+                    * f_ses(&x2[i], &kt2[i], p_pdf)
+                    * subprocess_cs[i] * jacobian[i]; */
+        //FULL SUMMATION
+//        sigma[i] = 0.5 * diff_sigma_jet(&x1[i],&x2[i],&kt2[i],p_pdf,&s_hat[i],&t_hat[i],&u_hat[i])
+//                    * jacobian[i];
+        result *= z[0][i]+2*z[1][i]+z[2][i];
+    }
+//
+//    double result = 1;
+//    for (auto s:sigma) result*=s;
 
     return result;
 }
