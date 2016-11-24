@@ -8,6 +8,7 @@
 #include <gsl/gsl_sf_expint.h>
 #include <gsl/gsl_integration.h>
 #include <gsl/gsl_monte.h>
+#include <gsl/gsl_monte_plain.h>
 #include <gsl/gsl_monte_miser.h>
 #include <gsl/gsl_monte_vegas.h>
 
@@ -68,11 +69,33 @@ int calculate_sigma_jet_product(double *, double *, const double * const, const 
 
 int main()
 {
-    double kt2_lower_cutoff [g_data_point_count];
+    //double kt2_lower_cutoff [g_data_point_count];
     double eikonal_sum_contributions [g_data_point_count][g_eikonal_sum_term_count];
     double data_sigma_inel;
     double sigma_jet[g_eikonal_sum_term_count+1], sigma_inel, sigma_el, sigma_tot;
     ofstream data, histogram;
+
+    //FROM FITS TO INEL
+    double kt2_lower_cutoff [g_data_point_count] = {1.1717, 1.7652, 2.60672, 3.11223, 4.33122, 5.97358, 9.19567, 12.3927, 13.3007, 17.1726, 24.1296, 34.4193, 48.6225};
+
+/*
+    PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
+    const double mand_s = 10000;
+    const double kt2 = 1.1717;
+
+    calculate_sigma_jet(&sigma_jet[0], &sigma_inel, &mand_s, &kt2, p_pdf);
+            cout<<0<<' '<<sigma_jet[0]<<endl;
+
+        for (int j=1; j<g_eikonal_sum_term_count+1; ++j){
+            calculate_sigma_jet_product(&sigma_jet[j], &sigma_inel, &mand_s, &kt2, p_pdf, j);
+            cout<<j<<' '<<sigma_jet[j]<<endl;
+        }
+
+    calculate_sigma_tot_from_integral(&sigma_tot, sigma_jet);
+    cout<<"tot"<<' '<<sigma_tot<<endl;
+    calculate_sigma_inel_from_integral(&sigma_inel, sigma_jet);
+    cout<<"inel"<<' '<<sigma_inel<<endl;
+*/
 
     PDF* p_pdf = mkPDF(g_pdfsetname, g_pdfsetmember);
 
@@ -92,7 +115,16 @@ int main()
 
         data.open(fn.str().c_str());
 
-        kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&g_sqrt_s_list[i], &data_sigma_inel, sigma_jet, &sigma_inel, p_pdf);
+        double mand_s =g_sqrt_s_list[i]*g_sqrt_s_list[i];
+
+        //kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&g_sqrt_s_list[i], &data_sigma_inel, sigma_jet, &sigma_inel, p_pdf);
+        calculate_sigma_jet(&sigma_jet[0], &sigma_inel, &mand_s, &kt2_lower_cutoff[i], p_pdf);
+
+        for (int j=1; j<g_eikonal_sum_term_count+1; ++j){
+            calculate_sigma_jet_product(&sigma_jet[j], &sigma_inel, &mand_s, &kt2_lower_cutoff[i], p_pdf, j);
+        }
+        calculate_sigma_inel_from_integral(&sigma_inel, sigma_jet);
+
 
         data << "#kt² lower cutoff: " << kt2_lower_cutoff[i] << '\n';
         data << "#data_sqrt(s): " << g_sqrt_s_list[i] << '\n';
@@ -151,6 +183,7 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
     const int dim = fulldim/3;
     double z[3][dim];
 
+    double kt2_upper[dim];
     double kt2[dim];
     double sqrt_s_per_kt[dim];
 
@@ -164,29 +197,48 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
     double x1[dim];
     double x2[dim];
 
+    double X1=1;
+    double X2=1;
+
     for(int i=0; i<dim; ++i){
         z[0][i] = p_x[3*i];
         z[1][i] = p_x[3*i +1];
         z[2][i] = p_x[3*i +2];
 
-        kt2[i] = *p_kt2_lower_cutoff + z[0][i] * ((*p_mand_s/4) - *p_kt2_lower_cutoff);
+        if(i!=0){
+            X1 -= x1[i-1];
+            X2 -= x2[i-1];
+
+            if(X1<=g_error_tolerance || X2<=g_error_tolerance) return 0;
+        }
+
+        kt2_upper[i] = (*p_mand_s/4) * X1 * X2;
+        kt2[i] = *p_kt2_lower_cutoff + z[0][i] * (kt2_upper[i] - *p_kt2_lower_cutoff);
 
         sqrt_s_per_kt[i] = sqrt(*p_mand_s/kt2[i]);
 
-        y1_upper[i] = acosh(sqrt_s_per_kt[i]/2);
+        y1_upper[i] = log((X1*sqrt_s_per_kt[i]/2) + sqrt( X1 * (*p_mand_s/(4*kt2[i])) - X1/X2));
         //y1_lower = -y1_upper;
         y1[i] = ( -1 + (2 * z[1][i]) ) * y1_upper[i]; //y1_lower + z2 * (y1_upper - y1_lower)
 
-        y2_upper[i] = log(sqrt_s_per_kt[i] - exp(y1[i]));
-        y2_lower[i] = -log(sqrt_s_per_kt[i] - exp(-y1[i]));
+        y2_upper[i] = log(sqrt_s_per_kt[i]*X1 - exp(y1[i]));
+        //cout<<y2_upper[i]<<' '<<sqrt_s_per_kt[i]*X1<<' '<<exp(y1[i])<<' ';
+        y2_lower[i] = -log(sqrt_s_per_kt[i]*X2 - exp(-y1[i]));
         y2[i] = y2_lower[i] + z[2][i] * (y2_upper[i] - y2_lower[i]);
 
         x1[i] = (exp(y1[i]) + exp(y2[i])) / sqrt_s_per_kt[i];
         x2[i] = (exp(-y1[i]) + exp(-y2[i])) / sqrt_s_per_kt[i];
+
+        if(isnan(x1[i])||isnan(x2[i])) return 0;
+
+        //cout<<"y1"<<i<<'='<<y1[i]<<' '<<"y2"<<i<<'='<<y2[i]<<' ';
+        //cout<<"x1"<<i<<'='<<x1[i]<<' '<<"x2"<<i<<'='<<x2[i]<<' ';
+        //cout<<"X1"<<i<<'='<<X1<<' '<<"X2"<<i<<'='<<X2<<' ';
+        //cout<<endl;
     }
 
-    auto sum_x1s=0;
-    auto sum_x2s=0;
+    double sum_x1s=0;
+    double sum_x2s=0;
 
     for (auto x:x1) sum_x1s+=x;
     for (auto x:x2) sum_x2s+=x;
@@ -221,7 +273,7 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
                     * jacobian[i];
     }
 
-    auto result = 1;
+    double result = 1;
     for (auto s:sigma) result*=s;
 
     return result;
@@ -537,20 +589,20 @@ int calculate_sigma_jet_product(double * p_value, double * p_error, const double
 
     gsl_monte_function G = { &sigma_jet_product_integrand, dim, &fdata};
 
-    size_t calls = 100000;
+    size_t calls = 1000000;
 
     gsl_rng_env_setup();
 
     T=gsl_rng_default;
     r=gsl_rng_alloc(T);
 
-    gsl_monte_miser_state *s =gsl_monte_miser_alloc(dim);
+    gsl_monte_plain_state *s =gsl_monte_plain_alloc(dim);
 
-    gsl_monte_miser_integrate(&G, xl, xu, dim, calls, r, s, p_value, p_error);
+    gsl_monte_plain_integrate(&G, xl, xu, dim, calls, r, s, p_value, p_error);
 
     cout<<*p_value<<endl;
 
-    gsl_monte_miser_free(s);
+    gsl_monte_plain_free(s);
 
     /*
 
