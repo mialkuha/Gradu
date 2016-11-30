@@ -3,6 +3,8 @@
 #include <stdio.h>
 #include <string>
 
+#include <time.h>
+
 #include <complex>
 #include <gsl/gsl_math.h>
 #include <gsl/gsl_sf_expint.h>
@@ -60,7 +62,7 @@ double sigma_gg_qaq(const double * const, const double * const, const double * c
 double sigma_gq_gq(const double * const, const double * const, const double * const, const double);
 double sigma_gg_gg(const double * const, const double * const, const double * const, const double);
 double sigma_jet_product_integrand(double *, size_t, void *);
-int calculate_sigma_jet_product(double *, double *, const double * const, const double * const, PDF*, int);
+int calculate_sigma_jet_product(double *, double *, const double * const, const double * const, PDF*, int, size_t);
 
 
 ///MAIN///
@@ -120,8 +122,36 @@ int main()
         //kt2_lower_cutoff[i] = find_kt2_lower_cutoff(&g_sqrt_s_list[i], &data_sigma_inel, sigma_jet, &sigma_inel, p_pdf);
         calculate_sigma_jet(&sigma_jet[0], &sigma_inel, &mand_s, &kt2_lower_cutoff[i], p_pdf);
 
+        int k =0;
+
         for (int j=1; j<g_eikonal_sum_term_count+1; ++j){
-            calculate_sigma_jet_product(&sigma_jet[j], &sigma_inel, &mand_s, &kt2_lower_cutoff[i], p_pdf, j);
+            time_t rawtime;
+            struct tm * timeinfo;
+
+            time (&rawtime);
+            timeinfo = localtime (&rawtime);
+
+
+            double pow_of_sigma_jet = pow(sigma_jet[0],j);
+            cout<<endl;
+            cout<<endl;
+            cout<<"j="<<j<<" Analytic: "<<pow_of_sigma_jet<<" time is: "<<asctime(timeinfo)<<endl;
+            cout<<endl;
+            cout<<endl;
+            double err =1.0;
+
+        //    do {
+            k++;
+            size_t calls = 10000*(pow(10,k));
+            calculate_sigma_jet_product(&sigma_jet[j], &sigma_inel, &mand_s, &kt2_lower_cutoff[i], p_pdf, j, calls);
+
+            err= abs(pow_of_sigma_jet - sigma_jet[j])/pow_of_sigma_jet;
+
+            cout<<"Calls: "<<calls<<" MC: "<<sigma_jet[j]<<" err: "<<err<<endl;
+
+        //    }while(err>0.01);
+            k =0;
+
         }
         calculate_sigma_inel_from_integral(&sigma_inel, sigma_jet);
 
@@ -219,7 +249,7 @@ double sigma_jet_product_integrand_REAL(double *p_x, size_t fulldim, void *p_fda
 
         y1_upper[i] = log((X1*sqrt_s_per_kt[i]/2) + sqrt( X1 * (*p_mand_s/(4*kt2[i])) - X1/X2));
         //y1_lower = -y1_upper;
-        y1[i] = ( -1 + (2 * z[1][i]) ) * y1_upper[i]; //y1_lower + z2 * (y1_upper - y1_lower)
+        y1[i] = ( -1 + (2 * z[1][i]) ) * y1_upper[i]; //y1_lower + z[1][i] * (y1_upper - y1_lower)
 
         y2_upper[i] = log(sqrt_s_per_kt[i]*X1 - exp(y1[i]));
         //cout<<y2_upper[i]<<' '<<sqrt_s_per_kt[i]*X1<<' '<<exp(y1[i])<<' ';
@@ -290,6 +320,7 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
 
     double kt2_upper[dim];
     double kt2[dim];
+    double sqrt_s_per_kt[dim];
 
     double y1_upper[dim];
     double y1[dim];
@@ -304,89 +335,69 @@ double sigma_jet_product_integrand(double *p_x, size_t fulldim, void *p_fdata){
     double X1=1;
     double X2=1;
 
+    double s_hat[dim];
+    double t_hat[dim];
+    double u_hat[dim];
+    double subprocess_cs[dim];
+    double jacobian[dim];
+    double sigma[dim];
+
     for(int i=0; i<dim; ++i){
         z[0][i] = p_x[3*i];
         z[1][i] = p_x[3*i +1];
         z[2][i] = p_x[3*i +2];
-    const auto z1 = p_x[0], z2 = p_x[1], z3 = p_x[2];
 
-    const auto kt2           = *p_kt2_lower_cutoff + z1 * ((*p_mand_s/4) - *p_kt2_lower_cutoff);
-    const auto sqrt_s_per_kt = sqrt(*p_mand_s/kt2);
+        kt2[i]          = *p_kt2_lower_cutoff + z[0][i] * ((*p_mand_s/4) - *p_kt2_lower_cutoff);
+        sqrt_s_per_kt[i] = sqrt(*p_mand_s/kt2[i]);
 
-    const auto y1_upper = acosh(sqrt_s_per_kt/2);
-    //const auto y1_lower = -y1_upper;
-    const auto y1       = ( -1 + (2 * z2) ) * y1_upper; //y1_lower + z2 * (y1_upper - y1_lower)
+        y1_upper[i] = acosh(sqrt_s_per_kt[i]/2);
+    //const auto y1_lower = -y1_upper[i];
+        y1[i]       = ( -1 + (2 * z[1][i]) ) * y1_upper[i]; //y1_lower + z[1][i] * (y1_upper[i] - y1_lower)
 
-    const auto y2_upper = log(sqrt_s_per_kt - exp(y1));
-    const auto y2_lower = -log(sqrt_s_per_kt - exp(-y1));
-    const auto y2       = y2_lower + z3 * (y2_upper - y2_lower);
+        y2_upper[i] = log(sqrt_s_per_kt[i] - exp(y1[i]));
+        y2_lower[i] = -log(sqrt_s_per_kt[i] - exp(-y1[i]));
+        y2[i]       = y2_lower[i] + z[2][i] * (y2_upper[i] - y2_lower[i]);
 
-    const auto x1 = (exp(y1) + exp(y2)) / sqrt_s_per_kt;
-    const auto x2 = (exp(-y1) + exp(-y2)) / sqrt_s_per_kt;
-
-    const auto s_hat         = s_hat_from_ys(&y1, &y2, &kt2);
-    const auto t_hat         = t_hat_from_ys(&y1, &y2, &kt2);
-    const auto u_hat         = u_hat_from_ys(&y1, &y2, &kt2);
-    //const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
-
-    const auto jacobian = ((*p_mand_s/4) - *p_kt2_lower_cutoff) * (2*y1_upper) * (y2_upper - y2_lower);
-
-    if (y2_upper < y2_lower || y1_upper < -y1_upper) p_fval[0]=0;
-    else
-    {
-        //SES
-        /*
-        p_fval[0] = 0.5 * f_ses(&x1, &kt2, p_pdf)
-                    * f_ses(&x2, &kt2, p_pdf)
-                    * subprocess_cs * jacobian; */
-        //FULL SUMMATION
-        p_fval[0] = 0.5 * diff_sigma_jet(&x1,&x2,&kt2,p_pdf,&s_hat,&t_hat,&u_hat)
-                    * jacobian;
-    }
-
+        x1[i] = (exp(y1[i]) + exp(y2[i])) / sqrt_s_per_kt[i];
+        x2[i] = (exp(-y1[i]) + exp(-y2[i])) / sqrt_s_per_kt[i];
 
     }
 
-//    double sum_x1s=0;
-//    double sum_x2s=0;
-//
-//    for (auto x:x1) sum_x1s+=x;
-//    for (auto x:x2) sum_x2s+=x;
-//
-//    if (sum_x1s>1 || sum_x2s>1) return 0; //MOMENTUM CONSERVATION
+    double sum_x1s=0;
+    double sum_x2s=0;
 
+    for (auto x:x1) sum_x1s+=x;
+    for (auto x:x2) sum_x2s+=x;
 
+    if (sum_x1s>1 || sum_x2s>1) return 0; //MOMENTUM CONSERVATION
 
-//    double s_hat[dim];
-//    double t_hat[dim];
-//    double u_hat[dim];
-//    //double subprocess_cs[dim];
-//    double jacobian[dim];
-//    double sigma[dim];
+    for(int i=0; i<dim; ++i){
+        s_hat[i]         = s_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
+        t_hat[i]         = t_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
+        u_hat[i]         = u_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
+        subprocess_cs[i] = sigma_gg_gg(&s_hat[i], &t_hat[i], &u_hat[i], p_pdf->alphasQ2(kt2[i]));
+
+        jacobian[i] = ((*p_mand_s/4) - *p_kt2_lower_cutoff) * (2*y1_upper[i]) * (y2_upper[i] - y2_lower[i]);
+
+        if (y2_upper[i] < y2_lower[i] || y1_upper[i] < -y1_upper[i]) return 0;
+        else
+        {
+            //SES
+
+            sigma[i] = 0.5 * f_ses(&x1[i], &kt2[i], p_pdf)
+                        * f_ses(&x2[i], &kt2[i], p_pdf)
+                        * subprocess_cs[i] * jacobian[i];
+            //FULL SUMMATION
+            /*sigma[i] = 0.5 * diff_sigma_jet(&x1[i],&x2[i],&kt2[i],p_pdf,&s_hat[i],&t_hat[i],&u_hat[i])
+                    * jacobian[i];*/
+        }
+    }
+
     double result = 1;
 
     for(int i=0; i<dim; ++i){
-//        s_hat[i] = s_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
-//        t_hat[i] = t_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
-//        u_hat[i] = u_hat_from_ys(&y1[i], &y2[i], &kt2[i]);
-
-        //subprocess_cs[i] = sigma_gg_gg(&s_hat[i], &t_hat[i], &u_hat[i], p_pdf->alphasQ2(kt2[i]));
-
-//        jacobian[i] = (kt2_upper[i]  - *p_kt2_lower_cutoff) * (2*y1_upper[i]) * (y2_upper[i] - y2_lower[i]);
-
-        //SES
-        /*
-        sigma[i] = 0.5 * f_ses(&x1[i], &kt2[i], p_pdf)
-                    * f_ses(&x2[i], &kt2[i], p_pdf)
-                    * subprocess_cs[i] * jacobian[i]; */
-        //FULL SUMMATION
-//        sigma[i] = 0.5 * diff_sigma_jet(&x1[i],&x2[i],&kt2[i],p_pdf,&s_hat[i],&t_hat[i],&u_hat[i])
-//                    * jacobian[i];
-        result *= z[0][i]+2*z[1][i]+z[2][i];
+        result *= sigma[i];
     }
-//
-//    double result = 1;
-//    for (auto s:sigma) result*=s;
 
     return result;
 }
@@ -478,7 +489,7 @@ double find_kt2_lower_cutoff(const double * const p_sqrt_s, const double * const
             cout<<0<<' '<<sigma_jet_ys[i][0]<<endl;
 
         for (int j=1; j<g_eikonal_sum_term_count+1; ++j){
-            calculate_sigma_jet_product(&sigma_jet_ys[i][j], &sigma_jet_error_ys[i][j], &mand_s, kt2_lower_cutoff+i, p_pdf, j);
+            calculate_sigma_jet_product(&sigma_jet_ys[i][j], &sigma_jet_error_ys[i][j], &mand_s, kt2_lower_cutoff+i, p_pdf, j,1/*TODO*/);
             cout<<j<<' '<<sigma_jet_ys[i][j]<<endl;
         }
         //    ys_data_sigma_jet << mand_s << ' ' << sigma_jet_ys << ' ' << sigma_jet_error_ys << '\n';
@@ -682,10 +693,11 @@ int calculate_sigma_jet(double * const p_value, double * const p_error, const do
 ///\param p_kt2_lower_cutoff = pointer to the lower cutoff of kt²
 ///\param p_pdf = pointer to the PDF object
 ///\param nof_dijets = number of similar reactions, affects momentum conservation.
+///\param calls = number of sampling calls for MC.
 ///
 ///\return 0 on successful run
 ///
-int calculate_sigma_jet_product(double * p_value, double * p_error, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf, int nof_dijets)
+int calculate_sigma_jet_product(double * p_value, double * p_error, const double * const p_mand_s, const double * const p_kt2_lower_cutoff, PDF* p_pdf, int nof_dijets,size_t calls)
 {
     size_t dim = 3*nof_dijets;
     pair<PDF*,pair<const double * const,const double * const> > fdata = { p_pdf , { p_mand_s , p_kt2_lower_cutoff } };
@@ -701,20 +713,44 @@ int calculate_sigma_jet_product(double * p_value, double * p_error, const double
 
     gsl_monte_function G = { &sigma_jet_product_integrand, dim, &fdata};
 
-    size_t calls = 1000000;
+    size_t calls=1;
+
+    switch (dim){
+        case 3:
+            calls = 100000; //0.16% error
+            break;
+        case 6:
+            calls = 10000000; //0.16% error
+            break;
+        case 9:
+            calls = 10000000; //0.7% error
+            break;
+        case 12:
+            calls = 100000000; //0.19% error
+            break;
+        case 15:
+            calls = 1000000000; //0.17% error
+            break;
+        case 18:
+            calls = 1000000000; //TODO
+            break;
+        default:
+            calls = 1000000000;
+            break;
+    }
 
     gsl_rng_env_setup();
 
     T=gsl_rng_default;
     r=gsl_rng_alloc(T);
 
-    gsl_monte_plain_state *s =gsl_monte_plain_alloc(dim);
+    gsl_monte_miser_state *s =gsl_monte_miser_alloc(dim);
 
-    gsl_monte_plain_integrate(&G, xl, xu, dim, calls, r, s, p_value, p_error);
+    gsl_monte_miser_integrate(&G, xl, xu, dim, calls, r, s, p_value, p_error);
 
-    cout<<*p_value<<endl;
+    //cout<<"MC: "<<*p_value<<endl;
 
-    gsl_monte_plain_free(s);
+    gsl_monte_miser_free(s);
 
     /*
 
@@ -859,7 +895,7 @@ int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsig
     const auto s_hat         = s_hat_from_ys(&y1, &y2, &kt2);
     const auto t_hat         = t_hat_from_ys(&y1, &y2, &kt2);
     const auto u_hat         = u_hat_from_ys(&y1, &y2, &kt2);
-    //const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
+    const auto subprocess_cs = sigma_gg_gg(&s_hat, &t_hat, &u_hat, p_pdf->alphasQ2(kt2));
 
     const auto jacobian = ((*p_mand_s/4) - *p_kt2_lower_cutoff) * (2*y1_upper) * (y2_upper - y2_lower);
 
@@ -867,13 +903,12 @@ int integrand_function_ys(unsigned ndim, const double *p_x, void *p_fdata, unsig
     else
     {
         //SES
-        /*
         p_fval[0] = 0.5 * f_ses(&x1, &kt2, p_pdf)
                     * f_ses(&x2, &kt2, p_pdf)
-                    * subprocess_cs * jacobian; */
+                    * subprocess_cs * jacobian;
         //FULL SUMMATION
-        p_fval[0] = 0.5 * diff_sigma_jet(&x1,&x2,&kt2,p_pdf,&s_hat,&t_hat,&u_hat)
-                    * jacobian;
+        /*p_fval[0] = 0.5 * diff_sigma_jet(&x1,&x2,&kt2,p_pdf,&s_hat,&t_hat,&u_hat)
+                    * jacobian;*/
     }
 
     /*
