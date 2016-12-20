@@ -1,0 +1,267 @@
+% Versio 1.1 (17.11.2015)
+% Tämä on esimerkkipohja fysiikan laboratoriotyöselostuksia varten. 
+\documentclass[a4paper, twoside, english, 12pt]{article}
+
+
+
+% Kielipaketit
+\usepackage[T1]{fontenc}
+\usepackage[finnish, english]{babel}
+
+
+\usepackage{pdfpages}
+
+%Jotta LaTeX osaisi kääntää normaalisti kirjoitetut skandinaaviset kirjaimet (esim. ä ja ö) oikein, tarvitaan inputenc-pakettia. Tämän paketin vaatimat valinnaiset argumentit riippuvat editorin asetuksista. Valitse alla olevista oman editorisi mukainen vaihtoehto kommentoimalla muut pois. Mikäli mikään alla olevista ei toimi, etsi sopivaa ohjetta netistä vaikka hakusanoilla latex, inputenc ja oman editorisi nimi. Ilmoita kohtaamasi ongelma työosastolle. TexnicCenterissä ja TexMakerissa ensimmäisen vaihtoehdon pitäisi toimia.
+\usepackage[utf8]{inputenc}
+%\usepackage[latin1]{inputenc}
+%\usepackage[applemac]{inputenc}
+
+% Matematiikkapaketteja
+\usepackage{amsmath}
+\usepackage{amsfonts}
+\usepackage{amssymb}
+
+%Feyngraphs
+\usepackage{feynmp-auto}
+\unitlength = 1mm
+\newcommand{\marrow}[5]{%
+	\fmfcmd{style_def marrow#1
+		expr p = drawarrow subpath (1/4, 3/4) of p shifted 10 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 10 #2);
+		enddef;}
+	\fmf{marrow#1,tension=0}{#5}}
+\newcommand{\smarrow}[5]{%
+	\fmfcmd{style_def smarrow#1
+		expr p = drawarrow subpath (2/4, 5/4) of p shifted 19 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{smarrow#1,tension=0}{#5}}
+\newcommand{\gmarrow}[5]{%
+	\fmfcmd{style_def gmarrow#1
+		expr p = drawarrow subpath (2/6, 8/10) of p shifted 16 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{gmarrow#1,tension=0}{#5}}
+\newcommand{\gomarrow}[5]{%
+	\fmfcmd{style_def gomarrow#1
+		expr p = drawarrow subpath (1/6, 2/3) of p shifted 16 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{gomarrow#1,tension=0}{#5}}
+\newcommand{\umarrow}[5]{%
+	\fmfcmd{style_def umarrow#1
+		expr p = drawarrow subpath (7/10, 5/5) of p shifted 10 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{umarrow#1,tension=0}{#5}}
+\newcommand{\yumarrow}[5]{%
+	\fmfcmd{style_def umarrow#1
+		expr p = drawarrow subpath (1/2, 4/5) of p shifted 10 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{umarrow#1,tension=0}{#5}}
+\newcommand{\Marrow}[6]{%
+	\fmfcmd{style_def marrow#1
+		expr p = drawarrow subpath (1/4, 3/4) of p shifted #6 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted #6 #2);
+		enddef;}
+	\fmf{marrow#1,tension=0}{#5}}
+
+
+\usepackage{array}
+\usepackage{geometry}
+
+\usepackage{fancyhdr}
+
+\usepackage{graphicx}
+\usepackage{caption}
+\usepackage{subcaption}
+
+
+
+% Kuvien lisäämistä varten
+\usepackage{graphicx}
+
+% Rivivälin muuttamista varten
+\usepackage{setspace}
+
+% Riviväli 1.5
+\onehalfspacing
+
+% Muuttaa taulukkojen ja kuvien otsikointia hieman kauniimmaksi.
+\usepackage{caption}
+
+% Paketti URL-osoitteita varten
+\usepackage{url}
+
+% Poistaa kappaleiden alkusisennyksen ja lisää tyhjää tilaa kappaleiden väliin.
+\usepackage{parskip}
+
+% Lisää \hyp{}-komennon, joka tekee väliviivan eikä estä tavutusta
+\usepackage{hyphenat}
+
+% SI-yksiköiden kirjoittamista varten
+\usepackage[decimalsymbol=comma,load=prefixed,separate-uncertainty=true]{siunitx} 
+
+
+
+
+
+%----------------------------------------------------------------------------------------
+% KANSILEHDEN MUOTOILU JA TEKSTI
+%----------------------------------------------------------------------------------------
+\newcommand*{\titleJYFL}{\begingroup  % Create the command for including the title page in the document
+	\hbox{                                    % Horizontal box
+		\hspace*{0.1\textwidth}                   % Whitespace to the left of the title page
+		\rule{1pt}{\textheight}                   % Vertical line
+		\hspace*{0.05\textwidth}                  % Whitespace between the vertical line and title page text
+		\parbox[b]{0.8\textwidth}{                % Paragraph box which restricts text to less than the width of the page
+			
+			% Tutkielman nimi
+			
+			\begin{flushleft}
+				\noindent\LARGE\bfseries Title\\[2\baselineskip]
+			\end{flushleft}
+			%
+			% Tutkielman tyyppi ja päiväys
+			{\large Masters thesis, \today}\\[3.5\baselineskip]
+			%
+			% Tutkielman tekijä 
+			{\normalsize Tekijä:}\\[0.5\baselineskip] 
+			{\large \textsc{Mikko Kuha}}\\[1\baselineskip]
+			%
+			% Työn ohjaajat
+			{\normalsize Ohjaaja:}\\[0.5\baselineskip]
+			{\large \textsc{Kari J. Eskola}}
+			%
+			% Tyhjä väli ohjaajan nimen ja yliopiston logon välille - älä poista seuraavaa tyhjää riviä!
+			
+			\vspace{0.2\textheight}
+			% Yliopiston logo, nimi ja ainelaitos
+			\includegraphics[height=27mm]{jyfl-logo.png} 
+		}
+	}        
+	\endgroup}
+%----------------------------------------------------------------------------------------
+% VARSINAINEN DOKUMENTTI
+%----------------------------------------------------------------------------------------
+\begin{document}
+	%----------------------------------------------------------------------------------------
+	% KANSILEHTI
+	%----------------------------------------------------------------------------------------
+	\titleJYFL
+
+	
+	%----------------------------------------------------------------------------------------
+	%	ABSTRACT
+	%----------------------------------------------------------------------------------------
+	\section*{Abstract}
+	
+	% Abstract text
+	\begin{otherlanguage}{english}
+TODO
+	\end{otherlanguage}
+	
+
+
+\selectlanguage{finnish}
+
+
+\newpage
+
+% Aloitetaan sivunumerointi alusta
+\setcounter{page}{1}
+
+
+
+
+
+
+\section{Eikonal approximation}\label{S:Eikonal_approximation}
+
+
+In this section I will derive the eikonal model for non-relativistic quantum scattering problem. The derivation will follow Barone and Predazzis one (presented in TODO) but is given in more detail.
+
+
+\subsection{Solving Schrödinger equation}\label{SS:schrode}
+
+Let us consider a particle scattering off a potential function $V$ that describes some kind of an interaction that has limited range. We are interested in the high-energy limit, so that particle energy dominates over the interaction potential,
+\begin{equation}\label{E:high_energy_assumption}
+	E\gg|V(\mathbf{r})|.
+\end{equation} 
+For processes of interest we can also make the assumption that our particle wavelength $\lambda$ is much smaller than the interaction range $a$, i.e.
+\begin{equation}\label{E:small_wavelength_assumption}
+	\lambda \ll a \iff ka\gg 1,
+\end{equation}
+where $k=2\pi/\lambda$ is the wave number of the particle. If we assume stationary state, the particle is represented in location space by its wave function $\psi(\mathbf{r})$ with location vector $\mathbf{r}=(x,y,z) \in \mathbb{R}^3$. The wave function is a solution to the non-relativistic time-independent Schrödinger equation (LÄHDE TODO)
+\begin{equation}\label{E:schrode}
+	-\frac{\hbar^2}{2\mu}\nabla^2\psi(\mathbf{r}) + V(\mathbf{r})\psi(\mathbf{r}) = E\psi(\mathbf{r}),
+\end{equation}
+where $\nabla^2$ is the Laplacian operator, $\hbar$ is the reduced Planck constant and $E$ and $\mu$ are the energy and the mass of the particle. Consider the particle incoming along the $z$-axis so that at the limit of $z \to -\infty$ it is completely unaffected by the potential $V(\mathbf{r})$. Taking into account that if conditions \ref{E:high_energy_assumption} and \ref{E:small_wavelength_assumption} are satisfied the scattering will happen dominantly into forward direction we can make a plane wave ansatz:
+\begin{equation}\label{E:planewave}
+	\psi(\mathbf{r}) = \phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}},
+\end{equation}
+where $\mathbf{k}=(0,0,k)\in \mathbb{R}^3$ is the wave vector and $\phi(\mathbf{r})$ is a unknown scalar field with boundary condition
+\begin{equation}\label{E:BC_for_phi}
+\phi(x,y,-\infty)=1.
+\end{equation}
+
+Remembering De Broglie relation for particle momentum $\mathbf{p}=\hbar\mathbf{k}$ and that kinetic energy $E=\frac{\mathbf{p}^2}{2\mu}$ we get the relation $\frac{2\mu}{\hbar}E=k^2$. With this and by naming $U(\mathbf{r})\equiv\frac{2\mu}{\hbar}V(\mathbf{r})$, equation \ref{E:schrode} simplifies to
+\begin{equation}\label{E:simpler_schrode}
+	\left[\nabla^2-U(\mathbf{r})+k^2\right]\psi(\mathbf{r}) = 0.
+\end{equation}
+Substituting now our plane wave solution from equation \ref{E:planewave} into equation \ref{E:simpler_schrode} we can derive a necessary condition for function $\phi(\mathbf{r})$:
+\begin{align}\label{E:phi_schrode}
+	0 &= \left[\nabla^2-U(\mathbf{r})+k^2\right]\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} \nonumber\\
+	&=\nabla^2\left(\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}}\right)-U(\mathbf{r})\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}}+k^2\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} \nonumber\\
+	&=\left(\nabla^2\phi(\mathbf{r})\right)\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} + \left(2i\mathbf{k}\cdot\nabla\phi(\mathbf{r})\right)\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}}  -U(\mathbf{r})\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} \nonumber\\
+\iff 0 &= \left[\nabla^2 +2i\mathbf{k}\cdot\nabla -U(\mathbf{r})\right]\phi(\mathbf{r}).
+\end{align}
+
+TODO miksi se, että U ja $\phi$ vaihtelevat vain suuremmassa skaalassa kuin $1/k$ antaa hylätä $\nabla^2\phi$n???
+
+Therefore we get 
+\begin{align}\label{E:differential_for_phi}
+	2ik\partial_z\phi(x,y,z) &= U(x,y,z)\phi(x,y,z) \nonumber\\
+\iff \qquad	\frac{\partial_z\phi(x,y,z)}{\phi(x,y,z)} &= -\frac{i}{2k}U(x,y,z).
+\end{align}
+Integrating both sides of equation \ref{E:differential_for_phi} with respect to $z$ and using boundary condition \ref{E:BC_for_phi} we arrive to a form
+\begin{align}\label{E:phi_solution}
+	\int\limits^{\phi}_{1}\frac{\text{d}\phi'}{\phi'} &= -\frac{i}{2k}\int\limits^{z}_{-\infty} U(x,y,z')\,\text{d}z' \nonumber\\
+\iff \qquad	\phi(x,y,z) &= \exp\left[-\frac{i}{2k}\int\limits^{z}_{-\infty} U(x,y,z')\,\text{d}z'\right].
+\end{align}
+By substituting equation \ref{E:phi_solution} to our original ansatz \ref{E:planewave} we can form the wave function
+\begin{equation}\label{E:wave_function_solution_xyz}
+	\psi(x,y,z) = \exp\left[ikz-\frac{i}{2k}\int\limits^{z}_{-\infty} U(x,y,z')\,\text{d}z'\right].
+\end{equation}
+Let us still express the location vector by $\mathbf{r}\equiv \mathbf{b}+z\hat{\mathbf{e}}_z$, where $\hat{\mathbf{e}}_z$ is the $z$-direction unit vector and $\mathbf{b}=(b_x,b_y,0)\in\mathbb{R}^3$ is called the impact parameter. With this definition we get a solution
+\begin{equation}\label{E:wave_function_solution}
+	\psi(\mathbf{r}) = \exp\left[i\mathbf{k}\cdot\mathbf{r}-\frac{i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]
+\end{equation}
+for the outgoing wave.
+
+
+
+\subsection{Asymptotical limit}\label{SS:asymptotical_limit}
+
+
+
+
+
+
+\newpage
+\nocite{*}
+% --------------------------------------------------------------------------
+% LÄHTEET
+% --------------------------------------------------------------------------
+\bibliographystyle{finabbrv}   % <= Määritellään käytettävä viittausjärjestelmä.
+\bibliography{omabib}           % <= Määritellään käytettävä BibTeX-tietokanta.
+\label{lastpage}
+% --------------------------------------------------------------------------
+% LIITTEET
+% --------------------------------------------------------------------------
+\appendix
+\newpage
+
+
+\end{document}
