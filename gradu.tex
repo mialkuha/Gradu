@@ -23,50 +23,6 @@
 
 %Feyngraphs
 \usepackage{feynmp-auto}
-\unitlength = 1mm
-\newcommand{\marrow}[5]{%
-	\fmfcmd{style_def marrow#1
-		expr p = drawarrow subpath (1/4, 3/4) of p shifted 10 #2 withpen pencircle scaled 0.4;
-		label.#3(btex #4 etex, point 0.5 of p shifted 10 #2);
-		enddef;}
-	\fmf{marrow#1,tension=0}{#5}}
-\newcommand{\smarrow}[5]{%
-	\fmfcmd{style_def smarrow#1
-		expr p = drawarrow subpath (2/4, 5/4) of p shifted 19 #2 withpen pencircle scaled 0.4;
-		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
-		enddef;}
-	\fmf{smarrow#1,tension=0}{#5}}
-\newcommand{\gmarrow}[5]{%
-	\fmfcmd{style_def gmarrow#1
-		expr p = drawarrow subpath (2/6, 8/10) of p shifted 16 #2 withpen pencircle scaled 0.4;
-		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
-		enddef;}
-	\fmf{gmarrow#1,tension=0}{#5}}
-\newcommand{\gomarrow}[5]{%
-	\fmfcmd{style_def gomarrow#1
-		expr p = drawarrow subpath (1/6, 2/3) of p shifted 16 #2 withpen pencircle scaled 0.4;
-		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
-		enddef;}
-	\fmf{gomarrow#1,tension=0}{#5}}
-\newcommand{\umarrow}[5]{%
-	\fmfcmd{style_def umarrow#1
-		expr p = drawarrow subpath (7/10, 5/5) of p shifted 10 #2 withpen pencircle scaled 0.4;
-		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
-		enddef;}
-	\fmf{umarrow#1,tension=0}{#5}}
-\newcommand{\yumarrow}[5]{%
-	\fmfcmd{style_def umarrow#1
-		expr p = drawarrow subpath (1/2, 4/5) of p shifted 10 #2 withpen pencircle scaled 0.4;
-		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
-		enddef;}
-	\fmf{umarrow#1,tension=0}{#5}}
-\newcommand{\Marrow}[6]{%
-	\fmfcmd{style_def marrow#1
-		expr p = drawarrow subpath (1/4, 3/4) of p shifted #6 #2 withpen pencircle scaled 0.4;
-		label.#3(btex #4 etex, point 0.5 of p shifted #6 #2);
-		enddef;}
-	\fmf{marrow#1,tension=0}{#5}}
-
 
 \usepackage{array}
 \usepackage{geometry}
@@ -163,10 +119,6 @@ TODO
 	\end{otherlanguage}
 	
 
-
-\selectlanguage{finnish}
-
-
 \newpage
 
 % Aloitetaan sivunumerointi alusta
@@ -176,41 +128,148 @@ TODO
 
 
 
-
-\section{Eikonal approximation}\label{S:Eikonal_approximation}
-
-
-In this section I will derive the eikonal model for non-relativistic quantum scattering problem. The derivation will follow Barone and Predazzis one (presented in TODO) but is given in more detail.
+\section{Introduction}\label{S:Intro}
 
 
-\subsection{Solving Schrödinger equation}\label{SS:schrode}
 
-Let us consider a particle scattering off a potential function $V$ that describes some kind of an interaction that has limited range. We are interested in the high-energy limit, so that particle energy dominates over the interaction potential,
+\section{Dijet production in proton--proton collision}\label{S:jet_production}
+
+In this section, we will gloss over the theory of proton--proton collision in the leading order ($\mathcal{O}(\alpha_s^2)$, $\alpha_s$ is the QCD coupling constant) of perturbative QCD on parton level. The discussion will follow the one in my research thesis report and the one in the lecture notes on the course FYSH556 perturbative QCD (viite TODO).
+
+According to parton model, protons and other hadrons are thought to be collections of quarks, antiquarks and gluons, collectively named partons. A proton--proton collision therefore is, in fact, an event of colliding partons. To the leading order in perturbative QCD, two partons can scatter from each other only in $2\rightarrow2$ processes. Due to the color confinement, partons must end up in colour neutral states. This causes the event products to hadronize into well-collimated showers of hadrons called jets. The problem in question therefore consists of two clearly discrete levels: dijet production in proton--proton collision on hadron level, and $2\rightarrow2$ scattering process on parton level. On an interesting sidenote, as the calculations on parton level are independent of the hadron level particles, the results could be applied to any hadron--hadron collisions.
+
+We are interested in an inclusive ultrarelativistic dijet production in proton--proton collision, or a process $\text{p}+\text{p}\rightarrow\text{jet}+\text{jet}+X$ where $X$ can be anything. According to the parton model then the partons labeled $i$ and $j$ interact via strong interaction. Let us label the end products of the partonic $2\rightarrow2$ scattering process as partons $k$ and $l$. Let us assume that the energy scale of the process is of such high magnitude that due to the running of strong coupling constant $\alpha_s$ the process can be approximated with the leading order perturbative QCD. All the $2\rightarrow2$ processes of the leading order ($\mathcal{O}(\alpha_s^2)$) allowed by QCD are shown in table TODO. Image TODO clarifies the situation with the parton model.
+
+Consider the centre of momentum frame so that the protons have equal but opposite four-momenta $h_1$ and $h_2$. Then the partons $i$ and $j$ have longitudinal momenta $x_1h_1$ and $x_2h_2$, respectively, where $x_1,x_2\in {[0,1]}$ are the momentum fractions of said partons. In the transversal direction the momentum can be assumed to be negligible. Let us name the event product partons' $k$ and $l$ momenta $k_1$ and $k_2$ respectively. These momenta have longitudinal components $k_{1L}$ and $k_{2L}$, and transversal momentum vectors $k_{1T}$ and $k_{2T}$ orthogonal to the momenta of the protons. Label also the energies of the partons $k$ and $l$ with symbols $E_1$ and $E_2$, respectively. Due to momentum conservation the transversal vectors must be equal but opposite, i.e. $\mathbf{k}_{1T}=-\mathbf{k}_{2T}$. Therefore we can name the transfersal momentum $k_{T}=|\mathbf{k}_{1T}|=|\mathbf{k}_{2T}|$. The rapidity $y_1$ of a parton $k$ can be written as
+\begin{equation}\label{E:rapidity}
+y_1=\frac{1}{2}\log\frac{E_1+k_{1L}}{E_1-k_{1L}}.
+\end{equation}
+The rapidity $y_2$ of the particle $l$ is defined similarly.
+
+TODO johto seuraavaan
+
+With these definitions, the differential cross section of the dijet production in the leading order perturbative QCD is (lähde TODO)
+\begin{equation}\label{E:dijet_cross_section}
+\frac{\text{d}\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X}}{\text{d}k_T^2\text{d}y_1\text{d}y_2} = \sum_{i,j,k,l} x_1f_i(x_1,Q^2)\cdot x_2f_j(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{i+j\rightarrow k+l},
+\end{equation}
+where $Q^2\approx k_T^2$ is the interaction energy scale, $\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{i+j\rightarrow k+l}$ is the differential cross section of the subprocess $i+j\rightarrow k+l$, and the Mandelstam variable $\hat{t} = (x_1h_1-k_1)^2$. The functions $f_i$ and $f_j$ are the parton distribution functions (PDF) of partons $i$ and $j$. These distributions can not be predicted from the perturbative QCD only, but they must be measured experimentally. PDFs are process-independent, so results of experiments on other processes (e.g. deep inelastic scattering, Drell-Yan dilepton production, multiple jet productions) can be combined using the DGLAP equations of perturbative QCD.
+
+The summation in the equation \eqref{E:dijet_cross_section} must include all possible initial partons $i$ and $j$ and all partonic subprocesses shown in table (TODO). As some processes contain identical particles in the final state, we must add factors $\frac{1}{2}$ in them to prevent doubly counting the phase-space. The equation \eqref{E:dijet_cross_section} written open takes the form (writing for example $x_1f_g(x_1,Q^2)\equiv g_1$ for simplisity)
+\begin{align}\label{E:partonic_bookkeeping}
+	\frac{\text{d}\sigma_{jet}}{\text{d}k_T^2\text{d}y_1\text{d}y_2} =\;  &g_1\cdot g_2 \cdot \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow gg} + g_1\cdot g_2 \cdot \sum\limits_{q=u,d,s,\dots}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow q\bar{q}} \nonumber\\[1em]
+	+&g_1\cdot \sum\limits_{q}q_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gq\rightarrow gq} + g_1\cdot \sum\limits_{\bar{q}}\bar{q}_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{g\bar{q}\rightarrow g\bar{q}} \nonumber\\[0.3em]
+	+&g_2\cdot \sum\limits_{q}q_1 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qg\rightarrow qg} + g_2\cdot \sum\limits_{\bar{q}}\bar{q}_1 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}g\rightarrow \bar{q}g} \nonumber\\[1em]
+	+&\sum\limits_{q} q_1\cdot q_2 \cdot \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qq\rightarrow qq} + \sum\limits_{\bar{q}} \bar{q}_1\cdot \bar{q}_2 \cdot \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}\bar{q}\rightarrow \bar{q}\bar{q}} \nonumber\\[1.5em]
+	+&\sum\limits_{q, q', q\neq q'} q_1\cdot q'_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qq'\rightarrow qq'} + \sum\limits_{\bar{q}, \bar{q}', \bar{q}\neq\bar{q}'} \bar{q}_1\cdot \bar{q}'_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}\bar{q}'\rightarrow \bar{q}\bar{q}'} \nonumber\\[0.3em]
+	+&\left(\sum\limits_{q} q_1\right)\cdot \left(\sum\limits_{\bar{q}', q\neq q'}\bar{q}'_2\right) \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}'\rightarrow q\bar{q}'} + \left(\sum\limits_{\bar{q}} \bar{q}_1\right)\cdot \left(\sum\limits_{q', q\neq q'}q'_2\right) \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q'\rightarrow \bar{q}q'} \nonumber\\[2em]
+	+&\sum\limits_{q} q_1\cdot \bar{q}_2 \cdot \left[\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}\rightarrow q\bar{q}} + \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}\rightarrow gg} +\sum\limits_{q'\neq q}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}\rightarrow q'\bar{q}'} \right] \nonumber\\[0.3em]
+	+&\sum\limits_{q} \bar{q}_1\cdot q_2 \cdot \left[\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q\rightarrow \bar{q}q} + \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q\rightarrow gg} +\sum\limits_{q'\neq q}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q\rightarrow \bar{q}'q'} \right],
+\end{align}
+which we will from now on call full partonic bookkeeping. The parton level Mandelstam variables in subprocess cross sections can be calculated using the formulae (lähde TODO)
+\begin{align}
+\hat{s}(k_T^2,y_1,y_2) &= 2k_T^2(1+\cosh(y_1-y_2)), \label{E:Mandelstam_s}\\
+\hat{t}(k_T^2,y_1,y_2) &= -k_T^2(1+\text{e}^{-(y_1-y_2)}),\label{E:Mandelstam_t}\\
+\hat{u}(k_T^2,y_1,y_2) &=  -k_T^2(1+\text{e}^{+(y_1-y_2)}). \label{E:Mandelstam_u}
+\end{align}
+
+As the equation \eqref{E:partonic_bookkeeping} is lenghty, it is often advantageous to use the so called single effective subprocess (SES) approximation (TODO lähde). This approximation bases on the notice that, on high energies, processes with same initial and final partons ($gg\rightarrow gg$ and $gq\leftarrow gq$ in particular) dominate jet production. Using this it can be shown that (TODO lähde) equation \eqref{E:dijet_cross_section} simplifies into
+\begin{equation}\label{E:dijet_cross_section_SES}
+\frac{\text{d}\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X}}{\text{d}k_T^2\text{d}y_1\text{d}y_2} \approx \frac{1}{2}x_1F_{\text{SES}}(x_1,Q^2)\cdot x_2F_{\text{SES}}(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{g+g\rightarrow g+g},
+\end{equation}
+where the factor $\frac{1}{2}$ comes from the symmetrization used in the approximation and
+\begin{equation}\label{E:F_SES}
+	F_{\text{SES}}(x,Q^2) = f_g(x,Q^2) + \frac{4}{9} \sum\limits_{q=u,d,s\ldots }\left(f_q(x,Q^2)+f_{\bar{q}}(x,Q^2)\right).
+\end{equation}
+
+\subsection{Integrated dijet production cross section}
+
+The full inclusive dijet production cross section $\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X} \equiv \sigma_{\text{jet}}$ in leading order can be found by simply integrating the equation \eqref{E:dijet_cross_section} over the phasespace:
+\begin{equation}\label{E:integrated_sigma_jet}
+	\sigma_{\text{jet}} = \sum_{i,j,k,l}\;\int\limits_{\Omega} x_1f_i(x_1,Q^2)\cdot x_2f_j(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}\;\text{d}k_T^2\text{d}y_1\text{d}y_2 , 
+\end{equation}
+or the equation \eqref{E:dijet_cross_section_SES} in the SES approximation:
+\begin{equation}\label{E:integrated_sigma_jet_SES}
+\sigma_{\text{jet}} \approx \frac{1}{2}\int\limits_{\Omega} x_1F_{\text{SES}}(x_1,Q^2)\cdot x_2F_{\text{SES}}(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow gg}\;\text{d}k_T^2\text{d}y_1\text{d}y_2 .
+\end{equation}
+
+The phasespace region $\Omega$ in equations \eqref{E:integrated_sigma_jet} and \eqref{E:integrated_sigma_jet_SES} can be determined from the kinematical limitation that $x_1, x_2 \leq 1$. Using that and the result
+\begin{align}
+	x_1 &= \frac{k_T}{\sqrt{s}}\left(\mathrm{e}^{y_1}+\mathrm{e}^{y_2}\right)\label{E:x1_from_ktandys} ,\\[1em]
+	x_2 &= \frac{k_T}{\sqrt{s}}\left(\mathrm{e}^{-y_1}+\mathrm{e}^{-y_2}\right)\label{E:x2_from_ktandys} , 
+\end{align}
+where $s = (h_1+h_2)^2$, one can show that 
+\begin{align}
+	k_T &\leq \frac{\sqrt{s}}{2}, \label{E:kt_limit} \\[1em]
+	|y_1| &\leq \text{arcosh}\left(\frac{\sqrt{s}}{2k_T}\right) \text{ and} \label{E:y1_limits} \\[1em]
+	-\log\left(\frac{\sqrt{s}}{k_T}-\mathrm{e}^{-y_1}\right) \leq y_2 &\leq \log\left(\frac{\sqrt{s}}{k_T}-\mathrm{e}^{y_1}\right)  \label{E:y2_limits} .
+\end{align}
+At low values in $k_T$ perturbative QCD becomes increasingly imprecise due to the running of $\alpha_S$, so we must limit the $k_T$-space by a restriction $k_T\geq k_0 \gg \Lambda_{\text{QCD}}$, where $k_0$ is a parametre to be fitted to experimental data.
+
+Inverting the equations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys} yields
+\begin{align}
+	y_1 &= \log\left[\frac{\sqrt{s}}{2x_2k_T}\left(x_1x_2-\sqrt{x_1x_2\left(x_1x_2-\frac{4k_T^2}{s}\right)}\right)\right] \label{E:y1_from_ktandxs} ,\\[1em]
+	y_2 &= \log\left[\frac{\sqrt{s}}{2x_2k_T}\left(x_1x_2+\sqrt{x_1x_2\left(x_1x_2-\frac{4k_T^2}{s}\right)}\right)\right] \label{E:y2_from_ktandxs} . 
+\end{align}
+Using these results the integration measures in equations \eqref{E:integrated_sigma_jet} and \eqref{E:integrated_sigma_jet_SES} can be written with
+\begin{equation}\label{E:integration_measure_transform}
+	\text{d}y_1\text{d}y_2 = \left|\frac{\partial(y_1,y_2)}{\partial(x_1,x_2)}\right|\text{d}x_1\text{d}x_2 = \frac{\text{d}x_1\text{d}x_2}{\sqrt{x_1x_2\left(x_1x_2-\frac{4k_T^2}{s}\right)}},
+\end{equation}
+in ($k_T^2,x_1,x_2$)-space, where the integration limits are much simpler:
+\begin{align}
+	k_0^2\leq\; &k_T^2 \leq \frac{s}{4} , \\
+	\frac{4k_T^2}{s} \leq\; &x_1 \leq 1 ,\\
+	\frac{4k_T^2}{sx_2} \leq\; &x_2 \leq 1 .
+\end{align}
+Some thought still needs to be had on the changing of basis. The coordinate transformations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys} are not injective; they are symmetric under the exchange of $y_1$ and $y_2$. There is no such symmetry in \eqref{E:y1_from_ktandxs} and \eqref{E:y2_from_ktandxs}, $y_{1,2}(x_1,x_2)\neq y_{1,2}(x_2,x_1)$, but we could have chosen to write the equations other way around with \eqref{E:y1_from_ktandxs} for $y_2$ and \eqref{E:y2_from_ktandxs} for $y_1$. Taking these considerations into account, to calculate the integral on the whole phase space, the transformation of the integral would need to be
+\begin{align}
+	&\int F(y_1,y_2)\;\text{d}y_1\text{d}y_2  = \nonumber\\ &\int \Big(F(y_1(x_1,x_2),y_2(x_1,x_2))+F(y_2(x_1,x_2),y_1(x_1,x_2))\Big)\left|\frac{\partial(y_1,y_2)}{\partial(x_1,x_2)}\right|\text{d}x_1\text{d}x_2 .
+\end{align}
+
+
+
+
+
+\section{Quantum Scattering problem}
+
+\subsection{Elastic, inelastic}
+
+TODO definitions here, analogiat klassiseen yms
+
+
+\subsection{Eikonal approximation}\label{S:Eikonal_approximation}
+
+
+In this section, we will derive the eikonal model for non-relativistic quantum scattering problem. The derivation will follow Barone's and Predazzi's one (presented in TODO) but is given in more detail.
+
+
+\subsubsection{Solving Schrödinger equation}\label{SS:schrode}
+
+Let us consider a particle scattering off a potential function $V$ that describes some kind of an interaction that has limited range. We are interested in the high-energy limit so that particle energy dominates over the interaction potential,
 \begin{equation}\label{E:high_energy_assumption}
 	E\gg|V(\mathbf{r})|.
 \end{equation} 
-For processes of interest we can also make the assumption that our particle wavelength $\lambda$ is much smaller than the interaction range $a$, i.e.
+For processes of interest, we can also make the assumption that our particle wavelength $\lambda$ is much smaller than the interaction range $a$, i.e.
 \begin{equation}\label{E:small_wavelength_assumption}
 	\lambda \ll a \iff ka\gg 1,
 \end{equation}
-where $k=2\pi/\lambda$ is the wave number of the particle. If we assume stationary state, the particle is represented in location space by its wave function $\psi(\mathbf{r})$ with location vector $\mathbf{r}=(x,y,z) \in \mathbb{R}^3$. The wave function is a solution to the non-relativistic time-independent Schrödinger equation (LÄHDE TODO)
+where $k=2\pi/\lambda$ is the wave number of the particle. If we assume a stationary state, the particle is represented in location space by its wave function $\psi(\mathbf{r})$ with location vector $\mathbf{r}=(x,y,z) \in \mathbb{R}^3$. The wave function is a solution to the non-relativistic time-independent Schrödinger equation (LÄHDE TODO)
 \begin{equation}\label{E:schrode}
 	-\frac{\hbar^2}{2\mu}\nabla^2\psi(\mathbf{r}) + V(\mathbf{r})\psi(\mathbf{r}) = E\psi(\mathbf{r}),
 \end{equation}
-where $\nabla^2$ is the Laplacian operator, $\hbar$ is the reduced Planck constant and $E$ and $\mu$ are the energy and the mass of the particle. Consider the particle incoming along the $z$-axis so that at the limit of $z \to -\infty$ it is completely unaffected by the potential $V(\mathbf{r})$. Taking into account that if conditions \ref{E:high_energy_assumption} and \ref{E:small_wavelength_assumption} are satisfied the scattering will happen dominantly into forward direction we can make a plane wave ansatz:
+where $\nabla^2$ is the Laplacian operator, $\hbar$ is the reduced Planck constant and $E$ and $\mu$ are the energy and the mass of the particle. Consider the particle incoming along the $z$-axis so that at the limit of $z \to -\infty$ it is completely unaffected by the potential $V(\mathbf{r})$. Taking into account that if conditions \eqref{E:high_energy_assumption} and \eqref{E:small_wavelength_assumption} are satisfied the scattering will happen dominantly into the forward direction we can make a plane wave ansatz:
 \begin{equation}\label{E:planewave}
 	\psi(\mathbf{r}) = \phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}},
 \end{equation}
-where $\mathbf{k}=(0,0,k)\in \mathbb{R}^3$ is the wave vector and $\phi(\mathbf{r})$ is a unknown scalar field with boundary condition
+where $\mathbf{k}=(0,0,k)\in \mathbb{R}^3$ is the wave vector of the incoming wave and $\phi(\mathbf{r})$ is an unknown scalar field with boundary condition
 \begin{equation}\label{E:BC_for_phi}
 \phi(x,y,-\infty)=1.
 \end{equation}
 
-Remembering De Broglie relation for particle momentum $\mathbf{p}=\hbar\mathbf{k}$ and that kinetic energy $E=\frac{\mathbf{p}^2}{2\mu}$ we get the relation $\frac{2\mu}{\hbar}E=k^2$. With this and by naming $U(\mathbf{r})\equiv\frac{2\mu}{\hbar}V(\mathbf{r})$, equation \ref{E:schrode} simplifies to
+Remembering De Broglie relation for particle momentum $\mathbf{p}=\hbar\mathbf{k}$ and that kinetic energy $E=\frac{\mathbf{p}^2}{2\mu}$ we get the relation $\frac{2\mu}{\hbar}E=k^2$. With this and by naming $U(\mathbf{r})\equiv\frac{2\mu}{\hbar}V(\mathbf{r})$, equation \eqref{E:schrode} simplifies to
 \begin{equation}\label{E:simpler_schrode}
 	\left[\nabla^2-U(\mathbf{r})+k^2\right]\psi(\mathbf{r}) = 0.
 \end{equation}
-Substituting now our plane wave solution from equation \ref{E:planewave} into equation \ref{E:simpler_schrode} we can derive a necessary condition for function $\phi(\mathbf{r})$:
+Substituting now our plane wave solution from equation \eqref{E:planewave} into equation \eqref{E:simpler_schrode} we can derive a necessary condition for function $\phi(\mathbf{r})$:
 \begin{align}\label{E:phi_schrode}
 	0 &= \left[\nabla^2-U(\mathbf{r})+k^2\right]\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} \nonumber\\
 	&=\nabla^2\left(\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}}\right)-U(\mathbf{r})\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}}+k^2\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} \nonumber\\
@@ -225,16 +284,16 @@ Therefore we get
 	2ik\partial_z\phi(x,y,z) &= U(x,y,z)\phi(x,y,z) \nonumber\\
 \iff \qquad	\frac{\partial_z\phi(x,y,z)}{\phi(x,y,z)} &= -\frac{i}{2k}U(x,y,z).
 \end{align}
-Integrating both sides of equation \ref{E:differential_for_phi} with respect to $z$ and using boundary condition \ref{E:BC_for_phi} we arrive to a form
+Integrating both sides of equation \eqref{E:differential_for_phi} with respect to $z$ and using boundary condition \eqref{E:BC_for_phi} we get to a form
 \begin{align}\label{E:phi_solution}
 	\int\limits^{\phi}_{1}\frac{\text{d}\phi'}{\phi'} &= -\frac{i}{2k}\int\limits^{z}_{-\infty} U(x,y,z')\,\text{d}z' \nonumber\\
 \iff \qquad	\phi(x,y,z) &= \exp\left[-\frac{i}{2k}\int\limits^{z}_{-\infty} U(x,y,z')\,\text{d}z'\right].
 \end{align}
-By substituting equation \ref{E:phi_solution} to our original ansatz \ref{E:planewave} we can form the wave function
+By substituting equation \eqref{E:phi_solution} to our original ansatz \eqref{E:planewave} we can form the wave function
 \begin{equation}\label{E:wave_function_solution_xyz}
 	\psi(x,y,z) = \exp\left[ikz-\frac{i}{2k}\int\limits^{z}_{-\infty} U(x,y,z')\,\text{d}z'\right].
 \end{equation}
-Let us still express the location vector by $\mathbf{r}\equiv \mathbf{b}+z\hat{\mathbf{e}}_z$, where $\hat{\mathbf{e}}_z$ is the $z$-direction unit vector and $\mathbf{b}=(b_x,b_y,0)\in\mathbb{R}^3$ is called the impact parameter. With this definition we get a solution
+Let us still express the location vector by $\mathbf{r}\equiv \mathbf{b}+z\hat{\mathbf{e}}_z$, where $\hat{\mathbf{e}}_z$ is the $z$-direction unit vector and $\mathbf{b}=(b_x,b_y,0)\in\mathbb{R}^3$ is called the impact parameter. With this definition, we get a solution
 \begin{equation}\label{E:wave_function_solution}
 	\psi(\mathbf{r}) = \exp\left[i\mathbf{k}\cdot\mathbf{r}-\frac{i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]
 \end{equation}
@@ -242,10 +301,255 @@ for the outgoing wave.
 
 
 
-\subsection{Asymptotical limit}\label{SS:asymptotical_limit}
+\subsubsection{Solving scattering amplitude}\label{SS:scatt_amplitude}
+
+Let us now assume that asymptotically far away from the scattering centre, that is $|\mathbf{r}|\equiv r\rightarrow\infty$, the wave function of the system can be expressed as a superposition of the incoming plane wave and an outgoing spherical wave originating from the scattering centre. This can be written as
+\begin{equation}\label{E:asymptotical_wave_function}		
+	\psi(\mathbf{r}) \sim \text{e}^{i\mathbf{k}\cdot\mathbf{r}} + f(\mathbf{k},\mathbf{k'})\frac{\text{e}^{ikr}}{r}, \quad \text{as} \,\, r\rightarrow\infty,
+\end{equation}
+where $\mathbf{k'}$ is the wave vector of the outgoing wave for which the consevation of energy necessitates that $|\mathbf{k'}|=|\mathbf{k}|=k$, and the $f(\mathbf{k},\mathbf{k'})$ is called scattering amplitude. Scattering amplitude is a function of great interest, as it contains all the information of the scattering process. 
+
+With the asymptotical behaviour of the wave function in equation \eqref{E:asymptotical_wave_function}, the Schrödinger equation \eqref{E:schrode} is solved by Lippman-Schwinger equation (lähde TODO (johto?)):
+\begin{equation}\label{E:Lippman-Schwinger}
+	\psi(\mathbf{r}) = \text{e}^{i\mathbf{k}\cdot\mathbf{r}} - \frac{1}{4\pi}\int \frac{\text{e}^{ik|\mathbf{r}-\mathbf{r'}|}}{|\mathbf{r}-\mathbf{r'}|}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'}.
+\end{equation}
+Taylor expanding the term $|\mathbf{r}-\mathbf{r'}|$ around $\mathbf{r'}=\mathbf{0}$ we find that
+\begin{equation}\label{E:taylor_r_r'}
+	|\mathbf{r}-\mathbf{r'}|=r-\frac{\mathbf{r'}\cdot\mathbf{r}}{r}+\mathcal{O}(r^{-1}).
+\end{equation}
+Inserting expansion \eqref{E:taylor_r_r'} to Lippman-Schwinger equation \eqref{E:Lippman-Schwinger} we get
+\begin{align}\label{E:Lippman-Schwinger_expanded}
+	\psi(\mathbf{r}) &= \text{e}^{i\mathbf{k}\cdot\mathbf{r}} - \frac{1}{4\pi}\int \frac{\text{e}^{ik\left(r-\frac{\mathbf{r'}\cdot\mathbf{r}}{r}+\mathcal{O}(r^{-1})\right)}}{r-\frac{\mathbf{r'}\cdot\mathbf{r}}{r}+\mathcal{O}(r^{-1})}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'} \nonumber \\
+	&=\text{e}^{i\mathbf{k}\cdot\mathbf{r}} + \frac{\text{e}^{ikr}}{r}\left[\frac{-1}{4\pi}\int \frac{\text{e}^{-ik\frac{\mathbf{r'}\cdot\mathbf{r}}{r}}}{\left(1-\frac{\mathbf{r'}\cdot\mathbf{r}}{r^2}+\mathcal{O}(r^{-2})\right)}\text{e}^{\mathcal{O}(r^{-1})}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'}\right].
+\end{align}
+In the asymptotical limit $r\rightarrow\infty$ we have $\text{e}^{\mathcal{O}(r^{-1})}\rightarrow 0$ and $-\frac{\mathbf{r'}\cdot\mathbf{r}}{r^2}+\mathcal{O}(r^{-2})\rightarrow 0$. Now note that $\mathbf{k'}\parallel\mathbf{r}$ leads to
+\begin{align}
+	\lim\limits_{r\rightarrow\infty} -ik\frac{\mathbf{r'}\cdot\mathbf{r}}{r} &= \lim\limits_{r\rightarrow\infty} -ik\frac{|\mathbf{r'}|r\cos(\theta_{\mathbf{r'}\mathbf{r}})}{r} = \lim\limits_{r\rightarrow\infty} -ik\frac{|\mathbf{r'}|\cos(\theta_{\mathbf{r'}\mathbf{k'}})}{1} \nonumber \\ 	
+	&= -i|\mathbf{k'}||\mathbf{r'}|\cos(\theta_{\mathbf{r'}\mathbf{k'}}) = -i\mathbf{k'}\cdot\mathbf{r'} \nonumber.
+\end{align}
+Inserting these limits into equation \eqref{E:Lippman-Schwinger_expanded} we arrive into
+\begin{equation}\label{E:asymptotical_limit_of_L-S}
+	\lim\limits_{r\rightarrow\infty} \psi(\mathbf{r}) = \text{e}^{i\mathbf{k}\cdot\mathbf{r}} + \left[\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\mathbf{r'}}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'}\right]\frac{\text{e}^{ikr}}{r}.
+\end{equation}
+Comparing now equations \eqref{E:asymptotical_wave_function} and \eqref{E:asymptotical_limit_of_L-S} we can read the scattering amplitude
+\begin{equation}\label{E:scattering_amplitude_from_wf}
+	f(\mathbf{k},\mathbf{k'}) = \frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\mathbf{r'}}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'}.
+\end{equation}
+Let us now define momentum transfer vector $\mathbf{q}\equiv\mathbf{k'}-\mathbf{k}$. Remembering our definition of impact parameter $\mathbf{b}$ and using solution \eqref{E:wave_function_solution}, we can express the scattering amplitude \eqref{E:scattering_amplitude_from_wf} as
+\begin{align}\label{E:scattering_amplitude_incomplete}
+	f(\mathbf{k},\mathbf{k'}) &=\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\mathbf{r'}}U(\mathbf{r'})\, \exp\left[i\mathbf{k}\cdot\mathbf{r'}-\frac{i}{2k}\int\limits^{z'}_{-\infty} U(\mathbf{b},z'')\,\text{d}z''\right]\,\text{d}^3\mathbf{r'} \nonumber \\
+	 &=\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\left(\mathbf{b}+z'\hat{\mathbf{e}}_z\right)}U(\mathbf{b},z') \text{e}^{i\mathbf{k}\cdot\left(\mathbf{b}+z'\hat{\mathbf{e}}_z\right)} \, \exp\left[-\frac{i}{2k}\int\limits^{z'}_{-\infty} U(\mathbf{b},z'')\,\text{d}z''\right]\,\text{d}^2\mathbf{b}\,\text{d}z' \nonumber \\
+	 &=\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{q}\cdot\left(\mathbf{b}+z'\hat{\mathbf{e}}_z\right)}U(\mathbf{b},z') \, \exp\left[-\frac{i}{2k}\int\limits^{z'}_{-\infty} U(\mathbf{b},z'')\,\text{d}z''\right]\,\text{d}^2\mathbf{b}\,\text{d}z'.
+\end{align}
+As stated in chapter \ref{SS:schrode}, when assumptions \eqref{E:high_energy_assumption} and \eqref{E:small_wavelength_assumption} are satisfied, the scattering happens dominantly into the forward direction. Because of this, we can approximate $\mathbf{q}\cdot\left(\mathbf{b}+z'\hat{\mathbf{e}}_z\right)\approx\mathbf{q}\cdot\mathbf{b}$. Noting also that
+\begin{align*}
+	&\frac{\partial}{\partial z}\, \exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right] = \exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]\left(\frac{-i}{2k}U(\mathbf{b},z')\right) \\
+	\implies \quad & \int\limits^{\infty}_{-\infty} U(\mathbf{b},z) \,\exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]\,\text{d}z = \int\limits^{\infty}_{-\infty} i2k\frac{\partial}{\partial z}\, \exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]\,\text{d}z \\
+	&= i2k\, \exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right] \biggr\rvert^\infty_{z=-\infty} = i2k\left( \exp\left[\frac{-i}{2k}\int\limits^{\infty}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right] - 1\right)
+\end{align*}
+equation \eqref{E:scattering_amplitude_incomplete} can be simplified into
+\begin{align}\label{E:scattering_amplitude}
+	 f(\mathbf{k},\mathbf{k'}) &= \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\left(1 - \text{e}^{\frac{-i}{2k}\int\limits^{\infty}_{-\infty} U(\mathbf{b},z)\,\text{d}z}\right) \,\text{d}^2\mathbf{b} \nonumber \\
+	 &= \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\left(1 - \text{e}^{i\chi(\mathbf{b})}\right) \,\text{d}^2\mathbf{b} \nonumber \\
+	 &= \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\,\Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b},
+\end{align}
+where we defined the eikonal function as
+\begin{equation}\label{E:eikonal_function}
+\chi(\mathbf{b}) \equiv \frac{-1}{2k}\int\limits^{\infty}_{-\infty} U(\mathbf{b},z)\,\text{d}z
+\end{equation}
+and the profile function
+\begin{equation}\label{E:profile_function}
+\Gamma(\mathbf{b}) \equiv 1 - \text{e}^{i\chi(\mathbf{b})}.
+\end{equation}
 
 
 
+\subsubsection{Scattering cross sections}\label{SS:cross_sections}
+
+Let us consider a continuous flow of particles into some target, where they either scatter or continue on their way. The flow $\Phi_\text{A}$ is the number of incoming particles per unit time  and unit area, $N_{\text{T}}$ stands for the number of target particles and $n_\text{S}$ is the number of scattering events in a unit time. With these in mind, we can define the elastic scattering cross section as
+\begin{equation}\label{E:cross_sections_definition}
+	\sigma_{\text{el}} \equiv \frac{n_\text{S}}{\Phi_\text{A}N_{\text{T}}}.
+\end{equation}
+
+Probability current density $\mathbf{j}(\mathbf{r})$ of a system with wave function $\psi(\mathbf{r})$ can be expressed as (LÄHDE TODO)
+\begin{equation}\label{E:prob_current_density_definition}
+	\mathbf{j}(\mathbf{r}) = -\frac{i\hbar}{2\mu}\left[\psi^*(\mathbf{r})\nabla\psi(\mathbf{r}) - \psi(\mathbf{r})\nabla\psi^*(\mathbf{r})\right] = \frac{\hbar}{\mu}\text{Im}\left[\psi^*(\mathbf{r})\nabla\psi(\mathbf{r})\right].
+\end{equation}
+This relates to quantities of our interest as the total number of particles scattered through a sphere with a normal vector $\mathbf{S}$ can be calculated as the integral of probability current density $\mathbf{j}_{\text{scatt}}$ related to the scattering, i.e.
+\begin{equation}\label{E:n:o_particles_through_sphere}
+	\int \mathbf{j}_{\text{scatt}}(\mathbf{r}) \cdot \text{d}\mathbf{S} = \int \mathbf{j}_{\text{scatt}}(\mathbf{r}) r^2 \, \text{d}\Omega \: \xrightarrow{r\rightarrow\infty} \: \frac{n_\text{S}}{N_{\text{T}}},
+\end{equation}
+where the last integral is over the solid angle $\Omega$. In chapter \ref{SS:scatt_amplitude} we hypothesised that in the asymptotical limit of $r\rightarrow\infty$, the wave function $\psi(\mathbf{r})$ of our system can be expressed as a linear combination of incoming plane wave $\psi_{\text{inc}}(\mathbf{r})$ and scattered spherical wave $\psi_{\text{scatt}}(\mathbf{r})$ in the form of 
+\begin{equation}\label{E:asymptotical_wave_function_with_naming}
+\psi(\mathbf{r}) \sim \text{e}^{i\mathbf{k}\cdot\mathbf{r}} + f(\mathbf{k},\mathbf{k'})\frac{\text{e}^{ikr}}{r} \equiv \psi_{\text{inc}}(\mathbf{r}) + \psi_{\text{scatt}}(\mathbf{r}), \quad \text{as} \,\, r\rightarrow\infty.
+\end{equation}
+By substituting \eqref{E:asymptotical_wave_function_with_naming} into \eqref{E:prob_current_density_definition} we get
+\begin{align}\label{E:probability_densities_broken_down}
+	\mathbf{j}(\mathbf{r}) &\stackrel{r\rightarrow\infty}{\sim} \frac{\hbar}{\mu}\text{Im}\Big[\left(\psi_{\text{inc}}^*(\mathbf{r}) + \psi_{\text{scatt}}^*(\mathbf{r})\right)\nabla\left(\psi_{\text{inc}}(\mathbf{r}) + \psi_{\text{scatt}}(\mathbf{r})\right)\Big] \nonumber \\
+	&= \frac{\hbar}{\mu}\text{Im}\Big[\psi_{\text{inc}}^*(\mathbf{r})\nabla\psi_{\text{inc}}(\mathbf{r}) + \psi_{\text{scatt}}^*(\mathbf{r})\nabla\psi_{\text{scatt}}(\mathbf{r}) + \Big( \psi_{\text{inc}}^*(\mathbf{r})\nabla\psi_{\text{scatt}}(\mathbf{r}) + \psi_{\text{scatt}}^*(\mathbf{r})\nabla\psi_{\text{inc}}(\mathbf{r}) \Big)\Big] \nonumber \\
+	&\equiv \mathbf{j}_{\text{inc}}(\mathbf{r}) + \mathbf{j}_{\text{scatt}}(\mathbf{r}) + \mathbf{j}_{\text{int}}(\mathbf{r}),
+\end{align}
+where we have now identified the probability current densities related to incoming ($\mathbf{j}_{\text{inc}}(\mathbf{r})$) and scattered ($\mathbf{j}_{\text{scatt}}(\mathbf{r})$) waves and an interference term $\mathbf{j}_{\text{int}}(\mathbf{r})$. By looking further into $\mathbf{j}_{\text{scatt}}(\mathbf{r})$, we find that 
+\begin{align}\label{E:scattered_prob_current}
+	\mathbf{j}_{\text{scatt}}(\mathbf{r}) &= \frac{\hbar}{\mu}\text{Im}\left[\psi_{\text{scatt}}^*(\mathbf{r})\nabla\psi_{\text{scatt}}(\mathbf{r})\right] \nonumber \\
+	&= \frac{\hbar}{\mu}\text{Im}\left[\left(f^*(\mathbf{k},\mathbf{k'})\frac{\text{e}^{-ikr}}{r}\right)\nabla\left(f(\mathbf{k},\mathbf{k'})\frac{\text{e}^{ikr}}{r}\right)\right] \nonumber \\
+	&= \frac{\hbar}{\mu}\text{Im}\left[\left|f(\mathbf{k},\mathbf{k'})\right|^2\frac{\text{e}^{-ikr}}{r}ik\frac{\text{e}^{ikr}}{r}\right]  \nonumber \\
+	&= \frac{\hbar k}{\mu r^2}\left|f(\mathbf{k},\mathbf{k'})\right|^2.
+\end{align}
+Also noting that the flow $\Phi_\text{A}$ simplifies to
+\begin{align}\label{E:flow_simplification}
+	\Phi_\text{A} &= \lim\limits_{r\rightarrow \infty} \left| \mathbf{j}_{\text{inc}}(\mathbf{r}) \right|= \lim\limits_{r\rightarrow \infty} \left| \frac{\hbar}{\mu}\text{Im}\left[\psi_{\text{inc}}^*(\mathbf{r})\nabla\psi_{\text{inc}}(\mathbf{r})\right] \right| \nonumber \\
+	&= \lim\limits_{r\rightarrow \infty} \left| \frac{\hbar}{\mu}\text{Im}\left[\text{e}^{-i\mathbf{k}\cdot\mathbf{r}}\nabla\text{e}^{i\mathbf{k}\cdot\mathbf{r}}\right] \right| = \lim\limits_{r\rightarrow \infty} \left| \frac{\hbar}{\mu}\text{Im}\left[\text{e}^{-ikz}\nabla\text{e}^{ikz}\right] \right| \nonumber \\ 
+	&= \lim\limits_{r\rightarrow \infty} \left| \frac{\hbar}{\mu}\text{Im}\left[ik\text{e}^{-ikz}\text{e}^{ikz}\hat{\mathbf{e}}_z\right] \right| \nonumber \\
+	&= \frac{\hbar k}{\mu},
+\end{align}
+we can write the elastic cross section $\sigma$ from equation \eqref{E:cross_sections_definition} as 
+\begin{equation}\label{E:sigma_from_f}
+	\sigma_{\text{el}} = \frac{1}{\Phi_\text{A}} \frac{n_\text{S}}{N_{\text{T}}} = \lim\limits_{r\rightarrow \infty} \frac{\mu}{\hbar k}\frac{\hbar k}{\mu} \int \frac{1}{r^2} \left|f(\mathbf{k},\mathbf{k'})\right|^2 r^2 \, \text{d}\Omega = \int \left|f(\mathbf{k},\mathbf{k'})\right|^2 \, \text{d}\Omega.
+\end{equation}
+
+Taking a closer look at equation \eqref{E:scattering_amplitude} we find that 
+\begin{align}\label{E:f_from_gamma}
+	f(\mathbf{k},\mathbf{k'}) &= f(\mathbf{q}) = \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\,\Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b} = ik2\pi\left[\frac{1}{(2\pi)^2}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\,\Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b}\right] \nonumber \\
+	&=ik2\pi \,\mathcal{F}^{-1}(\Gamma)(\mathbf{q}),
+\end{align}
+or the scattering amplitude $f(\mathbf{q})$ is a two-dimensional inverse Fourier transform of the profile function $\Gamma(\mathbf{b})$. Inverting this the profile function can be expressed as a Fourier transform of scattering amplitude, i.e.
+\begin{equation}\label{E:gamma_from_f}
+	\Gamma (\mathbf{b}) = \mathcal{F}\left(\mathcal{F}^{-1}(\Gamma)\right)(\mathbf{b}) = \frac{-i}{2\pi k}\mathcal{F}\left(f\right)(\mathbf{b}) = \frac{-i}{2\pi k} \int \text{e}^{i\mathbf{q}\cdot\mathbf{b}}f(\mathbf{q}) \,\text{d}^2\mathbf{q}.
+\end{equation}
+Parseval's theorem (LÄHDE TODO, JOHTO?) states that for a function $g$ with a two-dimensional domain,
+\begin{equation}\label{E:Parsevals_theorem}
+	\int |g(\mathbf{q})|^2\,\text{d}^2\mathbf{q} = \frac{1}{(2\pi)^2} \int |\mathcal{F}\left(g\right)(\mathbf{b})|^2\,\text{d}^2\mathbf{b}
+\end{equation}
+holds. 	Lastly, we need to turn our attention to the differential forms. The length of the momentum transfer vector is
+\begin{align}\label{E:qs_length}
+	q&\equiv|\mathbf{q}|=|\mathbf{k'}-\mathbf{k}|=\sqrt{\left(\mathbf{k'}-\mathbf{k}\right)\cdot\left(\mathbf{k'}-\mathbf{k}\right)}=\sqrt{|\mathbf{k'}|^2 -2\mathbf{k'}\cdot\mathbf{k} + |\mathbf{k}|^2} \nonumber \\
+	&=k\sqrt{2\left(1-\cos\theta_{\mathbf{k'}\mathbf{k}}\right)} = 2k\sin\frac{\theta_{\mathbf{k'}\mathbf{k}}}{2},
+\end{align}
+where $\theta_{\mathbf{k'}\mathbf{k}} \in \left[0,2\pi\right]$ is the angle between the momentum vectors $\mathbf{k}$ and $\mathbf{k'}$. Now using equation \eqref{E:qs_length} the differential form $\text{d}\mathbf{q}$ can be expressed in polar coordinates and with the solid angle $\Omega$ as
+\begin{align}\label{E:differential_q_into_solid_angle}
+\text{d}^2\mathbf{q} &= q\,\text{d}q\text{d}\phi = q\frac{\text{d}q}{\text{d}\theta}\,\text{d}\theta\text{d}\phi = 2k^2\sin\frac{\theta}{2}\cos\frac{\theta}{2} \,\text{d}\theta\text{d}\phi = k^2\sin\theta \,\text{d}\theta\text{d}\phi = k^2\,\text{d}\Omega.
+\end{align}
+Finally combining our equations \eqref{E:f_from_gamma}, \eqref{E:gamma_from_f}, \eqref{E:Parsevals_theorem} and \eqref{E:differential_q_into_solid_angle} into equation \eqref{E:sigma_from_f}, we find that the elastic (TODO selitys, miksi se on just elastinen) scattering cross section in the eikonal model is
+\begin{align}\label{E:sigma_el_from_profile}
+	\sigma_{\text{el}} &= \int \left|f(\mathbf{q})\right|^2 \, \text{d}\Omega = (2\pi)^2 \int \left|\mathcal{F}^{-1}(\Gamma)(\mathbf{q})\right|^2 k^2\frac{1}{k^2}\, \text{d}^2\mathbf{q} \nonumber \\
+	&= (2\pi)^2 \frac{1}{(2\pi)^2} \int \left|\mathcal{F}\left(\mathcal{F}^{-1}(\Gamma)\right)(\mathbf{b})\right|^2 \, \text{d}^2\mathbf{b}  \nonumber \\
+	&= \int \left|\Gamma(\mathbf{b}) \right|^2 \, \text{d}^2\mathbf{b} = \int \left|1-\text{e}^{i\chi(\mathbf{b})} \right|^2 \, \text{d}^2\mathbf{b}.
+\end{align}
+
+Optical theorem tells us that (TODO lähde, johto?) the total cross section $\sigma_\text{tot}$ is proportional to the scattering amplitude $f(\mathbf{q})$ in the forward scattering direction, i.e.
+\begin{equation}\label{E:optical_theorem}
+	\sigma_\text{tot} = \frac{4\pi}{k} \text{Im}\left(f(\mathbf{q}\cdot\mathbf{b}=0)\right).
+\end{equation}
+Inserting equation \eqref{E:scattering_amplitude} into equation \eqref{E:optical_theorem} yields the total cross section
+\begin{equation}\label{E:sigma_tot_from_profile}
+\sigma_\text{tot} = \frac{4\pi}{k} \text{Im}\left(\frac{ik}{2\pi}\int \Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b}\right) = 2\int \text{Re}\left(1 - \text{e}^{i\chi(\mathbf{b})}\right) \,\text{d}^2\mathbf{b}
+\end{equation}
+
+The difference of the total cross section $\sigma_\text{tot}$ and the elastic cross section $\sigma_\text{el}$ is the inelastic cross section $\sigma_\text{in}$. Subtracting \eqref{E:sigma_el_from_profile} from \eqref{E:sigma_tot_from_profile} yields us
+\begin{equation}\label{E:sigma_in_from_profile}
+	\sigma_\text{in} = \sigma_\text{tot} - \sigma_\text{el} = \int \left[ 2\text{Re}\Gamma(\mathbf{b}) - \left|\Gamma(\mathbf{b})\right|^2 \right] \,\text{d}^2\mathbf{b}
+\end{equation}
+
+
+
+\section{The model}\label{S:malli}
+
+
+Not much different from XNW (viite TODO), we are interested in studying proton--proton collision with the eikonal formalism discussed in section \ref{S:Eikonal_approximation}. Consider the limit of small real part in the scattering potential, so that equations \eqref{E:sigma_el_from_profile}, \eqref{E:sigma_tot_from_profile} and \eqref{E:sigma_in_from_profile} read
+\begin{align}
+	\sigma_{\text{el}} &= \pi\int\limits_0^\infty \left(1-\text{e}^{-\chi(b,s)} \right)^2 \, \text{d}b^2 \label{E:sigma_el} \\[0.8em]
+	\sigma_\text{in} &= \pi\int\limits_0^\infty \left(1-\text{e}^{-2\chi(b,s)} \right) \, \text{d}b^2 \label{E:sigma_in} \\[0.8em]
+	\sigma_\text{tot} &= 2\pi\int\limits_0^\infty \left(1-\text{e}^{-\chi(b,s)} \right) \, \text{d}b^2 \label{E:sigma_tot}
+\end{align}
+where eikonal function $\chi(b,s)$ is now a real number, and we have used $\text{d}^2\mathbf{b} = \pi\,\text{d}b^2$ which holds assuming azimuthal symmetry of cross sections in impact parametre.
+
+Now let us concentrate on the inelastic cross section $\sigma_\text{in}$. The equation \eqref{E:sigma_in} can be written as a integral of series
+\begin{align}\label{E:sigma_in_as_series}
+	\sigma_\text{in} &= \pi\int\limits_0^\infty \left(1-\text{e}^{-2\chi(b,s)} \right) \, \text{d}b^2 = \pi\int\limits_0^\infty \text{e}^{-2\chi(b,s)}\left(\text{e}^{2\chi(b,s)} -1 \right) \, \text{d}b^2 \nonumber\\
+	&= \pi\int\limits_0^\infty \sum\limits_{n=1}^\infty \frac{(2\chi(b,s))^n}{n!} \text{e}^{-2\chi(b,s)} \, \text{d}b^2 \equiv \pi\int\limits_0^\infty \sum\limits_{n=1}^\infty P_n(b,s)\, \text{d}b^2 ,
+\end{align}
+where we have now identified the Poissonic probability mass function $P_n(b,s)$, which corresponds to the probability of observing $n$ distinct events with event rate of $2\chi(b,s)$. Based on the results (lähde XNW TODO) we now neglect the effect of soft processes, and assume that the jet production discussed in section \ref{S:jet_production} is the sole contributor in the $\sigma_\text{in}$. This leads us into interpreting $P_n(b,s)$ as a probability of $n$ independent jet productions in an inelastic event, and thus we can assume 
+\begin{equation}\label{E:eikonal_function_in_model}
+	2\chi(b,s) = \sigma_\text{jet}(s)A(b),
+\end{equation}
+where $\sigma_\text{jet}(s)$ is defined in section \ref{S:jet_production} and $A(b)$ is the effective partonic overlap function of the protons at impact parametre $b$. The function $A(b)$ is given by the convolution of the individual protons' thickness functions $T_n$ normalized to unity, i.e.
+\begin{align}
+	&A(\mathbf{b}) =\int T_n(\mathbf{b'})T_n(|\mathbf{b}-\mathbf{b'}|) \,\text{d}^2\mathbf{b'} , \\[1em]
+	&\int A(\mathbf{b}) \,\text{d}^2\mathbf{b} = 1 .
+\end{align} 
+Here we will use Gaussian distribution for the $T_n(b)$,
+\begin{equation}
+	T_n(\mathbf{b}) = \frac{1}{2\pi\sigma^2}\text{e}^{-\frac{\mathbf{b}^2}{2\sigma^2}},
+\end{equation}
+with a width parametre $\sigma=0.43\,\femto\metre$ (lähde TODO). This gives us 
+\begin{equation}\label{E:overlap_function}
+	A(\mathbf{b}) = \frac{1}{4\pi\sigma^2}\text{e}^{-\frac{\mathbf{b}^2}{4\sigma^2}}.
+\end{equation}
+
+With some algebraic modifications the integral representations of the inelastic and total cross sections can be expressed with exponential integral functions:
+\begin{align}
+	\sigma_\text{in} &= 4\pi\sigma^2\int\limits_0^{\frac{\sigma_\text{jet}}{4\pi\sigma^2}} \left(1-\text{e}^{-t}\right)\frac{\text{d}t}{t} = 4\pi\sigma^2\,\text{Ein}(\frac{\sigma_\text{jet}}{4\pi\sigma^2}) \nonumber\\[0.6em] 
+	&= 4\pi\sigma^2\,\left(\gamma+\ln(\frac{\sigma_\text{jet}}{4\pi\sigma^2})+\text{E}_1(\frac{\sigma_\text{jet}}{4\pi\sigma^2})\right), \label{E:sigma_in_ei} 
+\end{align}
+\begin{align}
+	\sigma_\text{tot} &= 8\pi\sigma^2\int\limits_0^{\frac{\sigma_\text{jet}}{8\pi\sigma^2}} \left(1-\text{e}^{-t}\right)\frac{\text{d}t}{t} =  8\pi\sigma^2\,\text{Ein}(\frac{\sigma_\text{jet}}{8\pi\sigma^2})  \nonumber\\[0.6em] 
+	&= 8\pi\sigma^2\,\left(\gamma+\ln(\frac{\sigma_\text{jet}}{8\pi\sigma^2})+\text{E}_1(\frac{\sigma_\text{jet}}{8\pi\sigma^2})\right), \label{E:sigma_tot_ei}
+\end{align}
+where $\gamma\approx 0.57722$ is the Euler--Mascheroni constant.
+
+
+\section{Numerical calculations}
+
+
+In this section we will review the various numerical methods used in fitting the model described in section \ref{S:malli} to the experimental data on proton--proton collisions. All numerical calculations were made with C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}, the code is available at (lähde TODO).
+
+\subsection{Calculating cross sections}\label{SS:numerical_sigma_jet}
+
+The jet cross section $\sigma_{\text{jet}}$ was calculated via using the full partonic bookkeeping \eqref{E:integrated_sigma_jet} or the single effective subprocess approximation \eqref{E:integrated_sigma_jet_SES}. The needed subprocess cross sections were read from the table (TODO), and all variables were written in the $(k_T^2,y_1,y_2)$ space using equations \eqref{E:Mandelstam_s}--\eqref{E:Mandelstam_u} and \eqref{E:x1_from_ktandys}--\eqref{E:y2_limits}. The PDFs were calculated with LHAPDF (lähde TODO) interpolating library using the leading order ct14 PDF sets (lähde TODO). These sets also provided the coupling constant $\alpha_s$ as a function of transversal momentum $k_T$.
+
+For numerical simplicity the integral was scaled with a standard transformation
+\begin{align}\label{E:integrand_scaling}
+	&\int\limits_{a_1}^{b_1} \; \int\limits_{a_2(x_1)}^{b_2(x_1)} \; \int\limits_{a_3(x_1,x_2)}^{b_3(x_1,x_2)} F(x_1,x_2,x_3)\, \text{d}x_1\text{d}x_2\text{d}x_3 \nonumber \\[1em]
+	= &\int\limits_{0}^{1}\int\limits_{0}^{1}\int\limits_{0}^{1} F(x_1,x_2,x_3) (b_1-a_1)(b_2-a_2)(b_3-a_3) \, \text{d}z_1\text{d}z_2\text{d}z_3 , \\[1em]
+	&\text{where}\qquad x_i = a_i + z_i(b_i-a_i).\nonumber
+\end{align}
+
+The integral itself was then calculated using a recursive adaptive three dimensional integration algorithm implemented in cubature (lähde TODO) library.
+
+The total and inelastic cross sections $\sigma_{\text{tot}}$ and $\sigma_{\text{in}}$ were calculated from $\sigma_{\text{jet}}$ using equations \eqref{E:sigma_in_ei} and \eqref{E:sigma_tot_ei}. The exponential integral functions were evaluated using their series representations implemented in GSL (lähde TODO) library. Lastly the elastic cross section $\sigma_{\text{el}}$ was then calculated by subtracting $\sigma_{\text{in}}$ from $\sigma_{\text{tot}}$.
+
+
+
+\subsection{Fitting transversal momentum cutoff}
+
+The lower transversal momentum cutoff $k_0$ was chosen such that the calculated total cross section $\sigma_{\text{tot}}$ would fit the experimental data (lähteet TODO). The fitting algorithm was based on secant method (lähde TODO): Two small initial trial values $x_0\neq x_1$ were chosen for $k_0$ by trial and error such that the integral would converge.  After the first two calculations of the total cross section $\sigma_{\text{tot}}$, the new trial values $x_i$, $i=2,3,\ldots$ would be calculated using recursive formula
+\begin{align}
+	x_i = \frac{x_{i-2}\,\sigma_{\text{err}}(x_{i-1})-x_{i-1}\,\sigma_{\text{err}}(x_{i-2})}{\sigma_{\text{err}}(x_{i-1})-\sigma_{\text{err}}(x_{i-2})}, \qquad \sigma_{\text{err}}(k_0)\equiv \sigma_{\text{tot}}(k_0)-\sigma_{\text{data}},
+\end{align}
+where $\sigma_{\text{data}}$ would be the experimental data for total cross section at a given value of $s$. This procedure would be then continued until $\sigma_{\text{err}}(k_0)$ would be satisfyingly close to zero. After this fitting of the cutoff momentum we would then have already calculated the corresponding $\sigma_{\text{jet}}$, which could be further used to calculate $\sigma_{\text{in}}$ and finally $\sigma_{\text{el}}$.
+
+
+
+\subsection{Contributions of multiple jet production}
+
+As hinted before in section \ref{S:malli}, in our model the inelastic cross section $\sigma_{\text{in}}$ can be interpreted as a sum of cross sections that correspond to the probabilities of observing multiple distinct jet production events. This can be seen by writing the summation in equation \eqref{E:sigma_in_as_series} explicitly:
+\begin{equation}
+	\sigma_\text{in} =  \pi\int\limits_0^\infty \sum\limits_{n=1}^\infty P_n(b,s)\, \text{d}b^2 = \pi\int\limits_0^\infty P_1\, \text{d}b^2 + \pi\int\limits_0^\infty P_2\, \text{d}b^2 + \pi\int\limits_0^\infty P_3\, \text{d}b^2 +\ldots \; .
+\end{equation}
+This observation leads us to be interested in the quantity
+\begin{equation}
+	G_n = \frac{\pi\int\limits_0^\infty P_n\, \text{d}b^2}{\sigma_\text{in}}.
+\end{equation}
+The value of $G_n\in [0,1]$ denotes the contribution a single event with production of $n$ pairs of jets has on $\sigma_\text{in}$. It can also be interpreted as a probability that a single observed inelastic event is a production of $n$ pairs of jets.
+
+
+
+TODO kuinka suuren osan tekee pelkät gg->gg reaktiot, qq->qq reaktiot etc kuva
+
+\section{results}
+
+\section{Conclusion}
 
 
 
