@@ -6,7 +6,7 @@
 
 % Kielipaketit
 \usepackage[T1]{fontenc}
-\usepackage[finnish, english]{babel}
+\usepackage[english]{babel}
 
 
 \usepackage{pdfpages}
@@ -138,7 +138,27 @@ In this section, we will gloss over the theory of proton--proton collision in th
 
 According to parton model, protons and other hadrons are thought to be collections of quarks, antiquarks and gluons, collectively named partons. A proton--proton collision therefore is, in fact, an event of colliding partons. To the leading order in perturbative QCD, two partons can scatter from each other only in $2\rightarrow2$ processes. Due to the color confinement, partons must end up in colour neutral states. This causes the event products to hadronize into well-collimated showers of hadrons called jets. The problem in question therefore consists of two clearly discrete levels: dijet production in proton--proton collision on hadron level, and $2\rightarrow2$ scattering process on parton level. On an interesting sidenote, as the calculations on parton level are independent of the hadron level particles, the results could be applied to any hadron--hadron collisions.
 
-We are interested in an inclusive ultrarelativistic dijet production in proton--proton collision, or a process $\text{p}+\text{p}\rightarrow\text{jet}+\text{jet}+X$ where $X$ can be anything. According to the parton model then the partons labeled $i$ and $j$ interact via strong interaction. Let us label the end products of the partonic $2\rightarrow2$ scattering process as partons $k$ and $l$. Let us assume that the energy scale of the process is of such high magnitude that due to the running of strong coupling constant $\alpha_s$ the process can be approximated with the leading order perturbative QCD. All the $2\rightarrow2$ processes of the leading order ($\mathcal{O}(\alpha_s^2)$) allowed by QCD are shown in table TODO. Image TODO clarifies the situation with the parton model.
+We are interested in an inclusive ultrarelativistic dijet production in proton--proton collision, or a process $\text{p}+\text{p}\rightarrow\text{jet}+\text{jet}+X$ where $X$ can be anything. According to the parton model then the partons labeled $i$ and $j$ interact via strong interaction. Let us label the end products of the partonic $2\rightarrow2$ scattering process as partons $k$ and $l$. Let us assume that the energy scale of the process is of such high magnitude that due to the running of strong coupling constant $\alpha_s$ the process can be approximated with the leading order perturbative QCD. All the $2\rightarrow2$ processes of the leading order ($\mathcal{O}(\alpha_s^2)$) allowed by QCD are shown in table \ref{T:subprocesses}. Image TODO clarifies the situation with the parton model.
+
+\begin{table}[htp]
+	\begin{center}
+		\centering
+		\caption{Differential cross sections of the subprocesses of jet production in partonic model of leading order ($\alpha_s^2$) pQCD. lähde TODO}
+		\label{T:subprocesses}
+		\begin{tabular}{|cc|c|}\hline
+			& Subprocess &\begin{tabular}[c]{@{}c@{}}\\[0.1em] $\displaystyle \frac{\hat{s}}{\pi}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}\cdot\frac{\hat{s}}{\alpha_s^2} = \frac{\left\langle|\mathcal{M}|^2\right\rangle}{16\pi^2\alpha_s^2}$\\[0.3em] \,\end{tabular}\\ \hline
+			1 & \begin{tabular}[c]{@{}c@{}}$q_i+q_j\rightarrow q_i + q_j \quad$ or\\ $q_i+\bar{q_j}\rightarrow q_i + \bar{q_j}$,\\ $i\neq j$ \end{tabular}    & $\displaystyle \frac{4}{9}\;\frac{\hat{s}^2+\hat{u}^2}{\hat{t}^2}$  \\[2em]
+			2 & \begin{tabular}[c]{@{}c@{}}$q_i+q_i\rightarrow q_i + q_i \quad$\end{tabular}    & $\displaystyle \frac{4}{9} \left(\frac{\hat{s}^2+\hat{u}^2}{\hat{t}^2} +\frac{\hat{s}^2+\hat{t}^2}{\hat{u}^2} -\frac{2\hat{s}^2}{3\hat{t}\hat{u}}\right)$  \\[2em]
+			3 & \begin{tabular}[c]{@{}c@{}} $q_i+\bar{q_i}\rightarrow q_j + \bar{q_j}$,\\ $i\neq j$ \end{tabular}    & $\displaystyle \frac{4}{9}\;\frac{\hat{t}^2+\hat{u}^2}{\hat{s}^2}$  \\[2em]
+			4 & \begin{tabular}[c]{@{}c@{}} $q_i+\bar{q_i}\rightarrow q_i + \bar{q_i}$\end{tabular}    & $\displaystyle \frac{4}{9} \left(\frac{\hat{s}^2+\hat{u}^2}{\hat{t}^2} +\frac{\hat{t}^2+\hat{u}^2}{\hat{s}^2} -\frac{2\hat{u}^2}{3\hat{s}\hat{t}}\right)$  \\[2em]
+			5 & \begin{tabular}[c]{@{}c@{}} $q_i+\bar{q_i}\rightarrow g + g$\end{tabular}    & $\displaystyle \frac{8}{3} \left(\hat{t}^2+\hat{u}^2\right)\left(\frac{4}{9\hat{t}\hat{u}} -\frac{1}{\hat{s}^2}\right)$  \\[2em]
+			6 & \begin{tabular}[c]{@{}c@{}} $g + g\rightarrow q_i + \bar{q_i}$\end{tabular}    & $\displaystyle \frac{3}{8} \left(\hat{t}^2+\hat{u}^2\right)\left(\frac{4}{9\hat{t}\hat{u}} -\frac{1}{\hat{s}^2}\right)$  \\[2em]
+			7 & \begin{tabular}[c]{@{}c@{}} $g + q_i\rightarrow g + q_i$\end{tabular}    & $\displaystyle \left(\hat{s}^2+\hat{u}^2\right)\left(\frac{1}{\hat{t}^2} -\frac{4}{9\hat{s}\hat{u}}\right)$  \\[2em]
+			8 & \begin{tabular}[c]{@{}c@{}} $g + g\rightarrow g + g$\end{tabular}    & $\displaystyle \frac{9}{2} \left(3- \frac{\hat{t}\hat{u}}{\hat{s}^2} -\frac{\hat{s}\hat{u}}{\hat{t}^2} -\frac{\hat{s}\hat{t}}{\hat{u}^2}\right)$  \\ \hline	
+		\end{tabular}
+		
+	\end{center}
+\end{table}
 
 Consider the centre of momentum frame so that the protons have equal but opposite four-momenta $h_1$ and $h_2$. Then the partons $i$ and $j$ have longitudinal momenta $x_1h_1$ and $x_2h_2$, respectively, where $x_1,x_2\in {[0,1]}$ are the momentum fractions of said partons. In the transversal direction the momentum can be assumed to be negligible. Let us name the event product partons' $k$ and $l$ momenta $k_1$ and $k_2$ respectively. These momenta have longitudinal components $k_{1L}$ and $k_{2L}$, and transversal momentum vectors $k_{1T}$ and $k_{2T}$ orthogonal to the momenta of the protons. Label also the energies of the partons $k$ and $l$ with symbols $E_1$ and $E_2$, respectively. Due to momentum conservation the transversal vectors must be equal but opposite, i.e. $\mathbf{k}_{1T}=-\mathbf{k}_{2T}$. Therefore we can name the transfersal momentum $k_{T}=|\mathbf{k}_{1T}|=|\mathbf{k}_{2T}|$. The rapidity $y_1$ of a parton $k$ can be written as
 \begin{equation}\label{E:rapidity}
@@ -172,7 +192,7 @@ which we will from now on call full partonic bookkeeping. The parton level Mande
 \hat{u}(k_T^2,y_1,y_2) &=  -k_T^2(1+\text{e}^{+(y_1-y_2)}). \label{E:Mandelstam_u}
 \end{align}
 
-As the equation \eqref{E:partonic_bookkeeping} is lenghty, it is often advantageous to use the so called single effective subprocess (SES) approximation (TODO lähde). This approximation bases on the notice that, on high energies, processes with same initial and final partons ($gg\rightarrow gg$ and $gq\leftarrow gq$ in particular) dominate jet production. Using this it can be shown that (TODO lähde) equation \eqref{E:dijet_cross_section} simplifies into
+As the equation \eqref{E:partonic_bookkeeping} is lenghty, it is often advantageous to use the so called single effective subprocess (SES) approximation (TODO lähde). This approximation is based on the notice that, on high energies, processes with same initial and final partons ($gg\rightarrow gg$ and $gq\rightarrow gq$ in particular) dominate jet production. Using this it can be shown that (TODO lähde) equation \eqref{E:dijet_cross_section} simplifies into
 \begin{equation}\label{E:dijet_cross_section_SES}
 \frac{\text{d}\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X}}{\text{d}k_T^2\text{d}y_1\text{d}y_2} \approx \frac{1}{2}x_1F_{\text{SES}}(x_1,Q^2)\cdot x_2F_{\text{SES}}(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{g+g\rightarrow g+g},
 \end{equation}
@@ -203,7 +223,7 @@ where $s = (h_1+h_2)^2$, one can show that
 	|y_1| &\leq \text{arcosh}\left(\frac{\sqrt{s}}{2k_T}\right) \text{ and} \label{E:y1_limits} \\[1em]
 	-\log\left(\frac{\sqrt{s}}{k_T}-\mathrm{e}^{-y_1}\right) \leq y_2 &\leq \log\left(\frac{\sqrt{s}}{k_T}-\mathrm{e}^{y_1}\right)  \label{E:y2_limits} .
 \end{align}
-At low values in $k_T$ perturbative QCD becomes increasingly imprecise due to the running of $\alpha_S$, so we must limit the $k_T$-space by a restriction $k_T\geq k_0 \gg \Lambda_{\text{QCD}}$, where $k_0$ is a parametre to be fitted to experimental data.
+At low values in $k_T$ perturbative QCD becomes increasingly imprecise due to the running of $\alpha_S$, so we must limit the $k_T$-space by a restriction $k_T\geq k_0 \gg \Lambda_{\text{QCD}}$, where $k_0$ is a parameter to be fitted to experimental data.
 
 Inverting the equations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys} yields
 \begin{align}
@@ -462,7 +482,7 @@ Not much different from XNW (viite TODO), we are interested in studying proton--
 	\sigma_\text{in} &= \pi\int\limits_0^\infty \left(1-\text{e}^{-2\chi(b,s)} \right) \, \text{d}b^2 \label{E:sigma_in} \\[0.8em]
 	\sigma_\text{tot} &= 2\pi\int\limits_0^\infty \left(1-\text{e}^{-\chi(b,s)} \right) \, \text{d}b^2 \label{E:sigma_tot}
 \end{align}
-where eikonal function $\chi(b,s)$ is now a real number, and we have used $\text{d}^2\mathbf{b} = \pi\,\text{d}b^2$ which holds assuming azimuthal symmetry of cross sections in impact parametre.
+where eikonal function $\chi(b,s)$ is now a real number, and we have used $\text{d}^2\mathbf{b} = \pi\,\text{d}b^2$ which holds assuming azimuthal symmetry of cross sections in impact parameter.
 
 Now let us concentrate on the inelastic cross section $\sigma_\text{in}$. The equation \eqref{E:sigma_in} can be written as a integral of series
 \begin{align}\label{E:sigma_in_as_series}
@@ -473,7 +493,7 @@ where we have now identified the Poissonic probability mass function $P_n(b,s)$,
 \begin{equation}\label{E:eikonal_function_in_model}
 	2\chi(b,s) = \sigma_\text{jet}(s)A(b),
 \end{equation}
-where $\sigma_\text{jet}(s)$ is defined in section \ref{S:jet_production} and $A(b)$ is the effective partonic overlap function of the protons at impact parametre $b$. The function $A(b)$ is given by the convolution of the individual protons' thickness functions $T_n$ normalized to unity, i.e.
+where $\sigma_\text{jet}(s)$ is defined in section \ref{S:jet_production} and $A(b)$ is the effective partonic overlap function of the protons at impact parameter $b$. The function $A(b)$ is given by the convolution of the individual protons' thickness functions $T_n$ normalized to unity, i.e.
 \begin{align}
 	&A(\mathbf{b}) =\int T_n(\mathbf{b'})T_n(|\mathbf{b}-\mathbf{b'}|) \,\text{d}^2\mathbf{b'} , \\[1em]
 	&\int A(\mathbf{b}) \,\text{d}^2\mathbf{b} = 1 .
@@ -482,7 +502,7 @@ Here we will use Gaussian distribution for the $T_n(b)$,
 \begin{equation}
 	T_n(\mathbf{b}) = \frac{1}{2\pi\sigma^2}\text{e}^{-\frac{\mathbf{b}^2}{2\sigma^2}},
 \end{equation}
-with a width parametre $\sigma=0.43\,\femto\metre$ (lähde TODO). This gives us 
+with a width parameter $\sigma=0.43\,\femto\meter$ (lähde TODO). This gives us 
 \begin{equation}\label{E:overlap_function}
 	A(\mathbf{b}) = \frac{1}{4\pi\sigma^2}\text{e}^{-\frac{\mathbf{b}^2}{4\sigma^2}}.
 \end{equation}
@@ -521,7 +541,7 @@ The total and inelastic cross sections $\sigma_{\text{tot}}$ and $\sigma_{\text{
 
 
 
-\subsection{Fitting transversal momentum cutoff}
+\subsection{Fitting transversal momentum cutoff}\label{SS:fitting}
 
 The lower transversal momentum cutoff $k_0$ was chosen such that the calculated total cross section $\sigma_{\text{tot}}$ would fit the experimental data (lähteet TODO). The fitting algorithm was based on secant method (lähde TODO): Two small initial trial values $x_0\neq x_1$ were chosen for $k_0$ by trial and error such that the integral would converge.  After the first two calculations of the total cross section $\sigma_{\text{tot}}$, the new trial values $x_i$, $i=2,3,\ldots$ would be calculated using recursive formula
 \begin{align}
@@ -531,7 +551,7 @@ where $\sigma_{\text{data}}$ would be the experimental data for total cross sect
 
 
 
-\subsection{Contributions of multiple jet production}
+\subsection{Contributions of multiple jet production}\label{SS:multiple_jets}
 
 As hinted before in section \ref{S:malli}, in our model the inelastic cross section $\sigma_{\text{in}}$ can be interpreted as a sum of cross sections that correspond to the probabilities of observing multiple distinct jet production events. This can be seen by writing the summation in equation \eqref{E:sigma_in_as_series} explicitly:
 \begin{equation}
@@ -539,17 +559,74 @@ As hinted before in section \ref{S:malli}, in our model the inelastic cross sect
 \end{equation}
 This observation leads us to be interested in the quantity
 \begin{equation}
-	G_n = \frac{\pi\int\limits_0^\infty P_n\, \text{d}b^2}{\sigma_\text{in}}.
+	G_n = \frac{\pi\int\limits_0^\infty P_n\, \text{d}b^2}{\sigma_\text{in}} = \frac{\pi}{\sigma_\text{in}}\int\limits_0^\infty \frac{(\sigma_\text{jet}A(b))^n}{n!}\,\text{e}^{-\sigma_\text{jet}A(b)} \, \text{d}b^2.
 \end{equation}
-The value of $G_n\in [0,1]$ denotes the contribution a single event with production of $n$ pairs of jets has on $\sigma_\text{in}$. It can also be interpreted as a probability that a single observed inelastic event is a production of $n$ pairs of jets.
+The value of $G_n\in [0,1]$ denotes the contribution a single event with production of $n$ pairs of jets has on $\sigma_\text{in}$. It can also be interpreted as a probability that a single observed inelastic event is a production of $n$ pairs of jets. Values of $G_n$:s were integrated using adaptive integration routines in GSL library (lähde TODO).
 
-
-
-TODO kuinka suuren osan tekee pelkät gg->gg reaktiot, qq->qq reaktiot etc kuva
 
 \section{results}
 
+
+Calculating $\sigma_{\text{jet}}$ with full partonic bookkeeping makes a significant amount of calls to LHAPDF library, thus making calculations lenghty. Therefore we first wanted to estimate the error of using the single effective subprocess approximation described in section \ref{S:jet_production}. Figure \ref{F:FULL_vs_SES_const_kt0} represents $\sigma_{\text{jet}}$ calculated using both full partonic bookkeeping and the SES approximation with a constant cutoff momentum $k_0=2\,\text{GeV}$. Later the same comparison was made by using the cutoff momentums $k_0$ that were found by fitting the $\sigma_{\text{tot}}$ to data, as explained in section \ref{SS:numerical_sigma_jet}. The results of the latter calculation are represented in figure \ref{F:FULL_vs_SES}. Both figures \ref{F:FULL_vs_SES_const_kt0} and \ref{F:FULL_vs_SES} show a miniscule relative error in using SES approximation, though it undershoots the value of $\sigma_{\text{jet}}$. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/ys_sigma_jets_FULL+SES.png}
+	\caption{Jet cross section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in partonic model of leading order pQCD, with a constant momentum cutoff $k_0 = 2\,\text{GeV}$.}
+	\label{F:FULL_vs_SES_const_kt0}
+\end{figure}
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/sigma_jet_FULL+SES_new.png}
+	\caption{Jet cross section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in partonic model of leading order pQCD, with a momentum cutoff $k_0$ such that $\sigma_{\text{tot}}$ fits to data (see figure \ref{F:kt0_fitting}).}
+	\label{F:FULL_vs_SES}
+\end{figure}
+
+The SES approximation is based on the assumption that processes $gg\rightarrow gg$ and $gq\rightarrow gq$ dominate the jet production. To test this assumptions validity, we calculated the fractional contribution each subprocess on table \ref{T:subprocesses} has on $\sigma_{\text{jet}}$. These results are shown in figure \ref{F:subprocess_contribution}, from which we can read that the assumption holds very well on high energies, thus making SES a valid approximation.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/osaprosessit.png}
+	\caption{The contribution of individual subprocesses (see table \ref{T:subprocesses}) on the jet cross section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in partonic model of leading order pQCD, with a momentum cutoff $k_0$ such that $\sigma_{\text{tot}}$ fits to data (see figure \ref{F:kt0_fitting}).}
+	\label{F:subprocess_contribution}
+\end{figure}
+
+After these calculations, we fitted the total cross section $\sigma_{\text{tot}}$ to the experimental data (lähteet TODO) using momentum cutoff $k_0$ as a fitting parameter. The procedure is explained in section \ref{SS:fitting}. The fitted $k_0$ as a function of CMS energy $\sqrt{s}$ is represented in the figure \ref{F:kt0_fitting}. The data points fell somewhat on a straight line on a logarithmic plot, suggesting that the momentum cutoff is ruled by a power law.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/kt0_vs_sqrt(s)_fittedtotot.png}
+	\caption{The fitted momentum cutoff $k_0$ as a function of CMS energy $\sqrt{s}$, from fitting the total cross section $\sigma_{\text{tot}}$ to the experimental data. The fitting procedure is explained in detail in section \ref{SS:fitting}. Notice the power-law -like behaviour.}
+	\label{F:kt0_fitting}
+\end{figure}
+
+Next, we proceeded to calculate the cross sections $\sigma_{\text{in}}$ and $\sigma_{\text{el}}$ using the obtained momentum cutoffs (figure \ref{F:kt0_fitting}) as explained in \ref{SS:numerical_sigma_jet}. The results are shown on figure \ref{F:all_sigmas}. From these results we can see that, when the model parameter $k_0$ is tuned so that $\sigma_{\text{tot}}$ fits the experimental data, our model slightly undershoots the inelastic cross section $\sigma_{\text{in}}$. This difference could be explained by the contributions of the higher order pQCD corrections in $\sigma_{\text{jet}}$. In our model, the  $\sigma_{\text{in}}$ is a strictly increasing function of  $\sigma_{\text{jet}}$. The next to leading order terms (and further) raise the value of $\sigma_{\text{jet}}$, thus raising the value of $\sigma_{\text{in}}$. Even without taking this into account, our model seems to give fairly good estimates on  $\sigma_{\text{in}}$ and  $\sigma_{\text{el}}$.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/vaikutusalat_tot.png}
+	\caption{The calculated cross sections $\sigma_{\text{tot}}$, $\sigma_{\text{in}}$ and $\sigma_{\text{el}}$ as a functions of CMS energy $\sqrt{s}$, and the experimental data from lähteet TODO.}
+	\label{F:all_sigmas}
+\end{figure}
+
+Lastly, we calculated the probabilities $P_n$ of the production of $n$ jets for some values of $\sqrt{s}$. The procedure used is explained in section \ref{SS:multiple_jets}. The results are given in figure \ref{F:multiple_jets}.
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/histogram.png}
+	\caption{Probabilities $P_n$ of the production of $n$ jets for CMS energies $\sqrt{s}=200\,\text{GeV}, 550\,\text{GeV}, 1800\,\text{GeV} \;\text{and}\; 50000\,\text{GeV}$.}
+	\label{F:multiple_jets}
+\end{figure}
+
+
+
 \section{Conclusion}
+
+In this thesis we have derived the eikonal approximation for quantum scattering problem. In its framework we then built an analytically simplistic model for high energy proton--proton collisions, inspired by perturbative quantum chromodynamics. This model we then tested against experimental data gathered on topic to this day by numerical analysis. As a part of said numerical analysis, we also studied the validity of single effective subprocess approximation of the partonic model on high energies. We found it to be highly accurate on the energy scales studied.
+
+Our model depends on one parameter, momentum cutoff $k_0$. This cutoff sets the perturbatively calculable hard subprocesses apart from the nonperturbative soft subprocesses, which we left untouched in this thesis. 
+
 
 
 
