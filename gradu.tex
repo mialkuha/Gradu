@@ -3,6 +3,10 @@
 \documentclass[a4paper, twoside, english, 12pt]{article}
 
 
+\usepackage{cancel}
+
+\usepackage{changepage}
+
 
 % Kielipaketit
 \usepackage[T1]{fontenc}
@@ -22,7 +26,53 @@
 \usepackage{amssymb}
 
 %Feyngraphs
+
+%Feyngraphs
 \usepackage{feynmp-auto}
+\unitlength = 1mm
+\newcommand{\marrow}[5]{%
+	\fmfcmd{style_def marrow#1
+		expr p = drawarrow subpath (1/4, 3/4) of p shifted 10 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 10 #2);
+		enddef;}
+	\fmf{marrow#1,tension=0}{#5}}
+\newcommand{\smarrow}[5]{%
+	\fmfcmd{style_def smarrow#1
+		expr p = drawarrow subpath (2/4, 5/4) of p shifted 19 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{smarrow#1,tension=0}{#5}}
+\newcommand{\gmarrow}[5]{%
+	\fmfcmd{style_def gmarrow#1
+		expr p = drawarrow subpath (2/6, 8/10) of p shifted 16 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{gmarrow#1,tension=0}{#5}}
+\newcommand{\gomarrow}[5]{%
+	\fmfcmd{style_def gomarrow#1
+		expr p = drawarrow subpath (1/6, 2/3) of p shifted 16 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{gomarrow#1,tension=0}{#5}}
+\newcommand{\umarrow}[5]{%
+	\fmfcmd{style_def umarrow#1
+		expr p = drawarrow subpath (7/10, 5/5) of p shifted 10 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{umarrow#1,tension=0}{#5}}
+\newcommand{\yumarrow}[5]{%
+	\fmfcmd{style_def umarrow#1
+		expr p = drawarrow subpath (1/2, 4/5) of p shifted 10 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted 6 #2);
+		enddef;}
+	\fmf{umarrow#1,tension=0}{#5}}
+\newcommand{\Marrow}[6]{%
+	\fmfcmd{style_def marrow#1
+		expr p = drawarrow subpath (1/4, 3/4) of p shifted #6 #2 withpen pencircle scaled 0.4;
+		label.#3(btex #4 etex, point 0.5 of p shifted #6 #2);
+		enddef;}
+	\fmf{marrow#1,tension=0}{#5}}
+
 
 \usepackage{array}
 \usepackage{geometry}
@@ -32,6 +82,7 @@
 \usepackage{graphicx}
 \usepackage{caption}
 \usepackage{subcaption}
+
 
 
 
@@ -138,33 +189,61 @@ In this section, we will gloss over the theory of proton--proton collision in th
 
 According to parton model, protons and other hadrons are thought to be collections of quarks, antiquarks and gluons, collectively named partons. A proton--proton collision therefore is, in fact, an event of colliding partons. To the leading order in perturbative QCD, two partons can scatter from each other only in $2\rightarrow2$ processes. Due to the color confinement, partons must end up in colour neutral states. This causes the event products to hadronize into well-collimated showers of hadrons called jets. The problem in question therefore consists of two clearly discrete levels: dijet production in proton--proton collision on hadron level, and $2\rightarrow2$ scattering process on parton level. On an interesting sidenote, as the calculations on parton level are independent of the hadron level particles, the results could be applied to any hadron--hadron collisions.
 
-We are interested in an inclusive ultrarelativistic dijet production in proton--proton collision, or a process $\text{p}+\text{p}\rightarrow\text{jet}+\text{jet}+X$ where $X$ can be anything. According to the parton model then the partons labeled $i$ and $j$ interact via strong interaction. Let us label the end products of the partonic $2\rightarrow2$ scattering process as partons $k$ and $l$. Let us assume that the energy scale of the process is of such high magnitude that due to the running of strong coupling constant $\alpha_s$ the process can be approximated with the leading order perturbative QCD. All the $2\rightarrow2$ processes of the leading order ($\mathcal{O}(\alpha_s^2)$) allowed by QCD are shown in table \ref{T:subprocesses}. Image TODO clarifies the situation with the parton model.
-
+\newgeometry{top=1cm}
 \begin{table}[htp]
-	\begin{center}
-		\centering
-		\caption{Differential cross sections of the subprocesses of jet production in partonic model of leading order ($\alpha_s^2$) pQCD. lähde TODO}
-		\label{T:subprocesses}
-		\begin{tabular}{|cc|c|}\hline
-			& Subprocess &\begin{tabular}[c]{@{}c@{}}\\[0.1em] $\displaystyle \frac{\hat{s}}{\pi}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}\cdot\frac{\hat{s}}{\alpha_s^2} = \frac{\left\langle|\mathcal{M}|^2\right\rangle}{16\pi^2\alpha_s^2}$\\[0.3em] \,\end{tabular}\\ \hline
-			1 & \begin{tabular}[c]{@{}c@{}}$q_i+q_j\rightarrow q_i + q_j \quad$ or\\ $q_i+\bar{q_j}\rightarrow q_i + \bar{q_j}$,\\ $i\neq j$ \end{tabular}    & $\displaystyle \frac{4}{9}\;\frac{\hat{s}^2+\hat{u}^2}{\hat{t}^2}$  \\[2em]
-			2 & \begin{tabular}[c]{@{}c@{}}$q_i+q_i\rightarrow q_i + q_i \quad$\end{tabular}    & $\displaystyle \frac{4}{9} \left(\frac{\hat{s}^2+\hat{u}^2}{\hat{t}^2} +\frac{\hat{s}^2+\hat{t}^2}{\hat{u}^2} -\frac{2\hat{s}^2}{3\hat{t}\hat{u}}\right)$  \\[2em]
-			3 & \begin{tabular}[c]{@{}c@{}} $q_i+\bar{q_i}\rightarrow q_j + \bar{q_j}$,\\ $i\neq j$ \end{tabular}    & $\displaystyle \frac{4}{9}\;\frac{\hat{t}^2+\hat{u}^2}{\hat{s}^2}$  \\[2em]
-			4 & \begin{tabular}[c]{@{}c@{}} $q_i+\bar{q_i}\rightarrow q_i + \bar{q_i}$\end{tabular}    & $\displaystyle \frac{4}{9} \left(\frac{\hat{s}^2+\hat{u}^2}{\hat{t}^2} +\frac{\hat{t}^2+\hat{u}^2}{\hat{s}^2} -\frac{2\hat{u}^2}{3\hat{s}\hat{t}}\right)$  \\[2em]
-			5 & \begin{tabular}[c]{@{}c@{}} $q_i+\bar{q_i}\rightarrow g + g$\end{tabular}    & $\displaystyle \frac{8}{3} \left(\hat{t}^2+\hat{u}^2\right)\left(\frac{4}{9\hat{t}\hat{u}} -\frac{1}{\hat{s}^2}\right)$  \\[2em]
-			6 & \begin{tabular}[c]{@{}c@{}} $g + g\rightarrow q_i + \bar{q_i}$\end{tabular}    & $\displaystyle \frac{3}{8} \left(\hat{t}^2+\hat{u}^2\right)\left(\frac{4}{9\hat{t}\hat{u}} -\frac{1}{\hat{s}^2}\right)$  \\[2em]
-			7 & \begin{tabular}[c]{@{}c@{}} $g + q_i\rightarrow g + q_i$\end{tabular}    & $\displaystyle \left(\hat{s}^2+\hat{u}^2\right)\left(\frac{1}{\hat{t}^2} -\frac{4}{9\hat{s}\hat{u}}\right)$  \\[2em]
-			8 & \begin{tabular}[c]{@{}c@{}} $g + g\rightarrow g + g$\end{tabular}    & $\displaystyle \frac{9}{2} \left(3- \frac{\hat{t}\hat{u}}{\hat{s}^2} -\frac{\hat{s}\hat{u}}{\hat{t}^2} -\frac{\hat{s}\hat{t}}{\hat{u}^2}\right)$  \\ \hline	
-		\end{tabular}
-		
-	\end{center}
+	\centering
+	\caption{Differential cross sections of the subprocesses of jet production in partonic model of leading order ($\alpha_s^2$) pQCD. lähde TODO }
+	\label{T:subprocesses}
+	\begin{adjustwidth}{-1cm}{-2cm}
+		\includegraphics[width=\textwidth+2cm]{kuvat/subprocess_table.png}
+	\end{adjustwidth}
 \end{table}
+
+We are interested in an inclusive ultrarelativistic dijet production in proton--proton collision, or a process $\text{p}+\text{p}\rightarrow\text{jet}+\text{jet}+X$ where $X$ can be anything. According to the parton model then the partons labeled $i$ and $j$ interact via strong interaction. Let us label the end products of the partonic $2\rightarrow2$ scattering process as partons $k$ and $l$. Let us assume that the energy scale of the process is of such high magnitude that due to the running of strong coupling constant $\alpha_s$ the process can be approximated with the leading order perturbative QCD. All the $2\rightarrow2$ processes of the leading order ($\mathcal{O}(\alpha_s^2)$) allowed by QCD are shown in table \ref{T:subprocesses}. Figure \ref{F:dijet_production} clarifies the situation with the parton model.
 
 Consider the centre of momentum frame so that the protons have equal but opposite four-momenta $h_1$ and $h_2$. Then the partons $i$ and $j$ have longitudinal momenta $x_1h_1$ and $x_2h_2$, respectively, where $x_1,x_2\in {[0,1]}$ are the momentum fractions of said partons. In the transversal direction the momentum can be assumed to be negligible. Let us name the event product partons' $k$ and $l$ momenta $k_1$ and $k_2$ respectively. These momenta have longitudinal components $k_{1L}$ and $k_{2L}$, and transversal momentum vectors $k_{1T}$ and $k_{2T}$ orthogonal to the momenta of the protons. Label also the energies of the partons $k$ and $l$ with symbols $E_1$ and $E_2$, respectively. Due to momentum conservation the transversal vectors must be equal but opposite, i.e. $\mathbf{k}_{1T}=-\mathbf{k}_{2T}$. Therefore we can name the transfersal momentum $k_{T}=|\mathbf{k}_{1T}|=|\mathbf{k}_{2T}|$. The rapidity $y_1$ of a parton $k$ can be written as
 \begin{equation}\label{E:rapidity}
 y_1=\frac{1}{2}\log\frac{E_1+k_{1L}}{E_1-k_{1L}}.
 \end{equation}
 The rapidity $y_2$ of the particle $l$ is defined similarly.
+
+\begin{figure}[t]
+	\centering
+	\begin{fmffile}{Dijet_production}
+		\begin{fmfchar*}(80,50)
+			\fmfleft{ip1,ip2}
+			\fmfright{x1,o1,o2,x2}
+			\fmf{dbl_plain,tension=2.5}{ip1,vp}
+			\fmf{plain}{vq,o1}
+			\fmf{plain}{vq,o2}
+			\fmf{plain}{vp,x1}
+			\fmf{plain,tension=0.6}{vl,vq}
+			\fmfv{label=$i$,label.a=150,label.d=0.22w}{vl,vq}
+			\fmf{plain,tension=0.6,label=$j$,label.side=right}{vp,vq}
+			\fmf{dbl_plain,tension=2.5}{ip2,vl}
+			\fmf{plain}{vl,x2}
+			\fmflabel{$X$}{x1}
+			\fmflabel{$X$}{x2}
+			\fmflabel{$l$}{o1}
+			\fmflabel{$k$}{o2}
+			\fmfv{label=$p$, label.dist=0, decor.shape=circle, decor.pull=0.5, decor.filled=empty, decor.size=.15w}{vp}
+			\fmfv{label=$p$, label.dist=0, decor.shape=circle, decor.pull=0.5, decor.filled=empty, decor.size=.15w}{vl}
+			\fmfblob{.15w}{vq}
+			\fmfforce{(.65w,1h)}{x2}
+			\fmfforce{(.65w,0)}{x1}
+			\fmfforce{(0,0.8h)}{ip2}
+			\fmfforce{(0,0.2h)}{ip1}
+			\fmffreeze
+			\fmfi{plain}{vpath (__x1,__vp) shifted (thick*(0,2))}
+			\fmfi{plain}{vpath (__x1,__vp) shifted (thick*(1,-2))}
+			\fmfi{plain}{vpath (__x2,__vl) shifted (thick*(0,2))}
+			\fmfi{plain}{vpath (__x2,__vl) shifted (thick*(1,-2))}
+		\end{fmfchar*}
+	\end{fmffile}\\[1em]
+	\caption{Dijet production in proton--proton collision in parton model. Symbols \textit{i} and \textit{j} label the partons from protons \textit{p}, and \textit{k} and \textit{l} are the partons that eventually hadronise to form the outgoing jets.}
+	\label{F:dijet_production}
+\end{figure}
+
 
 TODO johto seuraavaan
 
@@ -200,6 +279,74 @@ where the factor $\frac{1}{2}$ comes from the symmetrization used in the approxi
 \begin{equation}\label{E:F_SES}
 	F_{\text{SES}}(x,Q^2) = f_g(x,Q^2) + \frac{4}{9} \sum\limits_{q=u,d,s\ldots }\left(f_q(x,Q^2)+f_{\bar{q}}(x,Q^2)\right).
 \end{equation}
+
+
+\subsection{Subprocesses}
+
+The leading order perturbative QCD allows for eight different $2 \rightarrow 2$ processes for quarks, antiquarks and gluons. These processes are shown in table \ref{T:subprocesses}. In this section we will make a brief overview of how the tables' results are calculated.
+
+One can see multiple similarities between the processes in table \ref{T:subprocesses}. In fact, many of the different Feynman diagrams can be calculated from each other by crossing external legs and changing the color factor. The graph of process 3 can be calculated from the process 1's graph, the graph of process 4 can be calculated from the process 2's graph, and the graphs of processes 6 and 7 can be calculated from process 5's graphs. In the process 8, the $t$, $u$ and $s$ - channels can be calculated by crossing legs from each other. 
+
+Using the Feynman rules in appendix TODO, the squared, color-averaged invariant amplitudes of the processes 1--7 are straightforwardly calculated even by hand. The process 8 on the other hand deserves some special attention. 
+
+\begin{figure}[h]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/four_gluon_scatt.png}
+	\caption{Feynman diagrams of the topologically different channels of the process $g+g\rightarrow g+g$ in the leading order of perturbative QCD. From the top left corner: channels $t$, $u$, $s$ and $4g$. The real gluons $1$ and $2$ are the initial particles in the process, and $3$ and $4$ are the products. The colors of these external legs are $a_i$ and polarizations $\lambda_i$ with $i=1\;..\;4$.}
+	\label{F:four_gluon_scatt}
+\end{figure} 
+
+The process $g+g\rightarrow g+g$ can happen via four topologically different channels in the leading order of perturbative QCD. These channels are represented in figure \ref{F:four_gluon_scatt}. The invariant amplitudes of these channels are of the form
+\begin{equation}
+\mathcal{M}'=\mathcal{M}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4}(p_1,p_2,p_3,p_4)\times\; \epsilon_{\lambda_1}^{\mu_1}(p_1)\times\; \epsilon_{\lambda_2}^{\mu_2}(p_2)\times\; {\epsilon^*}_{\lambda_3}^{\mu_3}(p_3)\times\; {\epsilon^*}_{\lambda_4}^{\mu_4}(p_4),
+\end{equation}
+where the tensors $\epsilon$ are polarization vectors. The tensors $\mathcal{M}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4}$ have in Feynman gauge the form
+\begin{align*}
+{\mathcal{M}_\text{t}}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4} = &-g_sf^{a_3a_1c}\Big(\,g_{\mu_3\mu_1}(-{p_3}-{p_1})_{\mu} + \,g_{\mu_1\mu}(2{p_1}-{p_3})_{\mu_3} + \,g_{\mu\mu_3}(-{p_1}+2{p_3})_{\mu_1}\Big) \\
+&\times \left[-\frac{i\delta^{cd}g^{\mu\nu}}{(p_1-p_3)^2}\right] \times\\
+&(-g_s)f^{a_2a_4d}\Big(\,g_{\mu_2\mu_4}({p_2}+{p_4})_{\nu} + \,g_{\mu_4\nu}(-2{p_4}+{p_2})_{\mu_2} + \,g_{\nu\mu_2}({p_4}-2{p_2})_{\mu_4}\Big),
+\end{align*}
+\begin{align*}
+{\mathcal{M}_\text{u}}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4} = &-g_sf^{a_4a_1c}\Big(\,g_{\mu_4\mu_1}(-{p_4}-{p_1})_{\mu} + \,g_{\mu_1\mu}(2{p_1}-{p_4})_{\mu_4} + \,g_{\mu\mu_4}(-{p_1}+2{p_4})_{\mu_1}\Big) \\
+&\times \left[-\frac{i\delta^{cd}g^{\mu\nu}}{(p_1-p_4)^2}\right] \times\\
+&(-g_s)f^{a_2a_3d}\Big(\,g_{\mu_2\mu_3}({p_2}+{p_3})_{\nu} + \,g_{\mu_3\nu}(-2{p_3}+{p_2})_{\mu_2} + \,g_{\nu\mu_2}({p_3}-2{p_2})_{\mu_3}\Big),
+\end{align*}
+\begin{align*}
+{\mathcal{M}_\text{s}}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4} = &-g_sf^{a_1a_2c}\Big(\,g_{\mu_1\mu_2}({p_1}-{p_2})_{\mu} + \,g_{\mu_2\mu}(2{p_2}+{p_1})_{\mu_1} + \,g_{\mu\mu_1}(-{p_2}-2{p_1})_{\mu_2}\Big) \\
+&\times \left[-\frac{i\delta^{cd}g^{\mu\nu}}{(p_1+p_2)^2}\right] \times\\
+&(-g_s)f^{a_4a_3d}\Big(\,g_{\mu_4\mu_3}(-{p_4}+{p_3})_{\nu} + \,g_{\mu_4\nu}(-2{p_3}-{p_4})_{\mu_3} + \,g_{\nu\mu_3}({p_3}+2{p_4})_{\mu_4}\Big)
+\end{align*}
+and
+\begin{align*}
+{\mathcal{M}_\text{4g}}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4} = &-ig_s^2\Big[f^{ca_1a_2}f^{ca_3a_4}( g_{\mu_1\mu_3}g_{\mu_2\mu_4} - g_{\mu_1\mu_4}g_{\mu_2\mu_3})\\
+&+ f^{ca_1a_3}f^{ca_4a_2}( g_{\mu_1\mu_4}g_{\mu_3\mu_2} - g_{\mu_1\mu_2}g_{\mu_3\mu_4}) \\ 
+&+ f^{ca_1a_4}f^{ca_2a_3}( g_{\mu_1\mu_2}g_{\mu_4\mu_3} - g_{\mu_1\mu_3}g_{\mu_4\mu_2})\Big],
+\end{align*}
+where $g_s$ is the strong coupling constant, $f^{abc}$ are the structure constants of SU(3), $g^{\mu\nu}$ is the metric tensor and $\delta^{ab}$ is the Kronecker delta. The squared averaged invariant amplitude of the whole process then gets the form
+
+\begin{align}
+\textstyle\left\langle|\mathcal{M}|^2\right\rangle = \frac{1}{2\cdot 2}\frac{1}{8\cdot 8}\,\,&\left(\mathcal{M}_\text{t}+\mathcal{M}_\text{u}+\mathcal{M}_\text{s}+\mathcal{M}_\text{4g}\right)_{\mu_1\mu_2\mu_3\mu_4}\left(\mathcal{M}_\text{t}^*+\mathcal{M}_\text{u}^*+\mathcal{M}_\text{s}^*+\mathcal{M}_\text{4g}^*\right)_{\mu'_1\mu'_2\mu'_3\mu'_4} \\\nonumber
+\displaystyle\times\; & \mathcal{P}^{\mu_1^{ }\mu'_1} (p_1)  \times\; \mathcal{P}^{\mu_2^{ }\mu'_2} (p_2)  \times\; \mathcal{P}^{\mu_3^{ }\mu'_3} (p_3)  \times\; \mathcal{P}^{\mu_4^{ }\mu'_4} (p_4),
+\end{align}
+
+where the averaging factors 2 and 8 are the numbers of gluons' polarization states and colors. The polarization tensors $\mathcal{P}$, which take the transversal polarization states of the gluons into account, are (LÄHDE TODO) 
+\begin{equation}\label{E:ptensorcovariant}
+\mathcal{P}^{\mu_1^{ }\mu'_1} (p_1) =\sum_{\lambda_1}\epsilon_{\lambda_1}^{\mu_1}(p_1) {\epsilon^*}_{\lambda_1}^{\mu'_1}(p_1) =  -g^{\mu_1^{ }\mu'_1} + \frac{p_1^{\mu_1^{ }}\tilde{p_1}^{\mu'_1}+\tilde{p_1}^{\mu_1^{ }}p_1^{\mu'_1}}{p_1\cdot\tilde{p_1}},
+\end{equation}
+where $\tilde{p_1}=(|\mathbf{p_1}|,-\mathbf{p_1})
+\overset{\text{CMS}}{=}p_2$ , $\tilde{p_2}\overset{\text{CMS}}{=}p_1$ , $\tilde{p_3}\overset{\text{CMS}}{=}p_4$ and $\tilde{p_4}\overset{\text{CMS}}{=}p_3$, and CMS stands for centre of momentum frame of the colliding gluons.
+
+Using the formulae given here one can directly calculate the invariant amplitude of the process $g+g\rightarrow g+g$ without the need of adding the Faddeev-Popov ghosts explicitly into the calculation (the ghost method can be seen for example in Risto Paatelainen's master's thesis TODO and originally in TODO). The calculation itself would be very demanding with pen and paper, due to the excess amount of terms in products. However, by using symbolical calculation on Wolfram Mathematica platform with excellent open source packages FeynCalc and FeynArts (viitteet TODO), the calculation can be made straightforwardly. 
+
+In my research training report, I went through the symbolical calculation for all the processes in table \ref{T:subprocesses}. In addition, I calculated the full gluonic process $g+g\rightarrow g+g$ also in general covariant gauge and in an axial gauge. All the source codes of these calculations are given in TODO.
+
+In general axial gauge the gauge field $A^\mu$ needs to satisfy the Lorentz gauge condition $n_\mu A^\mu=0$ for some arbitrary four-vector $n_\mu$. In this gauge the the polarization vector can be shown to fulfill conditions $n\cdot\epsilon(k)=0$ and $k\cdot\epsilon(k)=0$. With these the polarization tensor $\mathcal{P}$ can be shown to be
+\begin{equation}
+\mathcal{P}^{\mu\nu} (k) =  -g^{\mu\nu} +\frac{n^\mu k^\nu+k^\mu n^\nu}{n\cdot k} -\frac{n^2 k^\mu k^\nu}{(n\cdot k)^2}.
+\end{equation}
+In my research training report I calculated the process $g+g\rightarrow g+g$ in a special case of this gauge with extra conditions $n^2=0$ and $\lambda=0$. The $n$-vector can be chosen differently between each separate gauge field. For example, if for each external leg one chooses $n=\tilde{p}$, the polarization tensor simplifies into the form in \eqref{E:ptensorcovariant}. In the end, due to the gauge invariance of $\left\langle|\mathcal{M}|^2\right\rangle$, all choices need to lead to the same result.
+
+
 
 \subsection{Integrated dijet production cross section}
 
@@ -473,10 +620,10 @@ The difference of the total cross section $\sigma_\text{tot}$ and the elastic cr
 
 
 
-\section{The model}\label{S:malli}
+\section{The eikonal minijet model}\label{S:malli}
 
 
-Not much different from XNW (viite TODO), we are interested in studying proton--proton collision with the eikonal formalism discussed in section \ref{S:Eikonal_approximation}. Consider the limit of small real part in the scattering potential, so that equations \eqref{E:sigma_el_from_profile}, \eqref{E:sigma_tot_from_profile} and \eqref{E:sigma_in_from_profile} read
+In this section we study the eikonal minijet model, which was used for example in (LÄHTEET TODO). We are interested in studying proton--proton collision with the eikonal formalism discussed in section \ref{S:Eikonal_approximation}. Consider the limit of small real part in the scattering potential, so that equations \eqref{E:sigma_el_from_profile}, \eqref{E:sigma_tot_from_profile} and \eqref{E:sigma_in_from_profile} read
 \begin{align}
 	\sigma_{\text{el}} &= \pi\int\limits_0^\infty \left(1-\text{e}^{-\chi(b,s)} \right)^2 \, \text{d}b^2 \label{E:sigma_el} \\[0.8em]
 	\sigma_\text{in} &= \pi\int\limits_0^\infty \left(1-\text{e}^{-2\chi(b,s)} \right) \, \text{d}b^2 \label{E:sigma_in} \\[0.8em]
@@ -522,7 +669,7 @@ where $\gamma\approx 0.57722$ is the Euler--Mascheroni constant.
 \section{Numerical calculations}
 
 
-In this section we will review the various numerical methods used in fitting the model described in section \ref{S:malli} to the experimental data on proton--proton collisions. All numerical calculations were made with C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}, the code is available at (lähde TODO).
+In this section we will review the various numerical methods used in fitting the eikonal minijet model described in section \ref{S:malli} to the experimental data on proton--proton collisions. All numerical calculations were made with C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}, the code is available at (lähde TODO).
 
 \subsection{Calculating cross sections}\label{SS:numerical_sigma_jet}
 
@@ -551,82 +698,101 @@ where $\sigma_{\text{data}}$ would be the experimental data for total cross sect
 
 
 
-\subsection{Contributions of multiple jet production}\label{SS:multiple_jets}
+\subsection{Contributions of manyfold jet productions}\label{SS:multiple_jets}
 
-As hinted before in section \ref{S:malli}, in our model the inelastic cross section $\sigma_{\text{in}}$ can be interpreted as a sum of cross sections that correspond to the probabilities of observing multiple distinct jet production events. This can be seen by writing the summation in equation \eqref{E:sigma_in_as_series} explicitly:
+As hinted before in section \ref{S:malli}, in eikonal minijet model the inelastic cross section $\sigma_{\text{in}}$ can be interpreted as a sum of cross sections that correspond to the probabilities of observing multiple distinct jet production events. This can be seen by writing the summation in equation \eqref{E:sigma_in_as_series} explicitly:
 \begin{equation}
 	\sigma_\text{in} =  \pi\int\limits_0^\infty \sum\limits_{n=1}^\infty P_n(b,s)\, \text{d}b^2 = \pi\int\limits_0^\infty P_1\, \text{d}b^2 + \pi\int\limits_0^\infty P_2\, \text{d}b^2 + \pi\int\limits_0^\infty P_3\, \text{d}b^2 +\ldots \; .
 \end{equation}
 This observation leads us to be interested in the quantity
-\begin{equation}
+\begin{equation}\label{E:manyfold_scatt_prob}
 	G_n = \frac{\pi\int\limits_0^\infty P_n\, \text{d}b^2}{\sigma_\text{in}} = \frac{\pi}{\sigma_\text{in}}\int\limits_0^\infty \frac{(\sigma_\text{jet}A(b))^n}{n!}\,\text{e}^{-\sigma_\text{jet}A(b)} \, \text{d}b^2.
 \end{equation}
 The value of $G_n\in [0,1]$ denotes the contribution a single event with production of $n$ pairs of jets has on $\sigma_\text{in}$. It can also be interpreted as a probability that a single observed inelastic event is a production of $n$ pairs of jets. Values of $G_n$:s were integrated using adaptive integration routines in GSL library (lähde TODO).
 
 
+
+\subsection{Conservation of momentum}\label{SS:MC}
+
+If in an inelastic proton--proton scattering there indeed happens a manyfold jet production, one could be conserned with the conservation of momentum. The sum of the momenta of the individual partons can not exceed the initial momentum of the proton they are from. To take this into account for example in \eqref{E:manyfold_scatt_prob}, one must limit the phase-space of each subsequent calculation of $\sigma_\text{jet}$. In calculating $G_n$, we should then calculate the $\sigma_\text{jet}^n$ in \eqref{E:manyfold_scatt_prob} as
+\begin{align}\label{E:MC-integral}
+\sigma_\text{jet}^n = &\left(\prod\limits_{\alpha=1}^{n} \int\limits_{\Omega} \textstyle\text{d}k_{T,\alpha}^2\text{d}y_{1,\alpha}\text{d}y_{2,\alpha} \displaystyle\:\:  F\left(k_{T,\alpha}^2,y_{1,\alpha},y_{2,\alpha}\right)\right)\nonumber\\[0.6em]
+&\qquad\qquad\qquad\qquad\qquad\cdot\theta\left(1-\sum\limits_{\alpha=1}^{n}x_{1,\alpha}\right)\theta\left(1-\sum\limits_{\alpha=1}^{n}x_{2,\alpha}\right),
+\end{align}
+where $\theta$ is the Heaviside step function, and $x_1$ and $x_2$ depend on the integral variables via \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys}. The integration limits in \eqref{E:MC-integral} are dependent, the integrals can not be calculated separately, but they need to be calculated as a one, $3n$-dimensional integral. As the dimensionality of the integrals increases so rapidly, Monte Carlo methods are needed to solve \eqref{E:MC-integral} numerically.
+
+
+
+
 \section{results}
 
-
-Calculating $\sigma_{\text{jet}}$ with full partonic bookkeeping makes a significant amount of calls to LHAPDF library, thus making calculations lenghty. Therefore we first wanted to estimate the error of using the single effective subprocess approximation described in section \ref{S:jet_production}. Figure \ref{F:FULL_vs_SES_const_kt0} represents $\sigma_{\text{jet}}$ calculated using both full partonic bookkeeping and the SES approximation with a constant cutoff momentum $k_0=2\,\text{GeV}$. Later the same comparison was made by using the cutoff momentums $k_0$ that were found by fitting the $\sigma_{\text{tot}}$ to data, as explained in section \ref{SS:numerical_sigma_jet}. The results of the latter calculation are represented in figure \ref{F:FULL_vs_SES}. Both figures \ref{F:FULL_vs_SES_const_kt0} and \ref{F:FULL_vs_SES} show a miniscule relative error in using SES approximation, though it undershoots the value of $\sigma_{\text{jet}}$. 
-
-\begin{figure}[h]
+\begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/ys_sigma_jets_FULL+SES.png}
 	\caption{Jet cross section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in partonic model of leading order pQCD, with a constant momentum cutoff $k_0 = 2\,\text{GeV}$.}
 	\label{F:FULL_vs_SES_const_kt0}
 \end{figure}
 
-\begin{figure}[h]
+\begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/sigma_jet_FULL+SES_new.png}
 	\caption{Jet cross section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in partonic model of leading order pQCD, with a momentum cutoff $k_0$ such that $\sigma_{\text{tot}}$ fits to data (see figure \ref{F:kt0_fitting}).}
 	\label{F:FULL_vs_SES}
 \end{figure}
 
-The SES approximation is based on the assumption that processes $gg\rightarrow gg$ and $gq\rightarrow gq$ dominate the jet production. To test this assumptions validity, we calculated the fractional contribution each subprocess on table \ref{T:subprocesses} has on $\sigma_{\text{jet}}$. These results are shown in figure \ref{F:subprocess_contribution}, from which we can read that the assumption holds very well on high energies, thus making SES a valid approximation.
-
-\begin{figure}[h]
+\begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/osaprosessit.png}
 	\caption{The contribution of individual subprocesses (see table \ref{T:subprocesses}) on the jet cross section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in partonic model of leading order pQCD, with a momentum cutoff $k_0$ such that $\sigma_{\text{tot}}$ fits to data (see figure \ref{F:kt0_fitting}).}
 	\label{F:subprocess_contribution}
 \end{figure}
 
-After these calculations, we fitted the total cross section $\sigma_{\text{tot}}$ to the experimental data (lähteet TODO) using momentum cutoff $k_0$ as a fitting parameter. The procedure is explained in section \ref{SS:fitting}. The fitted $k_0$ as a function of CMS energy $\sqrt{s}$ is represented in the figure \ref{F:kt0_fitting}. The data points fell somewhat on a straight line on a logarithmic plot, suggesting that the momentum cutoff is ruled by a power law.
-
-\begin{figure}[h]
+\begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/kt0_vs_sqrt(s)_fittedtotot.png}
 	\caption{The fitted momentum cutoff $k_0$ as a function of CMS energy $\sqrt{s}$, from fitting the total cross section $\sigma_{\text{tot}}$ to the experimental data. The fitting procedure is explained in detail in section \ref{SS:fitting}. Notice the power-law -like behaviour.}
 	\label{F:kt0_fitting}
 \end{figure}
 
-Next, we proceeded to calculate the cross sections $\sigma_{\text{in}}$ and $\sigma_{\text{el}}$ using the obtained momentum cutoffs (figure \ref{F:kt0_fitting}) as explained in \ref{SS:numerical_sigma_jet}. The results are shown on figure \ref{F:all_sigmas}. From these results we can see that, when the model parameter $k_0$ is tuned so that $\sigma_{\text{tot}}$ fits the experimental data, our model slightly undershoots the inelastic cross section $\sigma_{\text{in}}$. This difference could be explained by the contributions of the higher order pQCD corrections in $\sigma_{\text{jet}}$. In our model, the  $\sigma_{\text{in}}$ is a strictly increasing function of  $\sigma_{\text{jet}}$. The next to leading order terms (and further) raise the value of $\sigma_{\text{jet}}$, thus raising the value of $\sigma_{\text{in}}$. Even without taking this into account, our model seems to give fairly good estimates on  $\sigma_{\text{in}}$ and  $\sigma_{\text{el}}$.
-
-\begin{figure}[h]
+\begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/vaikutusalat_tot.png}
 	\caption{The calculated cross sections $\sigma_{\text{tot}}$, $\sigma_{\text{in}}$ and $\sigma_{\text{el}}$ as a functions of CMS energy $\sqrt{s}$, and the experimental data from lähteet TODO.}
 	\label{F:all_sigmas}
 \end{figure}
 
-Lastly, we calculated the probabilities $P_n$ of the production of $n$ jets for some values of $\sqrt{s}$. The procedure used is explained in section \ref{SS:multiple_jets}. The results are given in figure \ref{F:multiple_jets}.
-
-\begin{figure}[h]
+\begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/histogram.png}
-	\caption{Probabilities $P_n$ of the production of $n$ jets for CMS energies $\sqrt{s}=200\,\text{GeV}, 550\,\text{GeV}, 1800\,\text{GeV} \;\text{and}\; 50000\,\text{GeV}$.}
+	\caption{Probabilities $G_n$ of the production of $n$ jets for CMS energies $\sqrt{s}=200\,\text{GeV}, 550\,\text{GeV}, 1800\,\text{GeV} \;\text{and}\; 50000\,\text{GeV}$.}
 	\label{F:multiple_jets}
 \end{figure}
+
+Calculating $\sigma_{\text{jet}}$ with full partonic bookkeeping makes a significant amount of calls to LHAPDF library, thus making calculations lenghty. Therefore we first wanted to estimate the error of using the single effective subprocess approximation described in section \ref{S:jet_production}. Figure \ref{F:FULL_vs_SES_const_kt0} represents $\sigma_{\text{jet}}$ calculated using both full partonic bookkeeping and the SES approximation with a constant cutoff momentum $k_0=2\,\text{GeV}$. Later the same comparison was made by using the cutoff momentums $k_0$ that were found by fitting the $\sigma_{\text{tot}}$ to data, as explained in section \ref{SS:numerical_sigma_jet}. The results of the latter calculation are represented in figure \ref{F:FULL_vs_SES}. Both figures \ref{F:FULL_vs_SES_const_kt0} and \ref{F:FULL_vs_SES} show a miniscule relative error in using SES approximation, though it undershoots the value of $\sigma_{\text{jet}}$. 
+
+The SES approximation is based on the assumption that processes $gg\rightarrow gg$ and $gq\rightarrow gq$ dominate the jet production. To test this assumptions validity, we calculated the fractional contribution each subprocess on table \ref{T:subprocesses} has on $\sigma_{\text{jet}}$. These results are shown in figure \ref{F:subprocess_contribution}, from which we can read that the assumption holds very well on high energies, thus making SES a valid approximation.
+
+After these calculations, we fitted the total cross section $\sigma_{\text{tot}}$ to the experimental data (lähteet TODO) using momentum cutoff $k_0$ as a fitting parameter. The procedure is explained in section \ref{SS:fitting}. The fitted $k_0$ as a function of CMS energy $\sqrt{s}$ is represented in the figure \ref{F:kt0_fitting}. The data points fell somewhat on a straight line on a logarithmic plot, suggesting that the momentum cutoff is ruled by a power law.
+
+Next, we proceeded to calculate the cross sections $\sigma_{\text{in}}$ and $\sigma_{\text{el}}$ using the obtained momentum cutoffs (figure \ref{F:kt0_fitting}) as explained in \ref{SS:numerical_sigma_jet}. The results are shown on figure \ref{F:all_sigmas}. From these results we can see that, when the model parameter $k_0$ is tuned so that $\sigma_{\text{tot}}$ fits the experimental data, eikonal minijet model slightly undershoots the inelastic cross section $\sigma_{\text{in}}$. This difference could be explained by the contributions of the higher order pQCD corrections in $\sigma_{\text{jet}}$. In this model, the  $\sigma_{\text{in}}$ is a strictly increasing function of  $\sigma_{\text{jet}}$. The next to leading order terms (and further) raise the value of $\sigma_{\text{jet}}$, thus raising the value of $\sigma_{\text{in}}$. Even without taking this into account, model seems to give fairly good estimates on $\sigma_{\text{in}}$ and  $\sigma_{\text{el}}$.
+
+We then calculated the probabilities $G_n$ of the production of $n$ jets for some values of $\sqrt{s}$. The procedure used is explained in section \ref{SS:multiple_jets}. The results are given in figure \ref{F:multiple_jets}.
+
+Lastly, we calculated the probabilities $G_n$ taking momentum conservation into account with Monte Carlo integration as described in section \ref{SS:MC}. Because of the limited calcultional capacity, we only calculated the effect in the region $\sqrt{s}=100\,..\,1000\,\text{GeV}$ and up to 8-fold jet production. In this region, we found the effect negligible. This result is not surprising, as from figure \ref{F:multiple_jets} one can read that single dijet production dominates the $\sigma_{\text{in}}$ in this region.
 
 
 
 \section{Conclusion}
 
-In this thesis we have derived the eikonal approximation for quantum scattering problem. In its framework we then built an analytically simplistic model for high energy proton--proton collisions, inspired by perturbative quantum chromodynamics. This model we then tested against experimental data gathered on topic to this day by numerical analysis. As a part of said numerical analysis, we also studied the validity of single effective subprocess approximation of the partonic model on high energies. We found it to be highly accurate on the energy scales studied.
+In this thesis we have derived the eikonal approximation for quantum scattering problem. In its framework we then studied an analytically simplistic model, the eikonal minijet model, for high energy proton--proton collisions. This model we then tested against experimental data gathered on topic to this day by numerical analysis. As a part of said numerical analysis, we also studied the validity of single effective subprocess approximation of the partonic model on high energies. We found the approximation to be highly accurate on the energy scales studied.
 
-Our model depends on one parameter, momentum cutoff $k_0$. This cutoff sets the perturbatively calculable hard subprocesses apart from the nonperturbative soft subprocesses, which we left untouched in this thesis. 
+The eikonal minijet model depends on one parameter, the momentum cutoff $k_0$. This cutoff sets the perturbatively calculable hard subprocesses apart from the nonperturbative soft subprocesses, which we left untouched in this thesis. Using numerical analysis, we found $k_0$'s so that our calculated total cross sections for proton--proton collisions fit the experimental data in central momentum energy range $\sqrt{s}=0.1\,..\,100\,\text{TeV}$. With the model parameter fixed, we then proceeded to calculate predictions for inelastic scattering cross sections in said range. Results of these calculations are shown in figures \ref{F:kt0_fitting} and \ref{F:all_sigmas}. We found that despite its apparent simplisticity, the model fit the experimental data very well. 
 
+The eikonal minijet model is based on the notion that inelastic proton--proton scattering on high energies can be treated perturbatively -- in the collision one or more distinct pairs of partons scatter from each other. Based on this we calculated within the framework of the model the probabilites of a single inelastic event to be a production of $n$ pairs of jets. These probabilities are shown in figure \ref{F:multiple_jets}. As expected, the greater the energy of the colliding protons, the more probable it is to have a manyfold jet production. 
+
+As the center of momentum energy rises, the contribution of the manyfold jet production events in inelastic scattering cross section increases. This raises a question, how does the conservation of momenta fit to the picture. The sum of the momenta of the partons participating in jet productions can not be more than the initial momentum of the proton in question. To see if this plays a role in the probabilities of having manyfold jet productions, one has to do high-dimensional Monte Carlo integration. 
+
+We calculated the effect of the momentum conservation on the probabilities of having manyfold jet productions in the region $\sqrt{s}=100\,..\,1000\,\text{GeV}$ up to 8-fold jet production, and found it negligible. This was somewhat expected, as in this region the one-fold jet production is very dominant. Studying the effect on higher energies was out of the scope of our work, as much more calculational capacity would be needed to run the increasingly high-dimensional Monte Carlo Integrals.
 
 
 
@@ -642,7 +808,220 @@ Our model depends on one parameter, momentum cutoff $k_0$. This cutoff sets the 
 % LIITTEET
 % --------------------------------------------------------------------------
 \appendix
-\newpage
+\cleardoublepage
+\numberwithin{equation}{section}
+
+\section{QCD remarks}\label{A:QCD}
+
+\subsection{Gluon propagators}\label{AS:gluon_propagators}
+
+The quantum chromodynamics is a non-Abelian gauge theory with a local SU(3) symmetry. The Lagrangian is written as (lähde TODO)
+\begin{align}\label{AE:lagrangian}
+	\mathcal{L} = -\frac{1}{4}\sum\limits_{\mu,\nu=0}^{3}\sum\limits_{a=1}^{8}F^{\mu\nu,a}F_{\mu\nu,a} + \sum\limits_{q}\left[i\sum\limits_{i,j=1}^{3}\left(\bar{\psi}_q\right)_i\cancel{D}_{ij}\left(\psi_q\right)_j-m_q\bar{\psi}_q\psi_q\right],
+\end{align}
+where the SU(3) Maxwell's field tensor is
+\begin{equation}
+	F_{\mu\nu}^a = \partial_\mu A_\nu^a-\partial_\nu A_\mu^a-g_s\sum\limits_{b,c=1}^{8}f^{abc}A_\mu^bA_\nu^c,
+\end{equation}
+field $A^{\mu,a}$ is the gluon field with color $a$, $g_s$ is the strong coupling constant, $f^{abc}$ are the structure constants of SU(3), $\left(\psi_q\right)_j$ is a spinor with color $j$ corresponding to quark $q=u,d,c,s,t,b$, $m_q$ is the mass of the quark $q$, and covariant derivative $\cancel{D}_{ij}$ is
+\begin{equation}
+	\cancel{D}_{ij}=\sum\limits_{\mu=0}^{3}\gamma_\mu D^\mu_{ij} =\sum\limits_{\mu=0}^{3}\gamma_\mu\left(\partial^\mu(\mathbb{I}_3)_{ij}+ig_s\sum\limits_{a=1}^{8}A^{\mu,a}(t^a)_{ij}\right),
+\end{equation}
+where $t^a$ are the generators of SU(3).
+
+In the given form \eqref{AE:lagrangian} does not give unique solutions for gauge field $A^\mu$, but we have to fix a gauge condition. One such condition is 
+\begin{equation}
+	\sum\limits_{\mu=0}^3 \partial_\mu A^\mu =0,
+\end{equation}
+which is called Lorentz gauge condition. It is implemented in the Lagrangian via Lagrange multiplier $\lambda$:
+\begin{equation}
+	\mathcal{L'} = \mathcal{L} -\frac{1}{2\lambda}\sum\limits_{a=1}^8\left(\sum\limits_{\mu=0}^3 \partial_\mu A^{\mu,a}\right)\left(\sum\limits_{\mu=0}^3 \partial_\mu A^{\mu,a}\right).
+\end{equation}
+This gauge condition leads to following Feynman rule for gluon propagators:
+\begin{equation*}
+\begin{tabular}{cc}
+\begin{tabular}[c]{@{}l@{}}\begin{fmffile}{gprop}
+\begin{fmfchar*}(20,10)
+\fmfbottom{i1,o1}
+\fmflabel{$\mu,a$}{i1} 
+\fmflabel{$\nu,b$}{o1}
+\fmf{gluon}{i1,o1}
+\marrow{b}{down}{bot}{$k$}{i1,o1}
+\end{fmfchar*}
+\end{fmffile}
+\end{tabular} & \begin{tabular}[c]{@{}l@{}} \\ $\displaystyle\qquad=-\frac{i\delta^{ab}}{k^2+i\epsilon}\left(g^{\mu\nu}-(1-\lambda)\frac{k^\mu k^\nu}{k^2}\right).$
+\end{tabular} 
+\end{tabular}
+\end{equation*}
+Leaving $\lambda$ arbitrary is often referred as general covariant gauge, whereas choice $\lambda=0$ is called Landau gauge and $\lambda=1$ is called Feynman gauge.
+
+Another choice would be axial gauge, where the gauge field $A^\mu$ satisfies
+\begin{equation}
+\sum\limits_{\mu=0}^3 n_\mu A^\mu =0,
+\end{equation}
+for some arbitrary four-vector $n$. Similar to Lorentz condition, this condition can be implemented into Lagrangian via
+\begin{equation}
+\mathcal{L'} = \mathcal{L} -\frac{1}{2\lambda}\sum\limits_{a=1}^8\left(\sum\limits_{\mu=0}^3 n_\mu A^{\mu,a}\right)\left(\sum\limits_{\mu=0}^3 n_\mu A^{\mu,a}\right).
+\end{equation}
+This gauge choice leads to following Feynman rule for gluon propagators:
+\begin{equation*}
+\begin{tabular}{cc}
+\begin{tabular}[c]{@{}l@{}}\begin{fmffile}{gpropaxial}
+\begin{fmfchar*}(20,10)
+\fmfbottom{i1,o1}
+\fmflabel{$\mu,a$}{i1} 
+\fmflabel{$\nu,b$}{o1}
+\fmf{gluon}{i1,o1}
+\marrow{b}{down}{bot}{$k$}{i1,o1}
+\end{fmfchar*}
+\end{fmffile}
+\end{tabular} & \begin{tabular}[c]{@{}l@{}} \\ $\displaystyle\qquad=-\frac{i\delta^{ab}}{k^2}\left(g^{\mu\nu}-\frac{n^\mu k^\nu+k^\mu n^\nu}{n\cdot k} + n^2(1-\lambda\frac{k^2}{n^2})\frac{k^\mu k^\nu}{(n\cdot k)^2}\right).$
+\end{tabular} 
+\end{tabular}
+\end{equation*}
+As the general axial gauge makes many calculations very complicated, one often makes further assumptions on the vector $n$. One popular restriction is $n^2=\lambda=0$, dubbed light-cone gauge. Note also that if in a given Feynman graph there are more than one gluons, they must each fulfill their gauge conditions separately. By making this observation, one can choose a different $n$ for each external leg, for example, to make calculations more practical. Although they are noticeably more inticate than Lorentz gauges, axial gauges have one clear superiority. In them, by construct, only transverse polarizations propagate. Thus no Faddeev-Popov ghosts emerge (lähde TODO). For this reason axial gauges are sometimes called physical gauges.
+
+\subsection{Polarization tensor in Lorentz gauge}\label{AS:axial_polarization_tensor}
+
+Leaving all summations and color indices implicit, in Lorentz gauge of the QCD the Lagrangian for one gluon reads
+\begin{equation}
+\mathcal{L} = - \frac{1}{4}F^{\mu\nu}F_{\mu\nu} - \frac{1}{2\lambda}(\partial_\mu A^\mu)^2.
+\end{equation}
+Euler-Lagrange equation for one gluon then gets the form
+\begin{equation}\label{AE:lorentz_ELE}
+\Box A^\nu -(1-\lambda)\partial^\nu\left(\partial_\mu A^\mu\right)= 0.
+\end{equation}
+Contracting then with $\partial_\nu$ yields us
+\begin{equation}
+	\lambda\Box\left(\partial_\mu A^\mu\right) = 0,
+\end{equation}
+which implies
+\begin{equation}
+\partial^\nu\left(\partial_\mu A^\mu\right) = C^\nu,
+\end{equation}
+where $C^\nu$ are constants in $x^\nu$. Substituting this result into \eqref{AE:lorentz_ELE} gives
+\begin{equation}
+	\Box A^\nu = (1-\lambda)C^\nu.
+\end{equation}
+As this must hold for any $\lambda$, the only possibility is that $C^\nu=0$. The gauge field $A^\nu$ must therefore satisfy the wave equation
+\begin{equation}
+	\Box A^\nu = 0.
+\end{equation}
+The wave equation is solved by plane waves
+\begin{equation}\label{AE:plane_waves}
+	A^\nu = \epsilon^\nu(k)\text{e}^{-ik\cdot x}.
+\end{equation}
+On the other hand, the Euler-Lagrange equation \eqref{AE:lorentz_ELE} now leaves just
+\begin{equation}
+(1-\lambda)\partial^\nu\left(\partial_\mu A^\mu\right)= 0 \; \; \forall \lambda,
+\end{equation}
+which implies that
+\begin{equation}
+	\partial_\mu A^\mu = D,
+\end{equation}
+where $D$ is a scalar constant in $x$. Now derivating equation \eqref{AE:plane_waves} leads to
+\begin{align}
+	\partial_\mu A^\mu = \left(\partial_\mu \epsilon^\mu(k)\right)\text{e}^{-ik\cdot x} -ik\cdot \epsilon(k)\text{e}^{-ik\cdot x} = -ik\cdot \epsilon(k)\text{e}^{-ik\cdot x} = D.
+\end{align}
+For $D$ and $\epsilon(k)$ to be independent of $x$, this then implies that
+\begin{equation}\label{AE:pol_k}
+	D = k\cdot \epsilon(k) = 0.
+\end{equation}
+
+Define now $\tilde{k}=(k^0,-\bar{k})$, a linearly independent vector with $k$. Require from polarization vectors $\epsilon(k)$ that 
+\begin{equation}\label{AE:pol_k_tilde}
+	\tilde{k}\cdot\epsilon(k) =0.
+\end{equation}
+This together with \eqref{AE:pol_k} implies then that
+\begin{equation}\label{AE:pol_self}
+	\epsilon^0 = 0, \quad \epsilon \bar{k}\cdot \bar{\epsilon}=0.
+\end{equation}
+Let us then define polarization tensor $\mathcal{P}$ by
+\begin{equation}\label{AE:pol_def}
+\mathcal{P}^{\mu\nu} = \sum\limits_{\lambda} \epsilon^\mu_\lambda(k)\epsilon^{*\nu}_\lambda(k),
+\end{equation}
+where summation is made over physical polarization states $\lambda=1,2$. Let the polarization vectors $\epsilon$ be normalized to unity, i.e.
+\begin{equation}\label{AE:pol_unity}
+\epsilon_\lambda(k)\cdot \epsilon^{*}_\lambda(k)=-1.
+\end{equation}
+Now using the definition \eqref{AE:pol_def} and constraints \eqref{AE:pol_k}, \eqref{AE:pol_k_tilde} and \eqref{AE:pol_unity}, we get following identities for polarization tensor:
+\begin{equation}\label{AE:pol_identities}
+g_{\mu\nu}\mathcal{P}^{\mu\nu}=-2, \quad k_{\mu}\mathcal{P}^{\mu\nu}=k_{\mu}k_{\nu}\mathcal{P}^{\mu\nu}= 0 , \quad \tilde{k}_{\mu}\mathcal{P}^{\mu\nu}=\tilde{k}_{\mu}\tilde{k}_{\nu}\mathcal{P}^{\mu\nu}= 0 .
+\end{equation}
+The polarization tensor is a second rank tensor, so it is uniquely fixed by two linearly independent vectors $\tilde{k}$ and $k$, and the metric $g$. Using this we can decompose it as
+\begin{equation}
+\mathcal{P}^{\mu\nu} = Ag^{\mu\nu} + Bk^{\mu}k^{\nu}+ C\tilde{k}^{\mu}\tilde{k}^{\nu} + D\tilde{k}^{\mu}k^{\nu} + Ek^{\mu}\tilde{k}^{\nu},
+\end{equation}
+where $A,B,C,D$ and $E$ are some scalars. The scalars can be determined by imposing the constraints \eqref{AE:pol_identities}. This yields us the form
+\begin{equation}
+\mathcal{P}^{\mu\nu} = -g^{\mu\nu} + \frac{1}{\tilde{k}\cdot k}\left(\tilde{k}^{\mu}k^{\nu} + k^{\mu}\tilde{k}^{\nu}\right).
+\end{equation}
+
+
+\subsection{Polarization tensor in axial gauge}\label{AS:axial_polarization_tensor}
+
+Again leaving all summations and color indices implicit, in axial gauge of the QCD the Lagrangian for one gluon reads
+\begin{equation}
+	\mathcal{L} = - \frac{1}{4}F^{\mu\nu}F_{\mu\nu} - \frac{1}{2\lambda}(n_\mu A^\mu)^2.
+\end{equation}
+Euler-Lagrange equation for one gluon then gets the form
+\begin{equation}\label{AE:axial_ELE}
+	-\lambda\left(n\cdot A\right)n^\nu + \Box A^\nu -\partial^\nu\left(\partial_\mu A^\mu\right)= 0.
+\end{equation}
+Contraction with one-form $n_\nu$ then yields differential equation
+\begin{equation}
+-\lambda n^2\left(n\cdot A\right) + \Box \left(n\cdot A\right) -\left(n\cdot\partial\right)\left(\partial_\mu A^\mu\right)= 0.
+\end{equation}
+Fourier transforming this yields us the equivalent algebraic equation in momentum space
+\begin{align}\label{AE:fourier_trans_axial}
+-\lambda n^2\left(n_\mu \tilde{A}^\mu\right) + k^2 \left(n_\mu \tilde{A}^\mu\right) -\left(n\cdot k\right)\left(\partial_\mu \tilde{A}^\mu\right) &= 0 \\[1em]
+\Leftrightarrow  \qquad\qquad\qquad \qquad\qquad \left[(\lambda n^2-k^2)n_\mu + (n\cdot k)k_\mu\right]\tilde{A}^\mu &= 0.
+\end{align}
+Now as neither factor $(\lambda n^2-k^2)$ nor $(n\cdot k)$ vanishes generally, and vectors $n$ and $k$ are linearly independent, for equation \eqref{AE:fourier_trans_axial} to hold also
+\begin{equation}
+	n\cdot \tilde{A} = 	k\cdot \tilde{A} = 0
+\end{equation}
+must hold. Inverse Fourier transforming these yields straightforwardly
+\begin{equation}\label{AE:axial_lag_cons}
+n\cdot A = 	k\cdot A = 0.
+\end{equation}
+Substituting \eqref{AE:axial_lag_cons} into \eqref{AE:axial_ELE} gives then
+\begin{equation}
+	\Box A^\nu= \partial^\nu\left(\partial_\mu A^\mu\right),
+\end{equation}
+which is solved by plane waves
+\begin{equation}
+	A^\mu = \epsilon^\mu(k)\text{e}^{-ik\cdot x},
+\end{equation}
+where the polarization vector $\epsilon^\mu(k)$ can be chosen such that 
+\begin{equation}\label{AE:axial_pol_k}
+	k\cdot \epsilon(k) = 0. 
+\end{equation}
+This can be done because of how $A^\mu$ transforms under gauge transformations. Now the constraint \eqref{AE:axial_lag_cons} gives
+\begin{equation}\label{AE:axial_pol_n}
+	n\cdot A = \left(n\cdot \epsilon(k)\right)\text{e}^{-ik\cdot x} = 0 \quad \Leftrightarrow \quad n\cdot \epsilon(k) = 0.
+\end{equation}
+
+Let us, similar to what we did in Lorentz gauge, then define polarization tensor $\mathcal{P}$ by
+\begin{equation}\label{AE:axial_pol_def}
+	\mathcal{P}^{\mu\nu} = \sum\limits_{\lambda} \epsilon^\mu_\lambda(k)\epsilon^{*\nu}_\lambda(k),
+\end{equation}
+where summation is made over physical polarization states $\lambda=1,2$. Let the polarization vectors $\epsilon$ be normalized to unity, i.e.
+\begin{equation}\label{AE:axial_pol_unity}
+	\epsilon_\lambda(k)\cdot \epsilon^{*}_\lambda(k)=-1.
+\end{equation}
+Now using the definition \eqref{AE:axial_pol_def} and constraints \eqref{AE:axial_pol_k}, \eqref{AE:axial_pol_n} and \eqref{AE:axial_pol_unity}, we get following identities for polarization tensor:
+\begin{equation}\label{AE:axial_pol_identities}
+	g_{\mu\nu}\mathcal{P}^{\mu\nu}=-2, \quad k_{\mu}\mathcal{P}^{\mu\nu}=k_{\mu}k_{\nu}\mathcal{P}^{\mu\nu}= 0 , \quad n_{\mu}\mathcal{P}^{\mu\nu}=n_{\mu}n_{\nu}\mathcal{P}^{\mu\nu}= 0 .
+\end{equation}
+The polarization tensor is a second rank tensor, so it is uniquely fixed by two linearly independent vectors $n$ and $k$, and the metric $g$. Using this we can decompose it as
+\begin{equation}
+	\mathcal{P}^{\mu\nu} = Ag^{\mu\nu} + Bk^{\mu}k^{\nu}+ Cn^{\mu}n^{\nu} + Dn^{\mu}k^{\nu} + Ek^{\mu}n^{\nu},
+\end{equation}
+where $A,B,C,D$ and $E$ are some scalars. The scalars can be determined by imposing the constraints \eqref{AE:axial_pol_identities}. This yields us the form
+\begin{equation}
+\mathcal{P}^{\mu\nu} = -g^{\mu\nu} + \frac{1}{n\cdot k}\left(n^{\mu}k^{\nu} + k^{\mu}n^{\nu}\right) - \frac{n^2}{\left(n\cdot k\right)^2}k^{\mu}k^{\nu}.
+\end{equation}
 
 
 \end{document}
