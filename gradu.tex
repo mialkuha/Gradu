@@ -1,6 +1,4 @@
-% Versio 1.1 (17.11.2015)
-% Tämä on esimerkkipohja fysiikan laboratoriotyöselostuksia varten. 
-\documentclass[a4paper, twoside, english, 12pt]{article}
+\documentclass[a4paper, twoside, english, 12pt]{report}
 
 
 \usepackage{cancel}
@@ -15,17 +13,13 @@
 
 \usepackage{pdfpages}
 
-%Jotta LaTeX osaisi kääntää normaalisti kirjoitetut skandinaaviset kirjaimet (esim. ä ja ö) oikein, tarvitaan inputenc-pakettia. Tämän paketin vaatimat valinnaiset argumentit riippuvat editorin asetuksista. Valitse alla olevista oman editorisi mukainen vaihtoehto kommentoimalla muut pois. Mikäli mikään alla olevista ei toimi, etsi sopivaa ohjetta netistä vaikka hakusanoilla latex, inputenc ja oman editorisi nimi. Ilmoita kohtaamasi ongelma työosastolle. TexnicCenterissä ja TexMakerissa ensimmäisen vaihtoehdon pitäisi toimia.
 \usepackage[utf8]{inputenc}
-%\usepackage[latin1]{inputenc}
-%\usepackage[applemac]{inputenc}
 
 % Matematiikkapaketteja
 \usepackage{amsmath}
 \usepackage{amsfonts}
 \usepackage{amssymb}
 
-%Feyngraphs
 
 %Feyngraphs
 \usepackage{feynmp-auto}
@@ -84,6 +78,9 @@
 \usepackage{subcaption}
 
 
+\newcommand{\intsub}[3]{\mathop{\Bigg/}\limits_{\hspace*{-5mm}{#1}}^{\hspace*{5mm}{#2}}{#3}}
+% Finnish integral substitution symbol
+
 
 
 % Kuvien lisäämistä varten
@@ -111,12 +108,31 @@
 \usepackage[decimalsymbol=comma,load=prefixed,separate-uncertainty=true]{siunitx} 
 
 
+\usepackage[]{hyperref}
+\hypersetup{
+	pdftitle={Thesis},
+	pdfauthor={Mikko Kuha},
+	pdfsubject={Eikonal minijet model for dijet production in proton--proton collisions}, 
+	pdfkeywords={keyword1, keyword2},
+	bookmarksnumbered=true,     
+	bookmarksopen=true,         
+	bookmarksopenlevel=1,       
+	colorlinks=true,
+	linkcolor = {black},
+	linkbordercolor = {blue}, 
+	citecolor = {blue},         
+	pdfstartview=Fit,           
+	pdfpagemode=UseOutlines,
+	pdfpagelayout=TwoPageRight
+}
+
 
 
 
 %----------------------------------------------------------------------------------------
 % KANSILEHDEN MUOTOILU JA TEKSTI
 %----------------------------------------------------------------------------------------
+
 \newcommand*{\titleJYFL}{\begingroup  % Create the command for including the title page in the document
 	\hbox{                                    % Horizontal box
 		\hspace*{0.1\textwidth}                   % Whitespace to the left of the title page
@@ -127,25 +143,25 @@
 			% Tutkielman nimi
 			
 			\begin{flushleft}
-				\noindent\LARGE\bfseries Title\\[2\baselineskip]
+				\noindent\LARGE\bfseries Eikonal minijet model for proton--proton collisions\\[2\baselineskip]
 			\end{flushleft}
 			%
 			% Tutkielman tyyppi ja päiväys
-			{\large Masters thesis, \today}\\[3.5\baselineskip]
+			{\large Master's thesis, \today}\\[3.5\baselineskip]
 			%
 			% Tutkielman tekijä 
-			{\normalsize Tekijä:}\\[0.5\baselineskip] 
+			{\normalsize Author:}\\[0.5\baselineskip]
 			{\large \textsc{Mikko Kuha}}\\[1\baselineskip]
 			%
 			% Työn ohjaajat
-			{\normalsize Ohjaaja:}\\[0.5\baselineskip]
+			{\normalsize Supervisor:}\\[0.5\baselineskip]
 			{\large \textsc{Kari J. Eskola}}
 			%
 			% Tyhjä väli ohjaajan nimen ja yliopiston logon välille - älä poista seuraavaa tyhjää riviä!
 			
 			\vspace{0.2\textheight}
 			% Yliopiston logo, nimi ja ainelaitos
-			\includegraphics[height=27mm]{jyfl-logo.png} 
+			\includegraphics[height=27mm]{kuvat/title_jyfl.png} 
 		}
 	}        
 	\endgroup}
@@ -153,154 +169,134 @@
 % VARSINAINEN DOKUMENTTI
 %----------------------------------------------------------------------------------------
 \begin{document}
-	%----------------------------------------------------------------------------------------
-	% KANSILEHTI
-	%----------------------------------------------------------------------------------------
-	\titleJYFL
+\pagenumbering{gobble}
+\titleJYFL
+
+\cleardoublepage
+\section*{Abstract}
+
+An eikonal minijet model for high energy proton--proton collisions was discussed and numerically tested. The testing was done against data gathered on elastic, inelastic, and total cross-sections in proton--proton collisions at the centre of momentum frame energy scale of $\sqrt{s}=0.1\,..\,100\,\text{TeV}$, including the latest CERN--LHC measurements. As a part of the numerical analysis, the validity of the single effective subprocess approximation was examined, and the contributions of multiple dijet production to the inelastic cross-section were calculated separately. The analytically simplistic eikonal minijet model performed surprisingly well in the data comparison when the width of the gluon cloud was chosen large enough. Also, the single effective subprocess approximation was demonstrated to work to a very good accuracy at the energy scales studied. 
+
+
+\section*{Tiivistelmä}
+
+\begin{sloppypar}
+Tässä tutkielmassa johdettiin minijettimalli suurienergiaisille protoni--protoni -törmäyksille eikonaaliformalismissa. Mallia testattiin numeerisen laskennan keinoin kokeellisilla tuloksilla protoni--protoni -törmäyksien elastisista, epäelastisista ja kokonaisvaikutusaloista keskeisliikemääräkoordinaatiston energiaskaalassa $\sqrt{s}=0.1\,..\,100\,\text{TeV}$. Myös viimeisimpiä CERN--LHC -kiihdyttimen mittaustuloksia tarkasteltiin. Numeerisen analyysin yhtenä osana tutkittiin myös yhden efektiivisen aliprosessin approksimaatiota, joka osoittautui tutkituilla energioilla hyvin tarkaksi. Lisäksi tarkasteltiin moninkertaisen kaksijettituoton roolia protoni--protoni -törmäysten epäelastisessa vaikutusalassa.
+\end{sloppypar}
 
 	
-	%----------------------------------------------------------------------------------------
-	%	ABSTRACT
-	%----------------------------------------------------------------------------------------
-	\section*{Abstract}
 	
-	% Abstract text
-	\begin{otherlanguage}{english}
-TODO
-	\end{otherlanguage}
-	
+\tableofcontents
 
 \newpage
-
 % Aloitetaan sivunumerointi alusta
-\setcounter{page}{1}
+\pagenumbering{arabic}
+
+
+\newgeometry{top=1.5cm,bottom=3.04cm}
 
 
 
+\chapter{Introduction}\label{S:Intro}
+
+In our quest to understand the building blocks of the universe we live in, we have developed the Standard Model of particle physics. It is the summit of our current knowledge about the fundamental particles and the ways they interact with each other. Within the Standard Model, the strong nuclear force is nowadays thought to be best described by Quantum Chromodynamics (QCD). 
+
+Not only are the nuclei of the atoms, but also the very constituents of those nuclei, protons and neutrons, held together by QCD interactions. Rather than being indivisible elementary particles, protons and neutrons, and other hadrons are actually ensembles of quarks, antiquarks, and gluons, collectively called partons. These partons we can unfortunately not study directly, as they eventually may only appear in colour neutral hadron states. This phenomenon is called colour confinement.
+
+The way to study the properties and interactions of partons is through indirect measurements. We collide hadrons onto each other with such high energies that their inner structure breaks, and then observe the results. The produced multitudes of new particles tell us about the mentioned inner structure of the hadrons and thus also about QCD.
+
+In this thesis, the background for an eikonal minijet model for proton--proton collisions will be presented, and its applicability will be studied via numerical analysis and comparison with experimental data. The vital parts for the model arising from perturbative QCD and parton model will be shown in Chapter 2. Chapter 3 focuses on a quantum scattering problem: the eikonal formalism will be derived in analogue with the classical scattering problem of lightwaves. After the theoretical foundation is laid, the eikonal minijet model is presented in Chapter 4. This marks the turning point of the thesis, as in Chapter 5 the focus will be turned to the methods of numerical analysis. Chapter 6 will then continue along these lines, and the results of the numerical analysis will be presented. Some concluding remarks will be discussed in Chapter 7. 
+
+The majority of the work behind this thesis was in the numerical analysis. The author continued from his symbolical perturbative QCD (pQCD) calculations in his research training in summer 2016 to build from scratch the program used in the numerical analysis. Most of the work was thus done during autumn 2016.
 
 
-\section{Introduction}\label{S:Intro}
+
+\cleardoublepage
+\chapter{Dijet production in proton--proton collisions}\label{S:jet_production}
 
 
 
-\section{Dijet production in proton--proton collision}\label{S:jet_production}
+In this chapter, we will introduce the jet-production formalism in proton--proton collisions in the leading order ($\mathcal{O}(\alpha_s^2)$, $\alpha_s$ is the QCD coupling constant) of perturbative QCD. The basic process of interest here is an ultrarelativistic inclusive inelastic scattering $\text{p}+\text{p}\rightarrow\text{jet}+\text{jet}+X$, where $X$ can be anything. The discussion will follow those in my research thesis report \cite{erkka} and in the lecture notes of the course FYSH556 perturbative QCD \cite{pqcd}.
 
-In this section, we will gloss over the theory of proton--proton collision in the leading order ($\mathcal{O}(\alpha_s^2)$, $\alpha_s$ is the QCD coupling constant) of perturbative QCD on parton level. The discussion will follow the one in my research thesis report and the one in the lecture notes on the course FYSH556 perturbative QCD (viite TODO).
+According to the parton model \cite{feynman, bjorken}, protons and other hadrons are thought to be collections of collinearly, longitudinally, moving quarks, antiquarks, and gluons, collectively named partons. A proton--proton collision, therefore, is an event of colliding partons. To the leading order in pQCD, if the interaction scale (transverse momentum exchange) is large enough so that $\alpha_s \ll 1$, two onshell partons can scatter from each other only in $2\rightarrow2$ processes. Due to the colour confinement, partons must, in the very end of the collision, end up in colour neutral hadron states. This causes the event products, partons of large transverse momenta, to hadronize into well-collimated showers of hadrons called jets. The problem in question, therefore, consists of two clearly discrete levels: dijet production in proton--proton collision on the hadron level, and $2\rightarrow2$ scattering process on the parton level. On an interesting sidenote, as the parton level calculations are independent of the hadron level particles, these can be applied to any hadron--hadron, or even hadron--nucleus or nucleus--nucleus collisions.
 
-According to parton model, protons and other hadrons are thought to be collections of quarks, antiquarks and gluons, collectively named partons. A proton--proton collision therefore is, in fact, an event of colliding partons. To the leading order in perturbative QCD, two partons can scatter from each other only in $2\rightarrow2$ processes. Due to the color confinement, partons must end up in colour neutral states. This causes the event products to hadronize into well-collimated showers of hadrons called jets. The problem in question therefore consists of two clearly discrete levels: dijet production in proton--proton collision on hadron level, and $2\rightarrow2$ scattering process on parton level. On an interesting sidenote, as the calculations on parton level are independent of the hadron level particles, the results could be applied to any hadron--hadron collisions.
 
-\newgeometry{top=1cm}
-\begin{table}[htp]
+\begin{figure}[b!]
 	\centering
-	\caption{Differential cross sections of the subprocesses of jet production in partonic model of leading order ($\alpha_s^2$) pQCD. lähde TODO }
+	\includegraphics[width=\textwidth]{kuvat/dijet_production.png}
+	\caption{Dijet production in proton--proton collision in the parton model. Symbols \textit{i} and \textit{j} label the initial state partons from the colliding protons \textit{p}, and \textit{k} and \textit{l} are the partons that eventually hadronize to form the outgoing jets. Also the four-momenta as explained in the text are shown.}
+	\label{F:dijet_production}
+\end{figure}
+
+
+
+
+Figure \ref{F:dijet_production} illustrates the situation in the parton model for the process $\text{p}+\text{p}\rightarrow\text{jet}+\text{jet}+X$. The initial state partons labelled $i$ and $j$ interact via the strong interaction. Let us label the end products of the partonic $2\rightarrow2$ scattering process as partons $k$ and $l$. We assume that the energy scale of the process, the transverse momentum of the partons, is of such a high magnitude that due to the running of the strong coupling constant $\alpha_s$ the process can be approximated with the leading order QCD perturbation theory.
+
+Consider the centre of momentum frame of the colliding protons so that the protons have equal but opposite four-momenta $h_1$ and $h_2$. Then the partons $i$ and $j$ have longitudinal momenta $x_1h_1$ and $x_2h_2$, respectively, where $x_1,x_2\in {[0,1]}$ are the momentum fractions of the partons. In the transverse direction, the momenta of the initial state partons can be assumed to be negligible. Let us name the momenta of the event product partons $k$ and $l$ as $k_1$ and $k_2$, respectively. These momenta have longitudinal components $k_{1L}$ and $k_{2L}$, and transverse momentum vectors $\mathbf{k}_{1T}$ and $\mathbf{k}_{2T}$ orthogonal to the momenta of the protons. Label also the energies of the partons $k$ and $l$ with symbols $E_1$ and $E_2$, respectively. As shown below, due to momentum conservation, the transverse vectors must be equal but opposite, i.e. $\mathbf{k}_{1T}=-\mathbf{k}_{2T}$. Therefore we can label the transverse momentum with  $k_{T}=|\mathbf{k}_{1T}|=|\mathbf{k}_{2T}|$. The rapidity $y_1$ of the parton $k$ is defined as
+\begin{equation}\label{E:rapidity}
+y_1=\frac{1}{2}\log\frac{E_1+k_{1L}}{E_1-k_{1L}}.
+\end{equation}
+The rapidity $y_2$ of the particle $l$ is defined similarly.
+
+With these definitions now the parton level subprocess cross-section can then be written as \cite{pqcd} \cite[ch. 4.5]{Peskin}
+\begin{equation}
+	\text{d}\hat{\sigma}^{i+j\rightarrow k+l} = \frac{1}{2\hat{s}}\;\frac{\text{d}^3k_1}{(2\pi)^32E_1}\;\frac{\text{d}^3k_2}{(2\pi)^32E_2}\; \left\langle|\mathcal{M}_{i+j\rightarrow k+l}|^2\right\rangle (2\pi)^4\delta^{(4)}(x_1h_1+x_2h_2-k_1-k_2)
+\end{equation}
+where the parton level Mandelstam variable $\hat{s} = (x_1h_1+x_2h_2)^2$, $\frac{\text{d}^3k_{1,2}}{(2\pi)^32E_{1,2}}$ are the Lorentz invariant integral measures, $\left\langle|\mathcal{M}|^2\right\rangle$ is the Lorentz invariant squared scattering amplitude averaged over spin/polarisation and colour states, and $\delta^{(4)}$ is the Dirac delta distribution in four dimensions. Now using \cite{Peskin,hitu}
+\begin{equation}
+	\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}} = \frac{\left\langle|\mathcal{M}|^2\right\rangle}{16\pi\hat{s}^2}
+\end{equation}
+and the collinear factorization theorem \cite[ch. 14.3]{Sterman}, the differential cross-section of the dijet production to leading order in perturbative QCD can be written as
+\begin{align}\label{E:factorization_theor}
+&E_1E_2\frac{\text{d}\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X}}{\text{d}^3k_1\text{d}^3k_2} \nonumber\\[1em] &= \sum_{i,j,k,l}\int\limits_{0}^{1}\text{d}x_1\text{d}x_2 \;\; f_i(x_1,Q^2) f_j(x_2,Q^2)\cdot \frac{\hat{s}}{2\pi} \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{i+j\rightarrow k+l}\delta^{(4)}(x_1h_1+x_2h_2-k_1-k_2),
+\end{align}
+where $Q^2\approx k_T^2$ is the interaction energy scale and the parton level Mandelstam variable $\hat{t} = (x_1h_1-k_1)^2$. The functions $f_i$ and $f_j$ are the parton distribution functions (PDFs) of partons $i$ and $j$. These distributions cannot be predicted from perturbative QCD, but they must be measured experimentally as they are inherently nonperturbative objects. The PDFs are, however, process-independent, so that results of experiments on other processes (e.g. deep inelastic scattering, Drell-Yan dilepton production) can be combined. Even though the PDFs cannot be derived from pQCD, their scale evolution is governed by the DGLAP Equations \cite{DG,L,A,P} of pQCD. The summation over $i,j,k,l$ in Equation \eqref{E:factorization_theor} will be discussed in more detail in Section \ref{SS:integrated_cross_sections}.
+
+Using the well-known identities of the Dirac delta distribution, one can easily show that
+\begin{align}\label{E:delta_modif}
+	&\delta^{(4)}(x_1h_1+x_2h_2-k_1-k_2) \nonumber\\[1em] &= \frac{2}{s}
+	\delta^{(2)}(\mathbf{k}_{1T}+\mathbf{k}_{2T})\delta \left(x_1- \frac{k_T}{\sqrt{s}}\left(\mathrm{e}^{y_1}+\mathrm{e}^{y_2}\right)\right) \delta \left(x_2- \frac{k_T}{\sqrt{s}}\left(\mathrm{e}^{-y_1}+\mathrm{e}^{-y_2}\right)\right),
+\end{align}
+where the hadron level Mandelstam variable $s=(h_1+h_2)^2$. Inserting \eqref{E:delta_modif} into \eqref{E:factorization_theor} and integrating over $\mathbf{k}_{2T}$ yields the differential cross-section
+\begin{align}
+&\frac{\text{d}\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X}}{\text{d}k_T^2\text{d}y_1\text{d}y_2} = \sum_{i,j,k,l} x_1f_i(x_1,Q^2)\cdot x_2f_j(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{i+j\rightarrow k+l},\label{E:dijet_cross_section}
+\end{align}
+where the momentum fractions are
+\begin{align}
+x_1 &= \frac{k_T}{\sqrt{s}}\left(\mathrm{e}^{y_1}+\mathrm{e}^{y_2}\right)\label{E:x1_from_ktandys} ,\\[1em]
+x_2 &= \frac{k_T}{\sqrt{s}}\left(\mathrm{e}^{-y_1}+\mathrm{e}^{-y_2}\right).\label{E:x2_from_ktandys}  
+\end{align}
+
+\begin{table}[htp!]
+	\centering
+	\caption{Differential cross-sections of the partonic subprocesses in jet production at leading order ($\alpha_s^2$) pQCD. \cite{erkka, RiPa,  eichsubpro}}
 	\label{T:subprocesses}
 	\begin{adjustwidth}{-1cm}{-2cm}
 		\includegraphics[width=\textwidth+2cm]{kuvat/subprocess_table.png}
 	\end{adjustwidth}
 \end{table}
 
-We are interested in an inclusive ultrarelativistic dijet production in proton--proton collision, or a process $\text{p}+\text{p}\rightarrow\text{jet}+\text{jet}+X$ where $X$ can be anything. According to the parton model then the partons labeled $i$ and $j$ interact via strong interaction. Let us label the end products of the partonic $2\rightarrow2$ scattering process as partons $k$ and $l$. Let us assume that the energy scale of the process is of such high magnitude that due to the running of strong coupling constant $\alpha_s$ the process can be approximated with the leading order perturbative QCD. All the $2\rightarrow2$ processes of the leading order ($\mathcal{O}(\alpha_s^2)$) allowed by QCD are shown in table \ref{T:subprocesses}. Figure \ref{F:dijet_production} clarifies the situation with the parton model.
+\section{Subprocesses}
 
-Consider the centre of momentum frame so that the protons have equal but opposite four-momenta $h_1$ and $h_2$. Then the partons $i$ and $j$ have longitudinal momenta $x_1h_1$ and $x_2h_2$, respectively, where $x_1,x_2\in {[0,1]}$ are the momentum fractions of said partons. In the transversal direction the momentum can be assumed to be negligible. Let us name the event product partons' $k$ and $l$ momenta $k_1$ and $k_2$ respectively. These momenta have longitudinal components $k_{1L}$ and $k_{2L}$, and transversal momentum vectors $k_{1T}$ and $k_{2T}$ orthogonal to the momenta of the protons. Label also the energies of the partons $k$ and $l$ with symbols $E_1$ and $E_2$, respectively. Due to momentum conservation the transversal vectors must be equal but opposite, i.e. $\mathbf{k}_{1T}=-\mathbf{k}_{2T}$. Therefore we can name the transfersal momentum $k_{T}=|\mathbf{k}_{1T}|=|\mathbf{k}_{2T}|$. The rapidity $y_1$ of a parton $k$ can be written as
-\begin{equation}\label{E:rapidity}
-y_1=\frac{1}{2}\log\frac{E_1+k_{1L}}{E_1-k_{1L}}.
-\end{equation}
-The rapidity $y_2$ of the particle $l$ is defined similarly.
+The leading order in perturbative QCD allows for eight different types of $2 \rightarrow 2$ processes for quarks, antiquarks, and gluons. These processes are shown in Table \ref{T:subprocesses}. In this section, we will make a brief overview of how the cross-sections of those are calculated.
 
-\begin{figure}[t]
-	\centering
-	\begin{fmffile}{Dijet_production}
-		\begin{fmfchar*}(80,50)
-			\fmfleft{ip1,ip2}
-			\fmfright{x1,o1,o2,x2}
-			\fmf{dbl_plain,tension=2.5}{ip1,vp}
-			\fmf{plain}{vq,o1}
-			\fmf{plain}{vq,o2}
-			\fmf{plain}{vp,x1}
-			\fmf{plain,tension=0.6}{vl,vq}
-			\fmfv{label=$i$,label.a=150,label.d=0.22w}{vl,vq}
-			\fmf{plain,tension=0.6,label=$j$,label.side=right}{vp,vq}
-			\fmf{dbl_plain,tension=2.5}{ip2,vl}
-			\fmf{plain}{vl,x2}
-			\fmflabel{$X$}{x1}
-			\fmflabel{$X$}{x2}
-			\fmflabel{$l$}{o1}
-			\fmflabel{$k$}{o2}
-			\fmfv{label=$p$, label.dist=0, decor.shape=circle, decor.pull=0.5, decor.filled=empty, decor.size=.15w}{vp}
-			\fmfv{label=$p$, label.dist=0, decor.shape=circle, decor.pull=0.5, decor.filled=empty, decor.size=.15w}{vl}
-			\fmfblob{.15w}{vq}
-			\fmfforce{(.65w,1h)}{x2}
-			\fmfforce{(.65w,0)}{x1}
-			\fmfforce{(0,0.8h)}{ip2}
-			\fmfforce{(0,0.2h)}{ip1}
-			\fmffreeze
-			\fmfi{plain}{vpath (__x1,__vp) shifted (thick*(0,2))}
-			\fmfi{plain}{vpath (__x1,__vp) shifted (thick*(1,-2))}
-			\fmfi{plain}{vpath (__x2,__vl) shifted (thick*(0,2))}
-			\fmfi{plain}{vpath (__x2,__vl) shifted (thick*(1,-2))}
-		\end{fmfchar*}
-	\end{fmffile}\\[1em]
-	\caption{Dijet production in proton--proton collision in parton model. Symbols \textit{i} and \textit{j} label the partons from protons \textit{p}, and \textit{k} and \textit{l} are the partons that eventually hadronise to form the outgoing jets.}
-	\label{F:dijet_production}
-\end{figure}
+One can see multiple similarities between the processes in Table \ref{T:subprocesses}. In fact, many of the different Feynman diagrams can be calculated from each other by crossing external legs and changing the colour factor. The graph of process 3 can be obtained from that of the process 1, the graphs of the process 4 can be obtained from those of the process 2, and the graphs of the processes 6 and 7 from the graphs of the process 5. In the process 8, one can make use of a crossing between the $t$, $u$, and $s$ - channels.
 
-
-TODO johto seuraavaan
-
-With these definitions, the differential cross section of the dijet production in the leading order perturbative QCD is (lähde TODO)
-\begin{equation}\label{E:dijet_cross_section}
-\frac{\text{d}\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X}}{\text{d}k_T^2\text{d}y_1\text{d}y_2} = \sum_{i,j,k,l} x_1f_i(x_1,Q^2)\cdot x_2f_j(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{i+j\rightarrow k+l},
-\end{equation}
-where $Q^2\approx k_T^2$ is the interaction energy scale, $\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{i+j\rightarrow k+l}$ is the differential cross section of the subprocess $i+j\rightarrow k+l$, and the Mandelstam variable $\hat{t} = (x_1h_1-k_1)^2$. The functions $f_i$ and $f_j$ are the parton distribution functions (PDF) of partons $i$ and $j$. These distributions can not be predicted from the perturbative QCD only, but they must be measured experimentally. PDFs are process-independent, so results of experiments on other processes (e.g. deep inelastic scattering, Drell-Yan dilepton production, multiple jet productions) can be combined using the DGLAP equations of perturbative QCD.
-
-The summation in the equation \eqref{E:dijet_cross_section} must include all possible initial partons $i$ and $j$ and all partonic subprocesses shown in table (TODO). As some processes contain identical particles in the final state, we must add factors $\frac{1}{2}$ in them to prevent doubly counting the phase-space. The equation \eqref{E:dijet_cross_section} written open takes the form (writing for example $x_1f_g(x_1,Q^2)\equiv g_1$ for simplisity)
-\begin{align}\label{E:partonic_bookkeeping}
-	\frac{\text{d}\sigma_{jet}}{\text{d}k_T^2\text{d}y_1\text{d}y_2} =\;  &g_1\cdot g_2 \cdot \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow gg} + g_1\cdot g_2 \cdot \sum\limits_{q=u,d,s,\dots}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow q\bar{q}} \nonumber\\[1em]
-	+&g_1\cdot \sum\limits_{q}q_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gq\rightarrow gq} + g_1\cdot \sum\limits_{\bar{q}}\bar{q}_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{g\bar{q}\rightarrow g\bar{q}} \nonumber\\[0.3em]
-	+&g_2\cdot \sum\limits_{q}q_1 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qg\rightarrow qg} + g_2\cdot \sum\limits_{\bar{q}}\bar{q}_1 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}g\rightarrow \bar{q}g} \nonumber\\[1em]
-	+&\sum\limits_{q} q_1\cdot q_2 \cdot \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qq\rightarrow qq} + \sum\limits_{\bar{q}} \bar{q}_1\cdot \bar{q}_2 \cdot \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}\bar{q}\rightarrow \bar{q}\bar{q}} \nonumber\\[1.5em]
-	+&\sum\limits_{q, q', q\neq q'} q_1\cdot q'_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qq'\rightarrow qq'} + \sum\limits_{\bar{q}, \bar{q}', \bar{q}\neq\bar{q}'} \bar{q}_1\cdot \bar{q}'_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}\bar{q}'\rightarrow \bar{q}\bar{q}'} \nonumber\\[0.3em]
-	+&\left(\sum\limits_{q} q_1\right)\cdot \left(\sum\limits_{\bar{q}', q\neq q'}\bar{q}'_2\right) \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}'\rightarrow q\bar{q}'} + \left(\sum\limits_{\bar{q}} \bar{q}_1\right)\cdot \left(\sum\limits_{q', q\neq q'}q'_2\right) \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q'\rightarrow \bar{q}q'} \nonumber\\[2em]
-	+&\sum\limits_{q} q_1\cdot \bar{q}_2 \cdot \left[\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}\rightarrow q\bar{q}} + \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}\rightarrow gg} +\sum\limits_{q'\neq q}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}\rightarrow q'\bar{q}'} \right] \nonumber\\[0.3em]
-	+&\sum\limits_{q} \bar{q}_1\cdot q_2 \cdot \left[\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q\rightarrow \bar{q}q} + \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q\rightarrow gg} +\sum\limits_{q'\neq q}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q\rightarrow \bar{q}'q'} \right],
-\end{align}
-which we will from now on call full partonic bookkeeping. The parton level Mandelstam variables in subprocess cross sections can be calculated using the formulae (lähde TODO)
-\begin{align}
-\hat{s}(k_T^2,y_1,y_2) &= 2k_T^2(1+\cosh(y_1-y_2)), \label{E:Mandelstam_s}\\
-\hat{t}(k_T^2,y_1,y_2) &= -k_T^2(1+\text{e}^{-(y_1-y_2)}),\label{E:Mandelstam_t}\\
-\hat{u}(k_T^2,y_1,y_2) &=  -k_T^2(1+\text{e}^{+(y_1-y_2)}). \label{E:Mandelstam_u}
-\end{align}
-
-As the equation \eqref{E:partonic_bookkeeping} is lenghty, it is often advantageous to use the so called single effective subprocess (SES) approximation (TODO lähde). This approximation is based on the notice that, on high energies, processes with same initial and final partons ($gg\rightarrow gg$ and $gq\rightarrow gq$ in particular) dominate jet production. Using this it can be shown that (TODO lähde) equation \eqref{E:dijet_cross_section} simplifies into
-\begin{equation}\label{E:dijet_cross_section_SES}
-\frac{\text{d}\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X}}{\text{d}k_T^2\text{d}y_1\text{d}y_2} \approx \frac{1}{2}x_1F_{\text{SES}}(x_1,Q^2)\cdot x_2F_{\text{SES}}(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{g+g\rightarrow g+g},
-\end{equation}
-where the factor $\frac{1}{2}$ comes from the symmetrization used in the approximation and
-\begin{equation}\label{E:F_SES}
-	F_{\text{SES}}(x,Q^2) = f_g(x,Q^2) + \frac{4}{9} \sum\limits_{q=u,d,s\ldots }\left(f_q(x,Q^2)+f_{\bar{q}}(x,Q^2)\right).
-\end{equation}
-
-
-\subsection{Subprocesses}
-
-The leading order perturbative QCD allows for eight different $2 \rightarrow 2$ processes for quarks, antiquarks and gluons. These processes are shown in table \ref{T:subprocesses}. In this section we will make a brief overview of how the tables' results are calculated.
-
-One can see multiple similarities between the processes in table \ref{T:subprocesses}. In fact, many of the different Feynman diagrams can be calculated from each other by crossing external legs and changing the color factor. The graph of process 3 can be calculated from the process 1's graph, the graph of process 4 can be calculated from the process 2's graph, and the graphs of processes 6 and 7 can be calculated from process 5's graphs. In the process 8, the $t$, $u$ and $s$ - channels can be calculated by crossing legs from each other. 
-
-Using the Feynman rules in appendix TODO, the squared, color-averaged invariant amplitudes of the processes 1--7 are straightforwardly calculated even by hand. The process 8 on the other hand deserves some special attention. 
+Using the Feynman rules in Appendix \ref{A:QCD}, the squared, colour and spin/polarisation averaged invariant amplitudes of the processes 1--7 are straightforwardly calculated even by hand. These calculations can be found e.g. in \cite{pqcd}. The process 8, on the other hand, deserves some special attention. 
 
 \begin{figure}[h]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/four_gluon_scatt.png}
-	\caption{Feynman diagrams of the topologically different channels of the process $g+g\rightarrow g+g$ in the leading order of perturbative QCD. From the top left corner: channels $t$, $u$, $s$ and $4g$. The real gluons $1$ and $2$ are the initial particles in the process, and $3$ and $4$ are the products. The colors of these external legs are $a_i$ and polarizations $\lambda_i$ with $i=1\;..\;4$.}
+	\caption{Feynman diagrams of the topologically different channels of the process $g+g\rightarrow g+g$ in the leading order of perturbative QCD. From the top left corner: channels $t$, $u$, $s$, and $4g$. The real gluons $1$ and $2$ are the initial particles in the process, and $3$ and $4$ are the products. The colours of these external legs are $a_i$ and polarisations $\lambda_i$ with $i=1\;..\;4$. The arrows show the chosen momentum arrangement.}
 	\label{F:four_gluon_scatt}
 \end{figure} 
 
-The process $g+g\rightarrow g+g$ can happen via four topologically different channels in the leading order of perturbative QCD. These channels are represented in figure \ref{F:four_gluon_scatt}. The invariant amplitudes of these channels are of the form
+The process $g+g\rightarrow g+g$ can happen via four topologically different channels in the leading order of QCD perturbation theory. These channels are represented in Figure \ref{F:four_gluon_scatt}. The invariant amplitudes of these channels are of the form
 \begin{equation}
 \mathcal{M}'=\mathcal{M}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4}(p_1,p_2,p_3,p_4)\times\; \epsilon_{\lambda_1}^{\mu_1}(p_1)\times\; \epsilon_{\lambda_2}^{\mu_2}(p_2)\times\; {\epsilon^*}_{\lambda_3}^{\mu_3}(p_3)\times\; {\epsilon^*}_{\lambda_4}^{\mu_4}(p_4),
 \end{equation}
-where the tensors $\epsilon$ are polarization vectors. The tensors $\mathcal{M}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4}$ have in Feynman gauge the form
+where the tensors $\epsilon$ are polarisation vectors. The tensors $\mathcal{M}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4}$ have in the Feynman gauge the form
 \begin{align*}
 {\mathcal{M}_\text{t}}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4} = &-g_sf^{a_3a_1c}\Big(\,g_{\mu_3\mu_1}(-{p_3}-{p_1})_{\mu} + \,g_{\mu_1\mu}(2{p_1}-{p_3})_{\mu_3} + \,g_{\mu\mu_3}(-{p_1}+2{p_3})_{\mu_1}\Big) \\
 &\times \left[-\frac{i\delta^{cd}g^{\mu\nu}}{(p_1-p_3)^2}\right] \times\\
@@ -314,7 +310,7 @@ where the tensors $\epsilon$ are polarization vectors. The tensors $\mathcal{M}_
 \begin{align*}
 {\mathcal{M}_\text{s}}_{\mu_1\mu_2\mu_3\mu_4}^{a_1a_2a_3a_4} = &-g_sf^{a_1a_2c}\Big(\,g_{\mu_1\mu_2}({p_1}-{p_2})_{\mu} + \,g_{\mu_2\mu}(2{p_2}+{p_1})_{\mu_1} + \,g_{\mu\mu_1}(-{p_2}-2{p_1})_{\mu_2}\Big) \\
 &\times \left[-\frac{i\delta^{cd}g^{\mu\nu}}{(p_1+p_2)^2}\right] \times\\
-&(-g_s)f^{a_4a_3d}\Big(\,g_{\mu_4\mu_3}(-{p_4}+{p_3})_{\nu} + \,g_{\mu_4\nu}(-2{p_3}-{p_4})_{\mu_3} + \,g_{\nu\mu_3}({p_3}+2{p_4})_{\mu_4}\Big)
+&(-g_s)f^{a_4a_3d}\Big(\,g_{\mu_4\mu_3}(-{p_4}+{p_3})_{\nu} + \,g_{\mu_4\nu}(-2{p_3}-{p_4})_{\mu_3} + \,g_{\nu\mu_3}({p_3}+2{p_4})_{\mu_4}\Big),
 \end{align*}
 and
 \begin{align*}
@@ -322,96 +318,137 @@ and
 &+ f^{ca_1a_3}f^{ca_4a_2}( g_{\mu_1\mu_4}g_{\mu_3\mu_2} - g_{\mu_1\mu_2}g_{\mu_3\mu_4}) \\ 
 &+ f^{ca_1a_4}f^{ca_2a_3}( g_{\mu_1\mu_2}g_{\mu_4\mu_3} - g_{\mu_1\mu_3}g_{\mu_4\mu_2})\Big],
 \end{align*}
-where $g_s$ is the strong coupling constant, $f^{abc}$ are the structure constants of SU(3), $g^{\mu\nu}$ is the metric tensor and $\delta^{ab}$ is the Kronecker delta. The squared averaged invariant amplitude of the whole process then gets the form
+where $g_s$ is the strong coupling constant ($\alpha_s^2 = \frac{g_s^2}{4\pi}$), $f^{abc}$ are the structure constants of SU(3), $g^{\mu\nu}$ is the metric tensor and $\delta^{ab}$ is the Kronecker delta. The squared averaged invariant amplitude of the whole process then gets the form
 
 \begin{align}
 \textstyle\left\langle|\mathcal{M}|^2\right\rangle = \frac{1}{2\cdot 2}\frac{1}{8\cdot 8}\,\,&\left(\mathcal{M}_\text{t}+\mathcal{M}_\text{u}+\mathcal{M}_\text{s}+\mathcal{M}_\text{4g}\right)_{\mu_1\mu_2\mu_3\mu_4}\left(\mathcal{M}_\text{t}^*+\mathcal{M}_\text{u}^*+\mathcal{M}_\text{s}^*+\mathcal{M}_\text{4g}^*\right)_{\mu'_1\mu'_2\mu'_3\mu'_4} \\\nonumber
 \displaystyle\times\; & \mathcal{P}^{\mu_1^{ }\mu'_1} (p_1)  \times\; \mathcal{P}^{\mu_2^{ }\mu'_2} (p_2)  \times\; \mathcal{P}^{\mu_3^{ }\mu'_3} (p_3)  \times\; \mathcal{P}^{\mu_4^{ }\mu'_4} (p_4),
 \end{align}
 
-where the averaging factors 2 and 8 are the numbers of gluons' polarization states and colors. The polarization tensors $\mathcal{P}$, which take the transversal polarization states of the gluons into account, are (LÄHDE TODO) 
+where the averaging factors 2 and 8 are the numbers of gluon polarisation states and colours, correspondingly. The polarisation tensors $\mathcal{P}$, which take only the physical transverse polarisation states of the gluons into account, are in the covariant gauge (see Appendix \ref{AS:cov_polarization_tensor}) \cite[ch. 5.3]{Peskin}\cite[ch. 16.1]{Sterman} 
 \begin{equation}\label{E:ptensorcovariant}
 \mathcal{P}^{\mu_1^{ }\mu'_1} (p_1) =\sum_{\lambda_1}\epsilon_{\lambda_1}^{\mu_1}(p_1) {\epsilon^*}_{\lambda_1}^{\mu'_1}(p_1) =  -g^{\mu_1^{ }\mu'_1} + \frac{p_1^{\mu_1^{ }}\tilde{p_1}^{\mu'_1}+\tilde{p_1}^{\mu_1^{ }}p_1^{\mu'_1}}{p_1\cdot\tilde{p_1}},
 \end{equation}
 where $\tilde{p_1}=(|\mathbf{p_1}|,-\mathbf{p_1})
-\overset{\text{CMS}}{=}p_2$ , $\tilde{p_2}\overset{\text{CMS}}{=}p_1$ , $\tilde{p_3}\overset{\text{CMS}}{=}p_4$ and $\tilde{p_4}\overset{\text{CMS}}{=}p_3$, and CMS stands for centre of momentum frame of the colliding gluons.
+\overset{\text{CMS}}{=}p_2$ , $\tilde{p_2}\overset{\text{CMS}}{=}p_1$ , $\tilde{p_3}\overset{\text{CMS}}{=}p_4$, and $\tilde{p_4}\overset{\text{CMS}}{=}p_3$, and CMS here stands for centre of momentum frame of the colliding gluons.
 
-Using the formulae given here one can directly calculate the invariant amplitude of the process $g+g\rightarrow g+g$ without the need of adding the Faddeev-Popov ghosts explicitly into the calculation (the ghost method can be seen for example in Risto Paatelainen's master's thesis TODO and originally in TODO). The calculation itself would be very demanding with pen and paper, due to the excess amount of terms in products. However, by using symbolical calculation on Wolfram Mathematica platform with excellent open source packages FeynCalc and FeynArts (viitteet TODO), the calculation can be made straightforwardly. 
+Using the formulae given here one can directly calculate the invariant amplitude of the process $g+g\rightarrow g+g$ without the need of adding the Faddeev-Popov ghosts explicitly into the calculation (the ghost method can be seen for example in Risto Paatelainen's Master's thesis \cite{RiPa} and originally in \cite{Cutler}). The calculation itself would be very demanding with pen and paper, due to the excessive amount of terms in products. However, by using symbolical calculation on Wolfram Mathematica platform with excellent open source packages FeynCalc \cite{FCalc1, FCalc2} and FeynArts \cite{FArts}, the calculation can be made straightforwardly. 
 
-In my research training report, I went through the symbolical calculation for all the processes in table \ref{T:subprocesses}. In addition, I calculated the full gluonic process $g+g\rightarrow g+g$ also in general covariant gauge and in an axial gauge. All the source codes of these calculations are given in TODO.
+In my research training report \cite{erkka}, I went through the symbolical calculation of all the processes in Table \ref{T:subprocesses}. In addition, I calculated the full gluonic process $g+g\rightarrow g+g$ also in a general covariant gauge and in an axial gauge. All the source codes of these calculations are given in \cite{erkkakoodit}.
 
-In general axial gauge the gauge field $A^\mu$ needs to satisfy the Lorentz gauge condition $n_\mu A^\mu=0$ for some arbitrary four-vector $n_\mu$. In this gauge the the polarization vector can be shown to fulfill conditions $n\cdot\epsilon(k)=0$ and $k\cdot\epsilon(k)=0$. With these the polarization tensor $\mathcal{P}$ can be shown to be
+In a general axial gauge the gauge field $A^\mu$ needs to satisfy the gauge condition $n_\mu A^\mu=0$ for some arbitrary four-vector $n_\mu$. In this gauge the polarisation vector of a gluon can be shown to fulfil the conditions $n\cdot\epsilon(k)=0$ and $k\cdot\epsilon(k)=0$. With these the polarisation tensor $\mathcal{P}$ can be shown to be (see Appendix \ref{AS:axial_polarization_tensor})
 \begin{equation}
 \mathcal{P}^{\mu\nu} (k) =  -g^{\mu\nu} +\frac{n^\mu k^\nu+k^\mu n^\nu}{n\cdot k} -\frac{n^2 k^\mu k^\nu}{(n\cdot k)^2}.
 \end{equation}
-In my research training report I calculated the process $g+g\rightarrow g+g$ in a special case of this gauge with extra conditions $n^2=0$ and $\lambda=0$. The $n$-vector can be chosen differently between each separate gauge field. For example, if for each external leg one chooses $n=\tilde{p}$, the polarization tensor simplifies into the form in \eqref{E:ptensorcovariant}. In the end, due to the gauge invariance of $\left\langle|\mathcal{M}|^2\right\rangle$, all choices need to lead to the same result.
+In \cite{erkka} I calculated the process $g+g\rightarrow g+g$ in a special case of this gauge with extra conditions $n^2=0$ and $\lambda=0$. The $n$-vector can and even must be chosen separately for each external gauge field. For example, if for each external leg one chooses $n=\tilde{p}$, the polarisation tensor simplifies into the form in \eqref{E:ptensorcovariant}. In the end, due to the gauge invariance of $\left\langle|\mathcal{M}|^2\right\rangle$, all choices need to lead to the same result.
 
 
 
-\subsection{Integrated dijet production cross section}
+\section{Integrated dijet production cross-section}\label{SS:integrated_cross_sections}
 
-The full inclusive dijet production cross section $\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X} \equiv \sigma_{\text{jet}}$ in leading order can be found by simply integrating the equation \eqref{E:dijet_cross_section} over the phasespace:
+
+\begin{sloppypar}
+The full integrated inclusive dijet production cross-section $\sigma^{p+p\rightarrow\text{jet}+\text{jet}+X} $ $\equiv \sigma_{\text{jet}}(\sqrt{s},k_0)$ in leading order can be found by integrating the Equation \eqref{E:dijet_cross_section} over the phase space $\Omega(\sqrt{s},k_0)$ as follows:
 \begin{equation}\label{E:integrated_sigma_jet}
-	\sigma_{\text{jet}} = \sum_{i,j,k,l}\;\int\limits_{\Omega} x_1f_i(x_1,Q^2)\cdot x_2f_j(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}\;\text{d}k_T^2\text{d}y_1\text{d}y_2 , 
+\sigma_{\text{jet}}(\sqrt{s},k_0) = \sum_{i,j,k,l}\;\int\limits_{\Omega(\sqrt{s},k_0)}\text{d}k_T^2\text{d}y_1\text{d}y_2\; \frac{1}{1+\delta_{kl}} x_1f_i(x_1,Q^2)\cdot x_2f_j(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl},
 \end{equation}
-or the equation \eqref{E:dijet_cross_section_SES} in the SES approximation:
+where $k_0 \gg \Lambda_{\text{QCD}}$ is some lower limit for $k_T$. The factor $\frac{1}{1+\delta_{kl}}$ prevents the double counting of the phase space for identical final state particles.
+\end{sloppypar}
+
+The phase space region $\Omega(\sqrt{s},k_0)$ in Equation \eqref{E:integrated_sigma_jet} can be determined from the kinematical limitation that $x_1, x_2 \leq 1$. Using this and the Equations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys}, one can show that 
+\begin{align}
+k_0 \leq k_T &\leq \frac{\sqrt{s}}{2}, \label{E:kt_limit} \\[1em]
+|y_1| \leq \text{arcosh}\left(\frac{\sqrt{s}}{2k_T}\right) = \log&\left(\frac{\sqrt{s}}{2k_T}+\sqrt{\frac{s}{4k_T^2}-1}\right)\; \text{ and} \label{E:y1_limits} \\[1em]
+-\log\left(\frac{\sqrt{s}}{k_T}-\mathrm{e}^{-y_1}\right) \leq y_2 &\leq \log\left(\frac{\sqrt{s}}{k_T}-\mathrm{e}^{y_1}\right)  \label{E:y2_limits} .
+\end{align}
+This phase space region is illustrated in Figure \ref{F:phasespace} for $y_1$ and $y_2$, keeping $k_T$ fixed.
+
+\begin{figure}[t!]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/phasespace.png}	
+	\caption{Plot of the shape of the limits of $y_1$ and $y_2$ in Equations \eqref{E:y1_limits} and \eqref{E:y2_limits} for three different values $k_T=1\,\text{GeV}$ (blue curve), $k_T=3\,\text{GeV}$ (purple curve), and $k_T=10\,\text{GeV}$ (red curve). Here $s=1\,\text{TeV}$.}
+	\label{F:phasespace}
+\end{figure}
+
+
+The summation in Equations \eqref{E:factorization_theor}, \eqref{E:dijet_cross_section}, and \eqref{E:integrated_sigma_jet} must include all possible initial partons $i$ and $j$, and all partonic subprocesses shown in Table \ref{T:subprocesses}. The Equation \eqref{E:integrated_sigma_jet} written explicitly takes the form (denoting $x_1f_g(x_1,Q^2)\equiv g_1$ and other parton flavours similarly, for brevity)
+\begin{align}\label{E:partonic_bookkeeping}
+\sigma_{\text{jet}}(\sqrt{s},k_0) = &\int\limits_{\Omega(\sqrt{s},k_0)}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\; \;  \Bigg\{\Bigg. g_1\cdot g_2 \cdot \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow gg} + g_1\cdot g_2 \cdot \sum\limits_{q=u,d,s,\dots}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow q\bar{q}}  \nonumber\\[0.5em]
+&+g_1\cdot \sum\limits_{q}q_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gq\rightarrow gq} + g_1\cdot \sum\limits_{\bar{q}}\bar{q}_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{g\bar{q}\rightarrow g\bar{q}} \nonumber\\
+&+g_2\cdot \sum\limits_{q}q_1 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qg\rightarrow qg} + g_2\cdot \sum\limits_{\bar{q}}\bar{q}_1 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}g\rightarrow \bar{q}g} \nonumber\\[0.5em]
+&+\sum\limits_{q} q_1\cdot q_2 \cdot \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qq\rightarrow qq} + \sum\limits_{\bar{q}} \bar{q}_1\cdot \bar{q}_2 \cdot \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}\bar{q}\rightarrow \bar{q}\bar{q}} \nonumber\\[0.75em]
+&+\sum\limits_{q, q', q\neq q'} q_1\cdot q'_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qq'\rightarrow qq'} + \sum\limits_{\bar{q}, \bar{q}', \bar{q}\neq\bar{q}'} \bar{q}_1\cdot \bar{q}'_2 \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}\bar{q}'\rightarrow \bar{q}\bar{q}'} \nonumber\\[0.15em]
+&+\left(\sum\limits_{q} q_1\right)\cdot \left(\sum\limits_{\bar{q}', q\neq q'}\bar{q}'_2\right) \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}'\rightarrow q\bar{q}'} + \left(\sum\limits_{\bar{q}} \bar{q}_1\right)\cdot \left(\sum\limits_{q', q\neq q'}q'_2\right) \cdot \frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q'\rightarrow \bar{q}q'} \nonumber\\[1em]
+&+\sum\limits_{q} q_1\cdot \bar{q}_2 \cdot \left[\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}\rightarrow q\bar{q}} + \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}\rightarrow gg} +\sum\limits_{q'\neq q}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{q\bar{q}\rightarrow q'\bar{q}'} \right] \nonumber\\[0.15em]
+&+\sum\limits_{q} \bar{q}_1\cdot q_2 \cdot \left[\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q\rightarrow \bar{q}q} + \frac{1}{2}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q\rightarrow gg} +\sum\limits_{q'\neq q}\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{\bar{q}q\rightarrow \bar{q}'q'} \right]\;\Bigg.\Bigg\},
+\end{align}
+which we will from now on call full partonic bookkeeping. The parton level Mandelstam variables in the subprocess cross-sections can be calculated using the formulae \cite{pqcd} 
+\begin{align}
+\hat{s}(k_T^2,y_1,y_2) &= 2k_T^2(1+\cosh(y_1-y_2)), \label{E:Mandelstam_s}\\
+\hat{t}(k_T^2,y_1,y_2) &= -k_T^2(1+\text{e}^{-(y_1-y_2)}),\label{E:Mandelstam_t}\\
+\hat{u}(k_T^2,y_1,y_2) &=  -k_T^2(1+\text{e}^{+(y_1-y_2)}), \label{E:Mandelstam_u}
+\end{align}
+where $\hat{u} = (x_1h_1-k_2)^2$, and we see that in the massless-parton limit discussed here we have $\hat{s}+\hat{t}+\hat{u}=0$.
+
+As Equation \eqref{E:partonic_bookkeeping} is lengthy, it is often advantageous to use the so-called single effective subprocess (SES) approximation \cite{pqcd, kjeold, combrses,ESW} for first estimates. This approximation is based on the notice that, at high energies, processes with same initial and final partons ($gg\rightarrow gg$ and $gq\rightarrow gq$ in particular) dominate jet production. Equation \eqref{E:partonic_bookkeeping} can be written as 
+\begin{align}
+	\sigma_{\text{jet}}&(\sqrt{s},k_0) = \int\limits_{\Omega(\sqrt{s},k_0)}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\; F(x_1,x_2,\hat{s},\hat{t},\hat{u}) \nonumber \\[1em]
+	&= \frac{1}{2}\left[\int\limits_{\Omega(\sqrt{s},k_0)}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\; F(x_1,x_2,\hat{s},\hat{t},\hat{u})+\int\limits_{\Omega}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\; F(x_1,x_2,\hat{s},\hat{t},\hat{u})\right]. \label{E:SES_vaihe1}
+\end{align}
+Now make a note that the kinematic limits of $y_1$ and $y_2$ in Figure \ref{F:phasespace} are symmetric under exchange of $y_1$ and $y_2$. Using Equations \eqref{E:x1_from_ktandys}, \eqref{E:x2_from_ktandys}, \eqref{E:Mandelstam_s}, \eqref{E:Mandelstam_t}, and \eqref{E:Mandelstam_u}, changing $y_1 \rightarrow y_2$, $y_2 \rightarrow y_1$ changes $x_1 \rightarrow x_1$, $x_2 \rightarrow x_2$, $\hat{s}\rightarrow \hat{s}$, $\hat{t}\rightarrow \hat{u}$ and $\hat{u}\rightarrow \hat{t}$. Making this exchange to the latter integral in \eqref{E:SES_vaihe1} and then re-labeling the integration variables yields
+\begin{align}
+\sigma_{\text{jet}} &= \frac{1}{2}\left[\int\limits_{\Omega(\sqrt{s},k_0)}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\; F(x_1,x_2,\hat{s},\hat{t},\hat{u})+\int\limits_{\Omega}\;\text{d}k_T^2\text{d}y_2\text{d}y_1\; F(x_1,x_2,\hat{s},\hat{u},\hat{t})\right] \nonumber \\[1em]
+&= \frac{1}{2}\left[\int\limits_{\Omega(\sqrt{s},k_0)}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\; F(x_1,x_2,\hat{s},\hat{t},\hat{u})+\int\limits_{\Omega}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\; F(x_1,x_2,\hat{s},\hat{u},\hat{t})\right] \nonumber \\[1em]
+&= \frac{1}{2}\int\limits_{\Omega(\sqrt{s},k_0)}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\; \left[F(x_1,x_2,\hat{s},\hat{t},\hat{u})+ F(x_1,x_2,\hat{s},\hat{u},\hat{t})\right] \nonumber
+\end{align}
+\begin{align}
+= \frac{1}{2}&\sum_{i,j,k,l}\;\;\int\limits_{\Omega(\sqrt{s},k_0)}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\;\nonumber\\[0.3em] &\qquad x_1f_i(x_1,Q^2)\cdot x_2f_j(x_2,Q^2) \left[\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}(\hat{s},\hat{t},\hat{u})+\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}(\hat{s},\hat{u},\hat{t})  \right]\frac{1}{1+\delta_{kl}}\nonumber\\[1.5em]
+= \frac{1}{2}&\sum_{i,j,k,l}\;\;\int\limits_{\Omega(\sqrt{s},k_0)}\;\text{d}k_T^2\text{d}y_1\text{d}y_2\; x_1f_i(x_1,Q^2)\cdot x_2f_j(x_2,Q^2) \left\langle\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}(\hat{s},\hat{t},\hat{u}) \right\rangle_{\hat{u},\hat{t}},\label{E:SES_vaihe2}
+\end{align}
+where $\left\langle\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}(\hat{s},\hat{t},\hat{u}) \right\rangle_{\hat{u},\hat{t}}$ are now called ${\hat{u},\hat{t}}$-symmetrised cross-sections, and
+\begin{align}
+	\left\langle\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}(\hat{s},\hat{t},\hat{u}) \right\rangle_{\hat{u},\hat{t}}=
+	\begin{cases}
+	\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}(\hat{s},\hat{t},\hat{u})       & \quad \text{if } k=l\\[0.5em]
+	\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}(\hat{s},\hat{t},\hat{u}) +\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{ij\rightarrow kl}(\hat{s},\hat{u},\hat{t})  & \quad \text{if } k\neq l\\
+	\end{cases}.
+\end{align}
+Now using Table \ref{T:subprocesses} it is straightforward to show that one can estimate 
+\begin{align}
+	\frac{\left\langle\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gq\rightarrow gq}(\hat{s},\hat{t},\hat{u}) \right\rangle_{\hat{u},\hat{t}}}{\left\langle\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow gg}(\hat{s},\hat{t},\hat{u}) \right\rangle_{\hat{u},\hat{t}}} &\approx \;\;\frac{4}{9}, \label{E:SES_approx1}\\[0.6em]
+	\frac{\left\langle\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{qq\rightarrow qq}(\hat{s},\hat{t},\hat{u}) \right\rangle_{\hat{u},\hat{t}}}{\left\langle\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow gg}(\hat{s},\hat{t},\hat{u}) \right\rangle_{\hat{u},\hat{t}}} &\approx \left(\frac{4}{9}\right)^2,\label{E:SES_approx2}
+\end{align}
+where $q$ can now be any quark or antiquark.
+\begin{figure}[b!]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/SES_background.png}	
+	\caption{The $y_1-y_2$ dependence of the ${\hat{u},\hat{t}}$-symmetrised cross-sections of the processes $qg\rightarrow qg$, $qq'\rightarrow qq'$, and $gg\rightarrow q\bar{q}$, normalized to the cross-section of the process $gg\rightarrow gg$, calculated using the subprocess cross-sections in Table \ref{T:subprocesses} and Equations \eqref{E:Mandelstam_s}--\eqref{E:Mandelstam_u}. Notice that process $gg\rightarrow q\bar{q}$, where initial and final states are not same, is negligible.}
+	\label{F:SES_back}
+\end{figure} Figure \ref{F:SES_back} illustrates this approximation. Now neglecting the effects of subprocesses that do not have same initial and final state particles, and using \eqref{E:SES_approx1} and \eqref{E:SES_approx2}, Equation \eqref{E:SES_vaihe2} simplifies into
 \begin{equation}\label{E:integrated_sigma_jet_SES}
-\sigma_{\text{jet}} \approx \frac{1}{2}\int\limits_{\Omega} x_1F_{\text{SES}}(x_1,Q^2)\cdot x_2F_{\text{SES}}(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow gg}\;\text{d}k_T^2\text{d}y_1\text{d}y_2 .
+\sigma_{\text{jet}} \approx \frac{1}{2}\int\limits_{\Omega}\text{d}k_T^2\text{d}y_1\text{d}y_2\; x_1F_{\text{SES}}(x_1,Q^2)\cdot x_2F_{\text{SES}}(x_2,Q^2) \cdot\frac{\text{d}\hat{\sigma}}{\text{d}\hat{t}}^{gg\rightarrow gg} ,
 \end{equation}
-
-The phasespace region $\Omega$ in equations \eqref{E:integrated_sigma_jet} and \eqref{E:integrated_sigma_jet_SES} can be determined from the kinematical limitation that $x_1, x_2 \leq 1$. Using that and the result
-\begin{align}
-	x_1 &= \frac{k_T}{\sqrt{s}}\left(\mathrm{e}^{y_1}+\mathrm{e}^{y_2}\right)\label{E:x1_from_ktandys} ,\\[1em]
-	x_2 &= \frac{k_T}{\sqrt{s}}\left(\mathrm{e}^{-y_1}+\mathrm{e}^{-y_2}\right)\label{E:x2_from_ktandys} , 
-\end{align}
-where $s = (h_1+h_2)^2$, one can show that 
-\begin{align}
-	k_T &\leq \frac{\sqrt{s}}{2}, \label{E:kt_limit} \\[1em]
-	|y_1| &\leq \text{arcosh}\left(\frac{\sqrt{s}}{2k_T}\right) \text{ and} \label{E:y1_limits} \\[1em]
-	-\log\left(\frac{\sqrt{s}}{k_T}-\mathrm{e}^{-y_1}\right) \leq y_2 &\leq \log\left(\frac{\sqrt{s}}{k_T}-\mathrm{e}^{y_1}\right)  \label{E:y2_limits} .
-\end{align}
-At low values in $k_T$ perturbative QCD becomes increasingly imprecise due to the running of $\alpha_S$, so we must limit the $k_T$-space by a restriction $k_T\geq k_0 \gg \Lambda_{\text{QCD}}$, where $k_0$ is a parameter to be fitted to experimental data.
-
-Inverting the equations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys} yields
-\begin{align}
-	y_1 &= \log\left[\frac{\sqrt{s}}{2x_2k_T}\left(x_1x_2-\sqrt{x_1x_2\left(x_1x_2-\frac{4k_T^2}{s}\right)}\right)\right] \label{E:y1_from_ktandxs} ,\\[1em]
-	y_2 &= \log\left[\frac{\sqrt{s}}{2x_2k_T}\left(x_1x_2+\sqrt{x_1x_2\left(x_1x_2-\frac{4k_T^2}{s}\right)}\right)\right] \label{E:y2_from_ktandxs} . 
-\end{align}
-Using these results the integration measures in equations \eqref{E:integrated_sigma_jet} and \eqref{E:integrated_sigma_jet_SES} can be written with
-\begin{equation}\label{E:integration_measure_transform}
-	\text{d}y_1\text{d}y_2 = \left|\frac{\partial(y_1,y_2)}{\partial(x_1,x_2)}\right|\text{d}x_1\text{d}x_2 = \frac{\text{d}x_1\text{d}x_2}{\sqrt{x_1x_2\left(x_1x_2-\frac{4k_T^2}{s}\right)}},
+where 
+\begin{equation}\label{E:F_SES}
+F_{\text{SES}}(x,Q^2) = f_g(x,Q^2) + \frac{4}{9} \sum\limits_{q=u,d,s\ldots }\bigg\lbrack f_q(x,Q^2)+f_{\bar{q}}(x,Q^2)\bigg\rbrack.
 \end{equation}
-in ($k_T^2,x_1,x_2$)-space, where the integration limits are much simpler:
-\begin{align}
-	k_0^2\leq\; &k_T^2 \leq \frac{s}{4} , \\
-	\frac{4k_T^2}{s} \leq\; &x_1 \leq 1 ,\\
-	\frac{4k_T^2}{sx_2} \leq\; &x_2 \leq 1 .
-\end{align}
-Some thought still needs to be had on the changing of basis. The coordinate transformations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys} are not injective; they are symmetric under the exchange of $y_1$ and $y_2$. There is no such symmetry in \eqref{E:y1_from_ktandxs} and \eqref{E:y2_from_ktandxs}, $y_{1,2}(x_1,x_2)\neq y_{1,2}(x_2,x_1)$, but we could have chosen to write the equations other way around with \eqref{E:y1_from_ktandxs} for $y_2$ and \eqref{E:y2_from_ktandxs} for $y_1$. Taking these considerations into account, to calculate the integral on the whole phase space, the transformation of the integral would need to be
-\begin{align}
-	&\int F(y_1,y_2)\;\text{d}y_1\text{d}y_2  = \nonumber\\ &\int \Big(F(y_1(x_1,x_2),y_2(x_1,x_2))+F(y_2(x_1,x_2),y_1(x_1,x_2))\Big)\left|\frac{\partial(y_1,y_2)}{\partial(x_1,x_2)}\right|\text{d}x_1\text{d}x_2 .
-\end{align}
+In what follows, in the minijet eikonal model considered here, $\sigma_{\text{jet}}(\sqrt{s}, k_0)$ is the key QCD quantity. We will consider $k_0$ as a parameter that needs to be fitted from experimental data. This parameter effectively sets the boundary between the perturbatively calculable hard subprocesses and the nonperturbative soft subprocesses. We will also see that, pushing pQCD validity to its limits, we should take $k_0$ to be of the order of few GeV. Jets of such a small transverse momenta ($p_T \leq 5 \,\text{GeV}$) are dubbed minijets as they cannot be observed directly as jets.
 
 
 
 
 
-\section{Quantum Scattering problem}
+\cleardoublepage
+\chapter{Eikonal approximation}\label{S:Eikonal_approximation}
 
-\subsection{Elastic, inelastic}
+In this chapter, we will derive the eikonal model for a non-relativistic quantum potential scattering problem. The derivation will follow Barone's and Predazzi's textbook \cite{barpred} but is given here in more detail.
 
-TODO definitions here, analogiat klassiseen yms
-
-
-\subsection{Eikonal approximation}\label{S:Eikonal_approximation}
+Scattering events can be classified into two categories. In elastic scattering, the final state particles are the same as the initial state particles, and in inelastic scattering, the particles change in the process. The elastic quantum scattering problem has a very precise classical analogy in the Kirchhoff's diffraction theory. In quantum world light waves are replaced by particles' wave functions and the hole in the screen is replaced by some scattering potential. The inelastic scattering also bears similarities to the classical diffraction theory in the case of perfectly absorptive interaction, but this analogy has its challenges (see discussion in \cite{barpred, amaldi}).
 
 
-In this section, we will derive the eikonal model for non-relativistic quantum scattering problem. The derivation will follow Barone's and Predazzi's one (presented in TODO) but is given in more detail.
+\section{Solving Schrödinger equation}\label{SS:schrode}
 
-
-\subsubsection{Solving Schrödinger equation}\label{SS:schrode}
-
-Let us consider a particle scattering off a potential function $V$ that describes some kind of an interaction that has limited range. We are interested in the high-energy limit so that particle energy dominates over the interaction potential,
+Let us consider a particle scattering off a potential $V(\mathbf{r})$ that describes some kind of an interaction that has a limited range. We are interested in the high-energy limit so that particle energy dominates over the interaction potential,
 \begin{equation}\label{E:high_energy_assumption}
 	E\gg|V(\mathbf{r})|.
 \end{equation} 
@@ -419,242 +456,284 @@ For processes of interest, we can also make the assumption that our particle wav
 \begin{equation}\label{E:small_wavelength_assumption}
 	\lambda \ll a \iff ka\gg 1,
 \end{equation}
-where $k=2\pi/\lambda$ is the wave number of the particle. If we assume a stationary state, the particle is represented in location space by its wave function $\psi(\mathbf{r})$ with location vector $\mathbf{r}=(x,y,z) \in \mathbb{R}^3$. The wave function is a solution to the non-relativistic time-independent Schrödinger equation (LÄHDE TODO)
+where $k=2\pi/\lambda$ is the wave number of the particle. Effects of spin are neglected here, i.e. we consider only scattering of scalar particles. If we assume a stationary state, the particle is represented in coordinate space by its wave function $\psi(\mathbf{r})$ with location vector $\mathbf{r}=(x,y,z) \in \mathbb{R}^3$. The wave function is a solution to the non-relativistic time-independent Schrödinger Equation \cite[p.144]{griff}
 \begin{equation}\label{E:schrode}
 	-\frac{\hbar^2}{2\mu}\nabla^2\psi(\mathbf{r}) + V(\mathbf{r})\psi(\mathbf{r}) = E\psi(\mathbf{r}),
 \end{equation}
-where $\nabla^2$ is the Laplacian operator, $\hbar$ is the reduced Planck constant and $E$ and $\mu$ are the energy and the mass of the particle. Consider the particle incoming along the $z$-axis so that at the limit of $z \to -\infty$ it is completely unaffected by the potential $V(\mathbf{r})$. Taking into account that if conditions \eqref{E:high_energy_assumption} and \eqref{E:small_wavelength_assumption} are satisfied the scattering will happen dominantly into the forward direction we can make a plane wave ansatz:
+where $\nabla^2$ is the Laplacian operator, $\hbar$ is the reduced Planck constant and $E$ and $\mu$ are the energy and the mass of the particle. Consider the particle coming in along the $z$-axis so that at the limit of $z \to -\infty$ it is completely unaffected by the potential $V(\mathbf{r})$. Taking into account that if the conditions \eqref{E:high_energy_assumption} and \eqref{E:small_wavelength_assumption} are satisfied the scattering will happen dominantly into the forward direction we can make a plane wave motivated ansatz:
 \begin{equation}\label{E:planewave}
 	\psi(\mathbf{r}) = \phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}},
 \end{equation}
-where $\mathbf{k}=(0,0,k)\in \mathbb{R}^3$ is the wave vector of the incoming wave and $\phi(\mathbf{r})$ is an unknown scalar field with boundary condition
+where $\mathbf{k}=(0,0,k)\in \mathbb{R}^3$ is the wave vector of the incoming wave and the modulation $\phi(\mathbf{r})$ is an unknown scalar field with boundary condition
 \begin{equation}\label{E:BC_for_phi}
-\phi(x,y,-\infty)=1.
+\phi(x,y,-\infty)=1,
 \end{equation}
+so that $\psi(x,y,-\infty) = \mathrm{e}^{i kz}$ i.e. an incoming plane wave.
 
-Remembering De Broglie relation for particle momentum $\mathbf{p}=\hbar\mathbf{k}$ and that kinetic energy $E=\frac{\mathbf{p}^2}{2\mu}$ we get the relation $\frac{2\mu}{\hbar}E=k^2$. With this and by naming $U(\mathbf{r})\equiv\frac{2\mu}{\hbar}V(\mathbf{r})$, equation \eqref{E:schrode} simplifies to
+Remembering De Broglie relation for particle momentum $\mathbf{p}=\hbar\mathbf{k}$ and that kinetic energy $E=\frac{\mathbf{p}^2}{2\mu}$ we denote $\frac{2\mu}{\hbar}E=k^2$. With this and by naming $U(\mathbf{r})\equiv\frac{2\mu}{\hbar}V(\mathbf{r})$, Equation \eqref{E:schrode} simplifies to
 \begin{equation}\label{E:simpler_schrode}
 	\left[\nabla^2-U(\mathbf{r})+k^2\right]\psi(\mathbf{r}) = 0.
 \end{equation}
-Substituting now our plane wave solution from equation \eqref{E:planewave} into equation \eqref{E:simpler_schrode} we can derive a necessary condition for function $\phi(\mathbf{r})$:
+Substituting now our modulated plane wave solution from Equation \eqref{E:planewave} into Equation \eqref{E:simpler_schrode} we can derive a necessary condition for the function $\phi(\mathbf{r})$:
 \begin{align}\label{E:phi_schrode}
 	0 &= \left[\nabla^2-U(\mathbf{r})+k^2\right]\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} \nonumber\\
 	&=\nabla^2\left(\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}}\right)-U(\mathbf{r})\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}}+k^2\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} \nonumber\\
 	&=\left(\nabla^2\phi(\mathbf{r})\right)\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} + \left(2i\mathbf{k}\cdot\nabla\phi(\mathbf{r})\right)\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}}  -U(\mathbf{r})\phi(\mathbf{r})\mathrm{e}^{i \mathbf{k}\cdot\mathbf{r}} \nonumber\\
-\iff 0 &= \left[\nabla^2 +2i\mathbf{k}\cdot\nabla -U(\mathbf{r})\right]\phi(\mathbf{r}).
+\iff 0 &= \left[\nabla^2 +2i\mathbf{k}\cdot\nabla -U(\mathbf{r})\right]\phi(\mathbf{r}),
 \end{align}
+where now $\mathbf{k}\cdot\nabla = k\partial_z$.
 
-TODO miksi se, että U ja $\phi$ vaihtelevat vain suuremmassa skaalassa kuin $1/k$ antaa hylätä $\nabla^2\phi$n???
-
-Therefore we get 
+If we now assume that on the scale of $1/k$ the behaviour of the wave function $\psi$ is dominated by the exponential part, so that the function $\phi$ is essentially a constant, we can neglect the term $\nabla^2\phi$ in \eqref{E:phi_schrode}. Therefore we can separate
 \begin{align}\label{E:differential_for_phi}
 	2ik\partial_z\phi(x,y,z) &= U(x,y,z)\phi(x,y,z) \nonumber\\
 \iff \qquad	\frac{\partial_z\phi(x,y,z)}{\phi(x,y,z)} &= -\frac{i}{2k}U(x,y,z).
 \end{align}
-Integrating both sides of equation \eqref{E:differential_for_phi} with respect to $z$ and using boundary condition \eqref{E:BC_for_phi} we get to a form
+Integrating both sides of Equation \eqref{E:differential_for_phi} with respect to $z$ and using the boundary condition \eqref{E:BC_for_phi} we get to a form
 \begin{align}\label{E:phi_solution}
 	\int\limits^{\phi}_{1}\frac{\text{d}\phi'}{\phi'} &= -\frac{i}{2k}\int\limits^{z}_{-\infty} U(x,y,z')\,\text{d}z' \nonumber\\
 \iff \qquad	\phi(x,y,z) &= \exp\left[-\frac{i}{2k}\int\limits^{z}_{-\infty} U(x,y,z')\,\text{d}z'\right].
 \end{align}
-By substituting equation \eqref{E:phi_solution} to our original ansatz \eqref{E:planewave} we can form the wave function
+By substituting Equation \eqref{E:phi_solution} to our original ansatz \eqref{E:planewave} we can form the wave function
 \begin{equation}\label{E:wave_function_solution_xyz}
 	\psi(x,y,z) = \exp\left[ikz-\frac{i}{2k}\int\limits^{z}_{-\infty} U(x,y,z')\,\text{d}z'\right].
 \end{equation}
-Let us still express the location vector by $\mathbf{r}\equiv \mathbf{b}+z\hat{\mathbf{e}}_z$, where $\hat{\mathbf{e}}_z$ is the $z$-direction unit vector and $\mathbf{b}=(b_x,b_y,0)\in\mathbb{R}^3$ is called the impact parameter. With this definition, we get a solution
+Let us still express the location vector by 
+\begin{equation}\label{E:impact_parameter}
+	\mathbf{r}\equiv \mathbf{b}+z\hat{\mathbf{e}}_z,
+\end{equation}
+where $\hat{\mathbf{e}}_z$ is the $z$-direction unit vector and $\mathbf{b}=(x,y,0)\in\mathbb{R}^3$ is called the impact parameter. With this definition, we get a solution
 \begin{equation}\label{E:wave_function_solution}
 	\psi(\mathbf{r}) = \exp\left[i\mathbf{k}\cdot\mathbf{r}-\frac{i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]
 \end{equation}
 for the outgoing wave.
 
 
-
-\subsubsection{Solving scattering amplitude}\label{SS:scatt_amplitude}
+\clearpage
+\section{Solving scattering amplitude}\label{SS:scatt_amplitude}
 
 Let us now assume that asymptotically far away from the scattering centre, that is $|\mathbf{r}|\equiv r\rightarrow\infty$, the wave function of the system can be expressed as a superposition of the incoming plane wave and an outgoing spherical wave originating from the scattering centre. This can be written as
-\begin{equation}\label{E:asymptotical_wave_function}		
+\begin{equation}\label{E:asymptotic_wave_function}		
 	\psi(\mathbf{r}) \sim \text{e}^{i\mathbf{k}\cdot\mathbf{r}} + f(\mathbf{k},\mathbf{k'})\frac{\text{e}^{ikr}}{r}, \quad \text{as} \,\, r\rightarrow\infty,
 \end{equation}
-where $\mathbf{k'}$ is the wave vector of the outgoing wave for which the consevation of energy necessitates that $|\mathbf{k'}|=|\mathbf{k}|=k$, and the $f(\mathbf{k},\mathbf{k'})$ is called scattering amplitude. Scattering amplitude is a function of great interest, as it contains all the information of the scattering process. 
+where $\mathbf{k'}\equiv |\mathbf{k'}|\mathbf{\hat{e}_r}$ is the wave vector of the outgoing wave (see Figure \ref{F:vectors}) for which the conservation of energy necessitates that $|\mathbf{k'}|=|\mathbf{k}|=k$, and $f(\mathbf{k},\mathbf{k'})$ is called scattering amplitude, and it depends only on the scattering angles ($\theta,\phi$) and the wave vector, $f(\mathbf{k},\mathbf{k'})=f_\mathbf{k}(\theta,\phi)$. The scattering amplitude is a function of great interest, as it contains all the information of the scattering process. 
 
-With the asymptotical behaviour of the wave function in equation \eqref{E:asymptotical_wave_function}, the Schrödinger equation \eqref{E:schrode} is solved by Lippman-Schwinger equation (lähde TODO (johto?)):
+\begin{figure}[htb!]
+\centering
+\includegraphics[width=\textwidth]{kuvat/vektorikuva.png}	
+\caption{Illustration of how $\mathbf{k}$, $\mathbf{k'}\equiv |\mathbf{k'}|\mathbf{\hat{e}_r}$, $\mathbf{q} \equiv \mathbf{k'}-\mathbf{k}$, and $\mathbf{q}_T$ relate to each other, and to the scattering angle $\theta$.}
+\label{F:vectors}
+\end{figure}
+
+With the asymptotic behaviour of the wave function in Equation \eqref{E:asymptotic_wave_function}, the Schrödinger Equation \eqref{E:schrode} can be written as an integral Equation \cite[p.424]{griff}:
 \begin{equation}\label{E:Lippman-Schwinger}
 	\psi(\mathbf{r}) = \text{e}^{i\mathbf{k}\cdot\mathbf{r}} - \frac{1}{4\pi}\int \frac{\text{e}^{ik|\mathbf{r}-\mathbf{r'}|}}{|\mathbf{r}-\mathbf{r'}|}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'}.
 \end{equation}
-Taylor expanding the term $|\mathbf{r}-\mathbf{r'}|$ around $\mathbf{r'}=\mathbf{0}$ we find that
+Taylor expanding the term $|\mathbf{r}-\mathbf{r'}|$ around the limit $\mathbf{r'}=\mathbf{0}$ (keeping the limit $\mathbf{r'}\ll \mathbf{r}\rightarrow \infty$ and the finite range of $U(\mathbf{r'})$ in mind) we find that
 \begin{equation}\label{E:taylor_r_r'}
 	|\mathbf{r}-\mathbf{r'}|=r-\frac{\mathbf{r'}\cdot\mathbf{r}}{r}+\mathcal{O}(r^{-1}).
 \end{equation}
-Inserting expansion \eqref{E:taylor_r_r'} to Lippman-Schwinger equation \eqref{E:Lippman-Schwinger} we get
+Inserting the expansion \eqref{E:taylor_r_r'} to the integral Equation \eqref{E:Lippman-Schwinger} we get
 \begin{align}\label{E:Lippman-Schwinger_expanded}
 	\psi(\mathbf{r}) &= \text{e}^{i\mathbf{k}\cdot\mathbf{r}} - \frac{1}{4\pi}\int \frac{\text{e}^{ik\left(r-\frac{\mathbf{r'}\cdot\mathbf{r}}{r}+\mathcal{O}(r^{-1})\right)}}{r-\frac{\mathbf{r'}\cdot\mathbf{r}}{r}+\mathcal{O}(r^{-1})}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'} \nonumber \\
 	&=\text{e}^{i\mathbf{k}\cdot\mathbf{r}} + \frac{\text{e}^{ikr}}{r}\left[\frac{-1}{4\pi}\int \frac{\text{e}^{-ik\frac{\mathbf{r'}\cdot\mathbf{r}}{r}}}{\left(1-\frac{\mathbf{r'}\cdot\mathbf{r}}{r^2}+\mathcal{O}(r^{-2})\right)}\text{e}^{\mathcal{O}(r^{-1})}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'}\right].
 \end{align}
-In the asymptotical limit $r\rightarrow\infty$ we have $\text{e}^{\mathcal{O}(r^{-1})}\rightarrow 0$ and $-\frac{\mathbf{r'}\cdot\mathbf{r}}{r^2}+\mathcal{O}(r^{-2})\rightarrow 0$. Now note that $\mathbf{k'}\parallel\mathbf{r}$ leads to
+In the asymptotic limit $r\rightarrow\infty$ we have $\text{e}^{\mathcal{O}(r^{-1})}\rightarrow 1$ and $-\frac{\mathbf{r'}\cdot\mathbf{r}}{r^2}+\mathcal{O}(r^{-2})\rightarrow 0$. Now note that we can identify $\mathbf{k'} = k\frac{\mathbf{r'}}{r}$ and write 
 \begin{align}
-	\lim\limits_{r\rightarrow\infty} -ik\frac{\mathbf{r'}\cdot\mathbf{r}}{r} &= \lim\limits_{r\rightarrow\infty} -ik\frac{|\mathbf{r'}|r\cos(\theta_{\mathbf{r'}\mathbf{r}})}{r} = \lim\limits_{r\rightarrow\infty} -ik\frac{|\mathbf{r'}|\cos(\theta_{\mathbf{r'}\mathbf{k'}})}{1} \nonumber \\ 	
-	&= -i|\mathbf{k'}||\mathbf{r'}|\cos(\theta_{\mathbf{r'}\mathbf{k'}}) = -i\mathbf{k'}\cdot\mathbf{r'} \nonumber.
+-ik\frac{\mathbf{r'}\cdot\mathbf{r}}{r} = -i\mathbf{k'}\cdot\mathbf{r'} \nonumber.
 \end{align}
-Inserting these limits into equation \eqref{E:Lippman-Schwinger_expanded} we arrive into
-\begin{equation}\label{E:asymptotical_limit_of_L-S}
+Inserting these results into Equation \eqref{E:Lippman-Schwinger_expanded} we arrive into
+\begin{equation}\label{E:asymptotic_limit_of_L-S}
 	\lim\limits_{r\rightarrow\infty} \psi(\mathbf{r}) = \text{e}^{i\mathbf{k}\cdot\mathbf{r}} + \left[\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\mathbf{r'}}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'}\right]\frac{\text{e}^{ikr}}{r}.
 \end{equation}
-Comparing now equations \eqref{E:asymptotical_wave_function} and \eqref{E:asymptotical_limit_of_L-S} we can read the scattering amplitude
+Comparing now Equations \eqref{E:asymptotic_wave_function} and \eqref{E:asymptotic_limit_of_L-S} we can read off the scattering amplitude as
 \begin{equation}\label{E:scattering_amplitude_from_wf}
 	f(\mathbf{k},\mathbf{k'}) = \frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\mathbf{r'}}U(\mathbf{r'})\psi(\mathbf{r'})\,\text{d}^3\mathbf{r'}.
 \end{equation}
-Let us now define momentum transfer vector $\mathbf{q}\equiv\mathbf{k'}-\mathbf{k}$. Remembering our definition of impact parameter $\mathbf{b}$ and using solution \eqref{E:wave_function_solution}, we can express the scattering amplitude \eqref{E:scattering_amplitude_from_wf} as
+Let us now define the momentum transfer vector $\mathbf{q}\equiv\mathbf{k'}-\mathbf{k}$ as in Figure \ref{F:vectors}. Remembering our definition of the impact parameter $\mathbf{b}$ in Equation \eqref{E:impact_parameter} and using the solution \eqref{E:wave_function_solution}, we can express the scattering amplitude \eqref{E:scattering_amplitude_from_wf} as 
 \begin{align}\label{E:scattering_amplitude_incomplete}
-	f(\mathbf{k},\mathbf{k'}) &=\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\mathbf{r'}}U(\mathbf{r'})\, \exp\left[i\mathbf{k}\cdot\mathbf{r'}-\frac{i}{2k}\int\limits^{z'}_{-\infty} U(\mathbf{b},z'')\,\text{d}z''\right]\,\text{d}^3\mathbf{r'} \nonumber \\
-	 &=\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\left(\mathbf{b}+z'\hat{\mathbf{e}}_z\right)}U(\mathbf{b},z') \text{e}^{i\mathbf{k}\cdot\left(\mathbf{b}+z'\hat{\mathbf{e}}_z\right)} \, \exp\left[-\frac{i}{2k}\int\limits^{z'}_{-\infty} U(\mathbf{b},z'')\,\text{d}z''\right]\,\text{d}^2\mathbf{b}\,\text{d}z' \nonumber \\
-	 &=\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{q}\cdot\left(\mathbf{b}+z'\hat{\mathbf{e}}_z\right)}U(\mathbf{b},z') \, \exp\left[-\frac{i}{2k}\int\limits^{z'}_{-\infty} U(\mathbf{b},z'')\,\text{d}z''\right]\,\text{d}^2\mathbf{b}\,\text{d}z'.
+	f(\mathbf{k},\mathbf{k'}) &=\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\mathbf{r'}}U(\mathbf{r'})\, \exp\left[i\mathbf{k}\cdot\mathbf{r'}-\frac{i}{2k}\int\limits^{z'}_{-\infty} U(\mathbf{b'},z'')\,\text{d}z''\right]\,\text{d}^3\mathbf{r'} \nonumber \\
+	 &=\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{k'}\cdot\left(\mathbf{b'}+z'\hat{\mathbf{e}}_z\right)}U(\mathbf{b'},z') \text{e}^{i\mathbf{k}\cdot\left(\mathbf{b'}+z'\hat{\mathbf{e}}_z\right)} \, \exp\left[-\frac{i}{2k}\int\limits^{z'}_{-\infty} U(\mathbf{b'},z'')\,\text{d}z''\right]\,\text{d}^2\mathbf{b'}\,\text{d}z' \nonumber \\
+	 &=\frac{-1}{4\pi}\int \text{e}^{-i\mathbf{q}\cdot\left(\mathbf{b'}+z'\hat{\mathbf{e}}_z\right)}U(\mathbf{b'},z') \, \exp\left[-\frac{i}{2k}\int\limits^{z'}_{-\infty} U(\mathbf{b'},z'')\,\text{d}z''\right]\,\text{d}^2\mathbf{b'}\,\text{d}z'.
 \end{align}
-As stated in chapter \ref{SS:schrode}, when assumptions \eqref{E:high_energy_assumption} and \eqref{E:small_wavelength_assumption} are satisfied, the scattering happens dominantly into the forward direction. Because of this, we can approximate $\mathbf{q}\cdot\left(\mathbf{b}+z'\hat{\mathbf{e}}_z\right)\approx\mathbf{q}\cdot\mathbf{b}$. Noting also that
+As stated in Chapter \ref{SS:schrode}, when assumptions \eqref{E:high_energy_assumption} and \eqref{E:small_wavelength_assumption} are satisfied, the scattering happens dominantly into the forward direction. Because of this, $\mathcal{O}(\theta^2)\ll 1$, and we can approximate
+\begin{align*}
+	\mathbf{q}\cdot\mathbf{r'} &= \mathbf{q}\cdot\left(\mathbf{b'}+z'\hat{\mathbf{e}}_z\right) = \mathbf{q}\cdot\mathbf{b'} + z'(\mathbf{k-k'})\cdot\hat{\mathbf{e}}_z\\
+	&= \mathbf{q}_T\cdot\mathbf{b'} + z'k(1-\cos\theta)= \mathbf{q}_T\cdot\mathbf{b'} + \mathcal{O}(\theta^2)\\ &\approx \mathbf{q}_T\cdot\mathbf{b'},
+\end{align*}
+where $\mathbf{q}_T$ is now a two-dimensional transverse vector as indicated in Figure \ref{F:vectors}. Noting also that
 \begin{align*}
 	&\frac{\partial}{\partial z}\, \exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right] = \exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]\left(\frac{-i}{2k}U(\mathbf{b},z')\right) \\
-	\implies \quad & \int\limits^{\infty}_{-\infty} U(\mathbf{b},z) \,\exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]\,\text{d}z = \int\limits^{\infty}_{-\infty} i2k\frac{\partial}{\partial z}\, \exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]\,\text{d}z \\
-	&= i2k\, \exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right] \biggr\rvert^\infty_{z=-\infty} = i2k\left( \exp\left[\frac{-i}{2k}\int\limits^{\infty}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right] - 1\right)
+	\textstyle\implies\displaystyle & \int\limits^{\infty}_{-\infty}\textstyle U(\mathbf{b},z) \,\exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]\displaystyle\text{d}z = \int\limits^{\infty}_{-\infty}\textstyle i2k\frac{\partial}{\partial z}\, \exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]\displaystyle\text{d}z \\
+	&= i2k\intsub{z=-\infty}{\infty}{\exp\left[\frac{-i}{2k}\int\limits^{z}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right]} = i2k\left( \exp\left[\frac{-i}{2k}\int\limits^{\infty}_{-\infty} U(\mathbf{b},z')\,\text{d}z'\right] - 1\right)
 \end{align*}
-equation \eqref{E:scattering_amplitude_incomplete} can be simplified into
+Equation \eqref{E:scattering_amplitude_incomplete} can be simplified into
 \begin{align}\label{E:scattering_amplitude}
-	 f(\mathbf{k},\mathbf{k'}) &= \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\left(1 - \text{e}^{\frac{-i}{2k}\int\limits^{\infty}_{-\infty} U(\mathbf{b},z)\,\text{d}z}\right) \,\text{d}^2\mathbf{b} \nonumber \\
-	 &= \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\left(1 - \text{e}^{i\chi(\mathbf{b})}\right) \,\text{d}^2\mathbf{b} \nonumber \\
-	 &= \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\,\Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b},
+	 f(\mathbf{k},\mathbf{k'}) &= \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}_T\cdot\mathbf{b'}}\left(1 - \text{e}^{\frac{-i}{2k}\int\limits^{\infty}_{-\infty} U(\mathbf{b'},z'')\,\text{d}z''}\right) \,\text{d}^2\mathbf{b'} \nonumber \\
+	 &= \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}_T\cdot\mathbf{b'}}\left(1 - \text{e}^{i\chi(\mathbf{b'})}\right) \,\text{d}^2\mathbf{b'} \nonumber \\
+	 &= \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}_T\cdot\mathbf{b}}\,\Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b},
 \end{align}
-where we defined the eikonal function as
+where, in the last term, we have dropped the primes for simplicity, and defined the eikonal function as
 \begin{equation}\label{E:eikonal_function}
 \chi(\mathbf{b}) \equiv \frac{-1}{2k}\int\limits^{\infty}_{-\infty} U(\mathbf{b},z)\,\text{d}z
 \end{equation}
-and the profile function
+and the profile function as
 \begin{equation}\label{E:profile_function}
 \Gamma(\mathbf{b}) \equiv 1 - \text{e}^{i\chi(\mathbf{b})}.
 \end{equation}
 
 
 
-\subsubsection{Scattering cross sections}\label{SS:cross_sections}
+\clearpage
+\section{Scattering cross-sections}\label{SS:cross_sections}
 
-Let us consider a continuous flow of particles into some target, where they either scatter or continue on their way. The flow $\Phi_\text{A}$ is the number of incoming particles per unit time  and unit area, $N_{\text{T}}$ stands for the number of target particles and $n_\text{S}$ is the number of scattering events in a unit time. With these in mind, we can define the elastic scattering cross section as
+Let us consider a continuous stationary flux of particles into some target, where they either scatter or continue on their way. The flux $\Phi_\text{A}$ is the number of incoming particles per unit time  and unit area, $N_{\text{T}}$ stands for the number of target particles and $n_\text{S}$ is the number of scattering events in a unit time. With these in mind, we can define the elastic scattering cross-section as
 \begin{equation}\label{E:cross_sections_definition}
 	\sigma_{\text{el}} \equiv \frac{n_\text{S}}{\Phi_\text{A}N_{\text{T}}}.
 \end{equation}
 
-Probability current density $\mathbf{j}(\mathbf{r})$ of a system with wave function $\psi(\mathbf{r})$ can be expressed as (LÄHDE TODO)
+The probability current density $\mathbf{j}(\mathbf{r})$ of a system with wave function $\psi(\mathbf{r})$ can be expressed as \cite[p.23]{griff}
 \begin{equation}\label{E:prob_current_density_definition}
 	\mathbf{j}(\mathbf{r}) = -\frac{i\hbar}{2\mu}\left[\psi^*(\mathbf{r})\nabla\psi(\mathbf{r}) - \psi(\mathbf{r})\nabla\psi^*(\mathbf{r})\right] = \frac{\hbar}{\mu}\text{Im}\left[\psi^*(\mathbf{r})\nabla\psi(\mathbf{r})\right].
 \end{equation}
-This relates to quantities of our interest as the total number of particles scattered through a sphere with a normal vector $\mathbf{S}$ can be calculated as the integral of probability current density $\mathbf{j}_{\text{scatt}}$ related to the scattering, i.e.
+This relates to quantities of our interest as the total number of particles scattered through a sphere with a normal vector $\text{d}\mathbf{S} = r^2\text{d}\Omega\, \mathbf{\hat{e}_r}$ can be calculated as the integral of probability current density $\mathbf{j}_{\text{scatt}}$ related to the scattering, i.e.
 \begin{equation}\label{E:n:o_particles_through_sphere}
-	\int \mathbf{j}_{\text{scatt}}(\mathbf{r}) \cdot \text{d}\mathbf{S} = \int \mathbf{j}_{\text{scatt}}(\mathbf{r}) r^2 \, \text{d}\Omega \: \xrightarrow{r\rightarrow\infty} \: \frac{n_\text{S}}{N_{\text{T}}},
+	\int \mathbf{j}_{\text{scatt}}(\mathbf{r}) \cdot \text{d}\mathbf{S} = \int \mathbf{j}_{\text{scatt}}(\mathbf{r})\cdot\mathbf{\hat{e}_r}\, r^2 \, \text{d}\Omega \: \xrightarrow{r\rightarrow\infty} \: \frac{n_\text{S}}{N_{\text{T}}},
 \end{equation}
-where the last integral is over the solid angle $\Omega$. In chapter \ref{SS:scatt_amplitude} we hypothesised that in the asymptotical limit of $r\rightarrow\infty$, the wave function $\psi(\mathbf{r})$ of our system can be expressed as a linear combination of incoming plane wave $\psi_{\text{inc}}(\mathbf{r})$ and scattered spherical wave $\psi_{\text{scatt}}(\mathbf{r})$ in the form of 
-\begin{equation}\label{E:asymptotical_wave_function_with_naming}
+where the last integral is over the solid angle $\Omega$. In Chapter \ref{SS:scatt_amplitude} we hypothesised that in the asymptotic limit of $r\rightarrow\infty$, the wave function $\psi(\mathbf{r})$ of our system can be expressed as a linear combination of incoming plane wave $\psi_{\text{inc}}(\mathbf{r})$ and scattered spherical wave $\psi_{\text{scatt}}(\mathbf{r})$ in the form of 
+\begin{equation}\label{E:asymptotic_wave_function_with_naming}
 \psi(\mathbf{r}) \sim \text{e}^{i\mathbf{k}\cdot\mathbf{r}} + f(\mathbf{k},\mathbf{k'})\frac{\text{e}^{ikr}}{r} \equiv \psi_{\text{inc}}(\mathbf{r}) + \psi_{\text{scatt}}(\mathbf{r}), \quad \text{as} \,\, r\rightarrow\infty.
 \end{equation}
-By substituting \eqref{E:asymptotical_wave_function_with_naming} into \eqref{E:prob_current_density_definition} we get
+By substituting \eqref{E:asymptotic_wave_function_with_naming} into \eqref{E:prob_current_density_definition} we get
 \begin{align}\label{E:probability_densities_broken_down}
-	\mathbf{j}(\mathbf{r}) &\stackrel{r\rightarrow\infty}{\sim} \frac{\hbar}{\mu}\text{Im}\Big[\left(\psi_{\text{inc}}^*(\mathbf{r}) + \psi_{\text{scatt}}^*(\mathbf{r})\right)\nabla\left(\psi_{\text{inc}}(\mathbf{r}) + \psi_{\text{scatt}}(\mathbf{r})\right)\Big] \nonumber \\
-	&= \frac{\hbar}{\mu}\text{Im}\Big[\psi_{\text{inc}}^*(\mathbf{r})\nabla\psi_{\text{inc}}(\mathbf{r}) + \psi_{\text{scatt}}^*(\mathbf{r})\nabla\psi_{\text{scatt}}(\mathbf{r}) + \Big( \psi_{\text{inc}}^*(\mathbf{r})\nabla\psi_{\text{scatt}}(\mathbf{r}) + \psi_{\text{scatt}}^*(\mathbf{r})\nabla\psi_{\text{inc}}(\mathbf{r}) \Big)\Big] \nonumber \\
+	\mathbf{j}(\mathbf{r}) &\stackrel{r\rightarrow\infty}{\sim} \frac{\hbar}{\mu}\text{Im}\Big[\left(\psi_{\text{inc}}^*(\mathbf{r}) + \psi_{\text{scatt}}^*(\mathbf{r})\right)\nabla\left(\psi_{\text{inc}}(\mathbf{r}) + \psi_{\text{scatt}}(\mathbf{r})\right)\Big] \nonumber \\[1em]
+	& \begin{tabular}[l]{@{}l@{}}
+	$\displaystyle=\frac{\hbar}{\mu}\text{Im}\Big[\psi_{\text{inc}}^*(\mathbf{r})\nabla\psi_{\text{inc}}(\mathbf{r}) + \psi_{\text{scatt}}^*(\mathbf{r})\nabla\psi_{\text{scatt}}(\mathbf{r})$ \\[0.7em] $\displaystyle \qquad\qquad\qquad\qquad  + \Big( \psi_{\text{inc}}^*(\mathbf{r})\nabla\psi_{\text{scatt}}(\mathbf{r}) + \psi_{\text{scatt}}^*(\mathbf{r})\nabla\psi_{\text{inc}}(\mathbf{r}) \Big)\Big] $
+	\end{tabular}  \nonumber \\[1em]
 	&\equiv \mathbf{j}_{\text{inc}}(\mathbf{r}) + \mathbf{j}_{\text{scatt}}(\mathbf{r}) + \mathbf{j}_{\text{int}}(\mathbf{r}),
 \end{align}
 where we have now identified the probability current densities related to incoming ($\mathbf{j}_{\text{inc}}(\mathbf{r})$) and scattered ($\mathbf{j}_{\text{scatt}}(\mathbf{r})$) waves and an interference term $\mathbf{j}_{\text{int}}(\mathbf{r})$. By looking further into $\mathbf{j}_{\text{scatt}}(\mathbf{r})$, we find that 
 \begin{align}\label{E:scattered_prob_current}
-	\mathbf{j}_{\text{scatt}}(\mathbf{r}) &= \frac{\hbar}{\mu}\text{Im}\left[\psi_{\text{scatt}}^*(\mathbf{r})\nabla\psi_{\text{scatt}}(\mathbf{r})\right] \nonumber \\
-	&= \frac{\hbar}{\mu}\text{Im}\left[\left(f^*(\mathbf{k},\mathbf{k'})\frac{\text{e}^{-ikr}}{r}\right)\nabla\left(f(\mathbf{k},\mathbf{k'})\frac{\text{e}^{ikr}}{r}\right)\right] \nonumber \\
-	&= \frac{\hbar}{\mu}\text{Im}\left[\left|f(\mathbf{k},\mathbf{k'})\right|^2\frac{\text{e}^{-ikr}}{r}ik\frac{\text{e}^{ikr}}{r}\right]  \nonumber \\
-	&= \frac{\hbar k}{\mu r^2}\left|f(\mathbf{k},\mathbf{k'})\right|^2.
+	\mathbf{j}_{\text{scatt}}(\mathbf{r})\cdot\mathbf{\hat{e}_r} &= \frac{\hbar}{\mu}\text{Im}\left[\psi_{\text{scatt}}^*(\mathbf{r})\nabla\psi_{\text{scatt}}(\mathbf{r})\right]\cdot\mathbf{\hat{e}_r} \nonumber \\
+	&= \frac{\hbar}{\mu}\text{Im}\left[\left(f^*(\mathbf{k},\mathbf{k'})\frac{\text{e}^{-ikr}}{r}\right)\mathbf{\hat{e}_r}\cdot\nabla\left(f(\mathbf{k},\mathbf{k'})\frac{\text{e}^{ikr}}{r}\right)\right] \nonumber \\
+	&= \frac{\hbar}{\mu}\text{Im}\left[\left|f(\mathbf{k},\mathbf{k'})\right|^2\frac{\text{e}^{-ikr}}{r}ik\frac{\text{e}^{ikr}}{r}\right] -\frac{\hbar}{\mu}\text{Im}\left[\frac{\left|f(\mathbf{k},\mathbf{k'})\right|^2}{r^3}\right]   \nonumber \\
+	\Rightarrow\qquad\mathbf{j}_{\text{scatt}}(\mathbf{r})\cdot\mathbf{\hat{e}_r} &= \frac{\hbar k}{\mu r^2}\left|f(\mathbf{k},\mathbf{k'})\right|^2.
 \end{align}
-Also noting that the flow $\Phi_\text{A}$ simplifies to
+Also noting that the incoming flux $\Phi_\text{A}$ simplifies to
 \begin{align}\label{E:flow_simplification}
 	\Phi_\text{A} &= \lim\limits_{r\rightarrow \infty} \left| \mathbf{j}_{\text{inc}}(\mathbf{r}) \right|= \lim\limits_{r\rightarrow \infty} \left| \frac{\hbar}{\mu}\text{Im}\left[\psi_{\text{inc}}^*(\mathbf{r})\nabla\psi_{\text{inc}}(\mathbf{r})\right] \right| \nonumber \\
 	&= \lim\limits_{r\rightarrow \infty} \left| \frac{\hbar}{\mu}\text{Im}\left[\text{e}^{-i\mathbf{k}\cdot\mathbf{r}}\nabla\text{e}^{i\mathbf{k}\cdot\mathbf{r}}\right] \right| = \lim\limits_{r\rightarrow \infty} \left| \frac{\hbar}{\mu}\text{Im}\left[\text{e}^{-ikz}\nabla\text{e}^{ikz}\right] \right| \nonumber \\ 
 	&= \lim\limits_{r\rightarrow \infty} \left| \frac{\hbar}{\mu}\text{Im}\left[ik\text{e}^{-ikz}\text{e}^{ikz}\hat{\mathbf{e}}_z\right] \right| \nonumber \\
 	&= \frac{\hbar k}{\mu},
 \end{align}
-we can write the elastic cross section $\sigma$ from equation \eqref{E:cross_sections_definition} as 
+we can write the elastic cross-section $\sigma$ from Equation \eqref{E:cross_sections_definition} as 
 \begin{equation}\label{E:sigma_from_f}
 	\sigma_{\text{el}} = \frac{1}{\Phi_\text{A}} \frac{n_\text{S}}{N_{\text{T}}} = \lim\limits_{r\rightarrow \infty} \frac{\mu}{\hbar k}\frac{\hbar k}{\mu} \int \frac{1}{r^2} \left|f(\mathbf{k},\mathbf{k'})\right|^2 r^2 \, \text{d}\Omega = \int \left|f(\mathbf{k},\mathbf{k'})\right|^2 \, \text{d}\Omega.
 \end{equation}
 
-Taking a closer look at equation \eqref{E:scattering_amplitude} we find that 
+Taking a closer look at Equation \eqref{E:scattering_amplitude} we find that 
 \begin{align}\label{E:f_from_gamma}
-	f(\mathbf{k},\mathbf{k'}) &= f(\mathbf{q}) = \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\,\Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b} = ik2\pi\left[\frac{1}{(2\pi)^2}\int \text{e}^{-i\mathbf{q}\cdot\mathbf{b}}\,\Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b}\right] \nonumber \\
-	&=ik2\pi \,\mathcal{F}^{-1}(\Gamma)(\mathbf{q}),
+	f(\mathbf{k},\mathbf{k'}) &= f(\mathbf{q}_T) = \frac{ik}{2\pi}\int \text{e}^{-i\mathbf{q}_T\cdot\mathbf{b}}\,\Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b} = ik2\pi\left[\frac{1}{(2\pi)^2}\int \text{e}^{-i\mathbf{q}_T\cdot\mathbf{b}}\,\Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b}\right] \nonumber \\
+	&=ik2\pi \,\mathcal{F}^{-1}(\Gamma)(\mathbf{q}_T),
 \end{align}
-or the scattering amplitude $f(\mathbf{q})$ is a two-dimensional inverse Fourier transform of the profile function $\Gamma(\mathbf{b})$. Inverting this the profile function can be expressed as a Fourier transform of scattering amplitude, i.e.
+or the scattering amplitude $f(\mathbf{q}_T)$ is a two-dimensional inverse Fourier transform of the profile function $\Gamma(\mathbf{b})$. Inverting this, the profile function can be expressed as a Fourier transform of the scattering amplitude, i.e.
 \begin{equation}\label{E:gamma_from_f}
-	\Gamma (\mathbf{b}) = \mathcal{F}\left(\mathcal{F}^{-1}(\Gamma)\right)(\mathbf{b}) = \frac{-i}{2\pi k}\mathcal{F}\left(f\right)(\mathbf{b}) = \frac{-i}{2\pi k} \int \text{e}^{i\mathbf{q}\cdot\mathbf{b}}f(\mathbf{q}) \,\text{d}^2\mathbf{q}.
+	\Gamma (\mathbf{b}) = \mathcal{F}\left(\mathcal{F}^{-1}(\Gamma)\right)(\mathbf{b}) = \frac{-i}{2\pi k}\mathcal{F}\left(f\right)(\mathbf{b}) = \frac{-i}{2\pi k} \int \text{e}^{i\mathbf{q}_T\cdot\mathbf{b}}f(\mathbf{q}_T) \,\text{d}^2\mathbf{q}_T.
 \end{equation}
-Parseval's theorem (LÄHDE TODO, JOHTO?) states that for a function $g$ with a two-dimensional domain,
+Parseval's theorem states that for a function $g$ with a two-dimensional domain,
 \begin{equation}\label{E:Parsevals_theorem}
-	\int |g(\mathbf{q})|^2\,\text{d}^2\mathbf{q} = \frac{1}{(2\pi)^2} \int |\mathcal{F}\left(g\right)(\mathbf{b})|^2\,\text{d}^2\mathbf{b}
+	\int |g(\mathbf{q}_T)|^2\,\text{d}^2\mathbf{q}_T = \frac{1}{(2\pi)^2} \int |\mathcal{F}\left(g\right)(\mathbf{b})|^2\,\text{d}^2\mathbf{b}
 \end{equation}
-holds. 	Lastly, we need to turn our attention to the differential forms. The length of the momentum transfer vector is
+holds. 	Lastly, we need to turn our attention to the differential forms. As can be seen from Figure \ref{F:vectors}, the length of the transverse momentum transfer vector $\mathbf{q}_T$ can be approximated with
 \begin{align}\label{E:qs_length}
-	q&\equiv|\mathbf{q}|=|\mathbf{k'}-\mathbf{k}|=\sqrt{\left(\mathbf{k'}-\mathbf{k}\right)\cdot\left(\mathbf{k'}-\mathbf{k}\right)}=\sqrt{|\mathbf{k'}|^2 -2\mathbf{k'}\cdot\mathbf{k} + |\mathbf{k}|^2} \nonumber \\
-	&=k\sqrt{2\left(1-\cos\theta_{\mathbf{k'}\mathbf{k}}\right)} = 2k\sin\frac{\theta_{\mathbf{k'}\mathbf{k}}}{2},
+	q_T \equiv |\mathbf{q}_T|&=k\sin\theta \approx k\theta,
 \end{align}
-where $\theta_{\mathbf{k'}\mathbf{k}} \in \left[0,2\pi\right]$ is the angle between the momentum vectors $\mathbf{k}$ and $\mathbf{k'}$. Now using equation \eqref{E:qs_length} the differential form $\text{d}\mathbf{q}$ can be expressed in polar coordinates and with the solid angle $\Omega$ as
+where $\theta \in \left[0,\pi\right]$, the angle between the momentum vectors $\mathbf{k}$ and $\mathbf{k'}$, is assumed to be small. Now using Equation \eqref{E:qs_length} the differential form $\text{d}\mathbf{q}_T$ can be expressed in polar coordinates and with the solid angle $\Omega$ approximatively as
 \begin{align}\label{E:differential_q_into_solid_angle}
-\text{d}^2\mathbf{q} &= q\,\text{d}q\text{d}\phi = q\frac{\text{d}q}{\text{d}\theta}\,\text{d}\theta\text{d}\phi = 2k^2\sin\frac{\theta}{2}\cos\frac{\theta}{2} \,\text{d}\theta\text{d}\phi = k^2\sin\theta \,\text{d}\theta\text{d}\phi = k^2\,\text{d}\Omega.
+\text{d}^2\mathbf{q}_T \; &=\; q_T\,\text{d}q_T\text{d}\phi \;\approx\; (k\theta)\text{d}(k\theta)\text{d}\phi \;\approx\; k^2\sin\theta\,\text{d}\theta\text{d}\phi \;=\; k^2\,\text{d}\cos\theta\text{d}\phi \;=\; k^2\,\text{d}\Omega.
 \end{align}
-Finally combining our equations \eqref{E:f_from_gamma}, \eqref{E:gamma_from_f}, \eqref{E:Parsevals_theorem} and \eqref{E:differential_q_into_solid_angle} into equation \eqref{E:sigma_from_f}, we find that the elastic (TODO selitys, miksi se on just elastinen) scattering cross section in the eikonal model is
+Finally combining our Equations \eqref{E:f_from_gamma}, \eqref{E:gamma_from_f}, \eqref{E:Parsevals_theorem}, and \eqref{E:differential_q_into_solid_angle} into Equation \eqref{E:sigma_from_f}, we find that the elastic scattering cross-section in the eikonal model is
 \begin{align}\label{E:sigma_el_from_profile}
-	\sigma_{\text{el}} &= \int \left|f(\mathbf{q})\right|^2 \, \text{d}\Omega = (2\pi)^2 \int \left|\mathcal{F}^{-1}(\Gamma)(\mathbf{q})\right|^2 k^2\frac{1}{k^2}\, \text{d}^2\mathbf{q} \nonumber \\
+	\sigma_{\text{el}} &= \int \left|f(\mathbf{q})\right|^2 \, \text{d}\Omega = (2\pi)^2 \int \left|\mathcal{F}^{-1}(\Gamma)(\mathbf{q}_T)\right|^2 k^2\frac{1}{k^2}\, \text{d}^2\mathbf{q}_T \nonumber \\
 	&= (2\pi)^2 \frac{1}{(2\pi)^2} \int \left|\mathcal{F}\left(\mathcal{F}^{-1}(\Gamma)\right)(\mathbf{b})\right|^2 \, \text{d}^2\mathbf{b}  \nonumber \\
 	&= \int \left|\Gamma(\mathbf{b}) \right|^2 \, \text{d}^2\mathbf{b} = \int \left|1-\text{e}^{i\chi(\mathbf{b})} \right|^2 \, \text{d}^2\mathbf{b}.
 \end{align}
 
-Optical theorem tells us that (TODO lähde, johto?) the total cross section $\sigma_\text{tot}$ is proportional to the scattering amplitude $f(\mathbf{q})$ in the forward scattering direction, i.e.
+Optical theorem tells us that \cite[ch. 11]{griff} the total cross-section $\sigma_\text{tot}$ is proportional to the imaginary part of the scattering amplitude $f(\mathbf{q})$ in the forward scattering direction when $\mathbf{q}=\mathbf{q}_T=\mathbf{0}$, i.e.
 \begin{equation}\label{E:optical_theorem}
-	\sigma_\text{tot} = \frac{4\pi}{k} \text{Im}\left(f(\mathbf{q}\cdot\mathbf{b}=0)\right).
+	\sigma_\text{tot} = \frac{4\pi}{k} \text{Im}\left(f(\mathbf{k}, \mathbf{k}' = \mathbf{k})\right).
 \end{equation}
-Inserting equation \eqref{E:scattering_amplitude} into equation \eqref{E:optical_theorem} yields the total cross section
+Inserting Equation \eqref{E:scattering_amplitude} into Equation \eqref{E:optical_theorem} yields the total cross-section
 \begin{equation}\label{E:sigma_tot_from_profile}
-\sigma_\text{tot} = \frac{4\pi}{k} \text{Im}\left(\frac{ik}{2\pi}\int \Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b}\right) = 2\int \text{Re}\left(1 - \text{e}^{i\chi(\mathbf{b})}\right) \,\text{d}^2\mathbf{b}
+\sigma_\text{tot} = \frac{4\pi}{k} \text{Im}\left(\frac{ik}{2\pi}\int \Gamma(\mathbf{b}) \,\text{d}^2\mathbf{b}\right) = 2\int \text{Re}\left(1 - \text{e}^{i\chi(\mathbf{b})}\right) \,\text{d}^2\mathbf{b}.
 \end{equation}
 
-The difference of the total cross section $\sigma_\text{tot}$ and the elastic cross section $\sigma_\text{el}$ is the inelastic cross section $\sigma_\text{in}$. Subtracting \eqref{E:sigma_el_from_profile} from \eqref{E:sigma_tot_from_profile} yields us
+The difference of the total cross-section $\sigma_\text{tot}$ and the elastic cross-section $\sigma_\text{el}$ is the inelastic cross-section $\sigma_\text{in}$. Subtracting \eqref{E:sigma_el_from_profile} from \eqref{E:sigma_tot_from_profile} yields us
+\begin{align*}
+	&\qquad\qquad\qquad\sigma_\text{in} = \sigma_\text{tot} - \sigma_\text{el} = \int \left[ 2\text{Re}\Gamma(\mathbf{b}) - \left|\Gamma(\mathbf{b})\right|^2 \right] \,\text{d}^2\mathbf{b} \\
+	&= \int 2\left[1-\text{Re}\left( \text{e}^{i\text{Re}\chi(\mathbf{b})-\text{Im}\chi(\mathbf{b})}\right)\right] - \left[\left(\text{Re}\Gamma(\mathbf{b})\right)^2+\left(\text{Im}\Gamma(\mathbf{b})\right)^2\right] \,\text{d}^2\mathbf{b} \\
+	&= \int 2\left[1- \text{e}^{-\text{Im}\chi(\mathbf{b})}\cos(\text{Re}\chi(\mathbf{b}))\right] - \left[1- 2\text{e}^{-\text{Im}\chi(\mathbf{b})}\cos(\text{Re}\chi(\mathbf{b})) +\text{e}^{-2\text{Im}\chi(\mathbf{b})}\right] \,\text{d}^2\mathbf{b}
+\end{align*}
 \begin{equation}\label{E:sigma_in_from_profile}
-	\sigma_\text{in} = \sigma_\text{tot} - \sigma_\text{el} = \int \left[ 2\text{Re}\Gamma(\mathbf{b}) - \left|\Gamma(\mathbf{b})\right|^2 \right] \,\text{d}^2\mathbf{b}
+\Rightarrow \qquad	\sigma_\text{in}= \int \left(1 -\text{e}^{-2\text{Im}\chi(\mathbf{b})}\right) \,\text{d}^2\mathbf{b}.
 \end{equation}
+Thus, as expected, the inelastic cross-section follows (only) from the imaginary part of the eikonal function $\chi(\mathbf{b})$, i.e. (see Equation \eqref{E:eikonal_function}) from the imaginary part of the scattering potential.
+
+The Mandelstam variable $t$ in the high energy limit with our notation can be expressed as $t \equiv (k_\mu-k'_\mu)^2 = (E-E')^2-(\mathbf{k}-\mathbf{k'})^2 = -q_T^2 =  -2k^2(1-\cos\theta)$ \cite{hitu}, where $k_\mu$ and $k'_\mu$ are four-vectors and $E=E'$. Now reading from Equation \eqref{E:sigma_from_f} we can write the elastic differential cross-section
+\begin{align}
+	\frac{\text{d} \sigma_{\text{el}}}{\text{d}\Omega} &= \frac{\text{d} \sigma_{\text{el}}}{\text{d}\text{cos}\theta\,\text{d}\phi} = \frac{\text{d}t}{\text{d}\text{cos}\theta}\frac{\text{d} \sigma_{\text{el}}}{\text{d}t\,\text{d}\phi} = 2k^2\frac{\text{d} \sigma_{\text{el}}}{\text{d}t\,\text{d}\phi} = |f(\mathbf{q}_T)|^2 \nonumber \\[1em]
+	\Leftrightarrow \qquad \frac{\text{d} \sigma_{\text{el}}}{\text{d}t} &= \frac{1}{2k^2}\int\limits_{0}^{2\pi} |f(\mathbf{q}_T)|^2 \,\text{d}\phi = \pi \left|\frac{f(\mathbf{q}_T)}{k}\right|^2 \nonumber \\[1em]
+	&= \pi\left|\frac{1}{2\pi}\int \text{e}^{-i\mathbf{q}_T\cdot\mathbf{b}}\,\Gamma(\mathbf{b})\,\text{d}^2\mathbf{b}\right|^2 \nonumber \\[1em]
+	&= \pi\left|\frac{1}{2\pi}\int\limits_{0}^{\infty}\int\limits_{0}^{2\pi} \text{e}^{-i\,q_T\,b\cos\theta}\,\Gamma(\mathbf{b})b\,\text{d}\theta\,\text{d}b\right|^2\nonumber \\[1em]
+	\Leftrightarrow \qquad \frac{\text{d} \sigma_{\text{el}}}{\text{d}t}&= \pi\left|\int\limits_{0}^{\infty} \,\Gamma(\mathbf{b})\;J_0(b\sqrt{-t})\;b\,\text{d}b\right|^2,\label{E:diff_sig_el}
+\end{align}
+where we have used Equation \eqref{E:f_from_gamma} and the integral representation \cite[Eq. 2.133]{barpred}
+\begin{equation}
+	J_0(x) = \frac{1}{2\pi}\int\limits_{0}^{2\pi} \text{e}^{i\,x\cos\theta}\text{d}\theta
+\end{equation}
+for the Bessel function $J_0$.
+
+Although the above results are derived from nonrelativistic Schrödinger Equation, they can be generalised for relativistic wave functions \cite{barpred}. Notice that in Equation \eqref{E:diff_sig_el}, the $\frac{\text{d} \sigma_{\text{el}}}{\text{d}t}$ is a fully Lorentz invariant quantity, so it directly generalises into the relativistic case. Integrating then yields straightforwardly Equation \eqref{E:sigma_el_from_profile}. Equation \eqref{E:sigma_tot_from_profile} can, again, be derived from the optical theorem. Then, exactly as we did above, Equation \eqref{E:sigma_in_from_profile} can be obtained from Equations \eqref{E:sigma_el_from_profile} and \eqref{E:sigma_tot_from_profile}.
 
 
 
-\section{The eikonal minijet model}\label{S:malli}
+
+\cleardoublepage
+\chapter{Eikonal minijet model}\label{S:malli}
 
 
-In this section we study the eikonal minijet model, which was used for example in (LÄHTEET TODO). We are interested in studying proton--proton collision with the eikonal formalism discussed in section \ref{S:Eikonal_approximation}. Consider the limit of small real part in the scattering potential, so that equations \eqref{E:sigma_el_from_profile}, \eqref{E:sigma_tot_from_profile} and \eqref{E:sigma_in_from_profile} read
+In this Chapter we study the eikonal minijet model \cite{xnw, durand}. We are interested in studying proton--proton collisions with the eikonal formalism discussed in Chapter \ref{S:Eikonal_approximation}. Consider the limit of small real part in the scattering potential, so that we have $i\chi(\mathbf{b})\approx -\text{Im}\chi(\mathbf{b}) \equiv -\chi(b,s)$. Equations \eqref{E:sigma_el_from_profile}, \eqref{E:sigma_tot_from_profile}, and \eqref{E:sigma_in_from_profile} read now
 \begin{align}
 	\sigma_{\text{el}} &= \pi\int\limits_0^\infty \left(1-\text{e}^{-\chi(b,s)} \right)^2 \, \text{d}b^2 \label{E:sigma_el} \\[0.8em]
 	\sigma_\text{in} &= \pi\int\limits_0^\infty \left(1-\text{e}^{-2\chi(b,s)} \right) \, \text{d}b^2 \label{E:sigma_in} \\[0.8em]
 	\sigma_\text{tot} &= 2\pi\int\limits_0^\infty \left(1-\text{e}^{-\chi(b,s)} \right) \, \text{d}b^2 \label{E:sigma_tot}
 \end{align}
-where eikonal function $\chi(b,s)$ is now a real number, and we have used $\text{d}^2\mathbf{b} = \pi\,\text{d}b^2$ which holds assuming azimuthal symmetry of cross sections in impact parameter.
+where the eikonal function $\chi(b,s)$, which is assumed to depend on the centre of momentum (CMS) energy ($\sqrt{s}$) of the collision, is now a real number, and we have used $\text{d}^2\mathbf{b} = \pi\,\text{d}b^2$ which holds assuming azimuthal symmetry of cross-sections in impact parameter.
 
-Now let us concentrate on the inelastic cross section $\sigma_\text{in}$. The equation \eqref{E:sigma_in} can be written as a integral of series
+Now let us concentrate on the inelastic cross-section $\sigma_\text{in}$. The Equation \eqref{E:sigma_in} can be written as an integral of series
 \begin{align}\label{E:sigma_in_as_series}
 	\sigma_\text{in} &= \pi\int\limits_0^\infty \left(1-\text{e}^{-2\chi(b,s)} \right) \, \text{d}b^2 = \pi\int\limits_0^\infty \text{e}^{-2\chi(b,s)}\left(\text{e}^{2\chi(b,s)} -1 \right) \, \text{d}b^2 \nonumber\\
 	&= \pi\int\limits_0^\infty \sum\limits_{n=1}^\infty \frac{(2\chi(b,s))^n}{n!} \text{e}^{-2\chi(b,s)} \, \text{d}b^2 \equiv \pi\int\limits_0^\infty \sum\limits_{n=1}^\infty P_n(b,s)\, \text{d}b^2 ,
 \end{align}
-where we have now identified the Poissonic probability mass function $P_n(b,s)$, which corresponds to the probability of observing $n$ distinct events with event rate of $2\chi(b,s)$. Based on the results (lähde XNW TODO) we now neglect the effect of soft processes, and assume that the jet production discussed in section \ref{S:jet_production} is the sole contributor in the $\sigma_\text{in}$. This leads us into interpreting $P_n(b,s)$ as a probability of $n$ independent jet productions in an inelastic event, and thus we can assume 
+where we have now identified the Poissonian probability mass function $P_n(b,s)$, which corresponds to the probability of having $n$ distinct events with the average number of events being $2\chi(b,s)$. These events are now perturbative (hard) and nonperturbative (soft) partonic collisions, which destroy the colliding protons. In this thesis, we will neglect the effect of soft processes \cite{xnw}, and assume that the (mini)jet production discussed in Chapter \ref{S:jet_production} is the sole contributor in $\sigma_\text{in}$ bringing the transverse momentum cutoff $k_0$ to as small a value as possible. Then, $k_0 \sim \mathcal{O}(1\,\text{GeV})$ and we are indeed discussing minijets, the few-GeV partons, which are certainly present in the proton--proton collision although they cannot be directly observed. This leads us to interpret $P_n(b,s)$ as the probability of $n$ independent minijet-producing collisions in an inelastic event, and thus we can assume 
 \begin{equation}\label{E:eikonal_function_in_model}
-	2\chi(b,s) = \sigma_\text{jet}(s)A(b),
+	2\chi(b,s) = \sigma_\text{jet}(s,k_0)A(b),
 \end{equation}
-where $\sigma_\text{jet}(s)$ is defined in section \ref{S:jet_production} and $A(b)$ is the effective partonic overlap function of the protons at impact parameter $b$. The function $A(b)$ is given by the convolution of the individual protons' thickness functions $T_n$ normalized to unity, i.e.
+where $\sigma_\text{jet}(s,k_0)$ is defined in Chapter \ref{S:jet_production} and $A(b)$ is the effective partonic overlap function of the protons at an impact parameter $b$. The function $A(b)$ is given by the convolution of the individual proton	 thickness functions $T_n$ normalized to unity, i.e.
 \begin{align}
-	&A(\mathbf{b}) =\int T_n(\mathbf{b'})T_n(|\mathbf{b}-\mathbf{b'}|) \,\text{d}^2\mathbf{b'} , \\[1em]
-	&\int A(\mathbf{b}) \,\text{d}^2\mathbf{b} = 1 .
+	&A(\mathbf{b}) =\int T_n(\mathbf{b'})T_n(\mathbf{b}-\mathbf{b'}) \,\text{d}^2\mathbf{b'} , \label{E:convolution}\\[0.1em]
+	&\int A(\mathbf{b}) \,\text{d}^2\mathbf{b} = 1, \qquad  \int T_n(\mathbf{b}) \,\text{d}^2\mathbf{b} = 1.
 \end{align} 
-Here we will use Gaussian distribution for the $T_n(b)$,
+Since the minijet production considered here is dominated by gluonic subprocesses, the $T_n$ above is to be understood as the gluonic thickness function. To obtain that, we follow Ref. \cite{kjenuc} and exploit the exclusive electroproduction of $J/\psi$ at HERA, $\gamma^* + p \rightarrow J/\psi + p$, for which ZEUS has measured the differential cross section near $t = 0$ to be $\frac{\text{d}\sigma}{\text{d}t} \propto \exp(-b|t|)\propto |G|^2$  with a slope $b = 4.72\,$GeV$^2$ \cite{zeuksen_pap}. Taking a 2-dimensional Fourier transformation of
+the corresponding 2-gluon form factor G leads to a Gaussian
+distribution for $T_n$,
 \begin{equation}
 	T_n(\mathbf{b}) = \frac{1}{2\pi\sigma^2}\text{e}^{-\frac{\mathbf{b}^2}{2\sigma^2}},
 \end{equation}
-with a width parameter $\sigma=0.43\,\femto\meter$ (lähde TODO). This gives us 
+first with a width parameter $\sigma=\sqrt{b}=0.43\,\femto\meter$. Doing the integration in \eqref{E:convolution} in Cartesian coordinates gives us straightforwardly a Gaussian overlap
 \begin{equation}\label{E:overlap_function}
 	A(\mathbf{b}) = \frac{1}{4\pi\sigma^2}\text{e}^{-\frac{\mathbf{b}^2}{4\sigma^2}}.
 \end{equation}
-
-With some algebraic modifications the integral representations of the inelastic and total cross sections can be expressed with exponential integral functions:
+With some algebraic modifications the integral representations of the inelastic and total cross-sections can be expressed with exponential integral functions \cite[Ch. 5.1]{abste}:
 \begin{align}
 	\sigma_\text{in} &= 4\pi\sigma^2\int\limits_0^{\frac{\sigma_\text{jet}}{4\pi\sigma^2}} \left(1-\text{e}^{-t}\right)\frac{\text{d}t}{t} = 4\pi\sigma^2\,\text{Ein}(\frac{\sigma_\text{jet}}{4\pi\sigma^2}) \nonumber\\[0.6em] 
 	&= 4\pi\sigma^2\,\left(\gamma+\ln(\frac{\sigma_\text{jet}}{4\pi\sigma^2})+\text{E}_1(\frac{\sigma_\text{jet}}{4\pi\sigma^2})\right), \label{E:sigma_in_ei} 
@@ -663,145 +742,220 @@ With some algebraic modifications the integral representations of the inelastic 
 	\sigma_\text{tot} &= 8\pi\sigma^2\int\limits_0^{\frac{\sigma_\text{jet}}{8\pi\sigma^2}} \left(1-\text{e}^{-t}\right)\frac{\text{d}t}{t} =  8\pi\sigma^2\,\text{Ein}(\frac{\sigma_\text{jet}}{8\pi\sigma^2})  \nonumber\\[0.6em] 
 	&= 8\pi\sigma^2\,\left(\gamma+\ln(\frac{\sigma_\text{jet}}{8\pi\sigma^2})+\text{E}_1(\frac{\sigma_\text{jet}}{8\pi\sigma^2})\right), \label{E:sigma_tot_ei}
 \end{align}
-where $\gamma\approx 0.57722$ is the Euler--Mascheroni constant.
+where $\gamma\approx 0.57722$ is the Euler--Mascheroni constant, and 
+\begin{equation}
+	\text{E}_1(z) = \int\limits_{z}^{\infty} \frac{\text{e}^{-t}}{t} \, \text{d}t = -\gamma - \ln z - \sum\limits_{k=1}^{\infty} \frac{(-z)^k}{k\, k!}.
+\end{equation}
 
 
-\section{Numerical calculations}
+
+\cleardoublepage
+\chapter{Numerical calculations}
 
 
-In this section we will review the various numerical methods used in fitting the eikonal minijet model described in section \ref{S:malli} to the experimental data on proton--proton collisions. All numerical calculations were made with C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}, the code is available at (lähde TODO).
+In this chapter, we will review the various numerical methods used in fitting the eikonal minijet model described in Chapter \ref{S:malli} to the experimental data on total cross-sections of proton--proton \cite{fit, data1,data2,data3,data4,data5} and proton--antiproton collisions \cite{data5}. All numerical calculations were written from scratch with C\nolinebreak[4]\hspace{-.05em}\raisebox{.4ex}{\tiny\bf ++}, the code is available at \cite{koodit}.\nocite{LHAPDF} 
 
-\subsection{Calculating cross sections}\label{SS:numerical_sigma_jet}
+\section{Calculating cross-sections}\label{SS:numerical_sigma_jet}
 
-The jet cross section $\sigma_{\text{jet}}$ was calculated via using the full partonic bookkeeping \eqref{E:integrated_sigma_jet} or the single effective subprocess approximation \eqref{E:integrated_sigma_jet_SES}. The needed subprocess cross sections were read from the table (TODO), and all variables were written in the $(k_T^2,y_1,y_2)$ space using equations \eqref{E:Mandelstam_s}--\eqref{E:Mandelstam_u} and \eqref{E:x1_from_ktandys}--\eqref{E:y2_limits}. The PDFs were calculated with LHAPDF (lähde TODO) interpolating library using the leading order ct14 PDF sets (lähde TODO). These sets also provided the coupling constant $\alpha_s$ as a function of transversal momentum $k_T$.
+\begin{figure}[b!]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/pdfs.png}
+	\caption{CT14LO \cite{ct14lo} PDFs $xf(x,Q^2)$ as a function of momentum fraction $x$ at $Q^2 = (1.3\,\text{GeV})^2$ (on left) and $Q^2 = 10\,\text{GeV}^2$ (on right). Notice the scalings for gluons.}
+	\label{F:pdfs}
+\end{figure}
 
-For numerical simplicity the integral was scaled with a standard transformation
+The jet cross-section $\sigma_{\text{jet}}$ was calculated via using both the full partonic bookkeeping \eqref{E:integrated_sigma_jet} and the single effective subprocess approximation \eqref{E:integrated_sigma_jet_SES}. The needed subprocess cross-sections were read from Table \ref{T:subprocesses}, and all variables were written in the $(k_T^2,y_1,y_2)$ space using Equations \eqref{E:Mandelstam_s}--\eqref{E:Mandelstam_u} and \eqref{E:x1_from_ktandys}--\eqref{E:y2_limits}. The PDFs were calculated with the LHAPDF \cite{LHAPDF} interpolating library using the leading order CT14LO PDF set \cite{ct14lo}. This set also provided the coupling constant $\alpha_s(Q^2)$ as a function of transverse momentum, $Q^2=k_T^2$. Illustration of the used PDFs is shown in Figure \ref{F:pdfs}.
+
+For numerical simplicity the integral was subjected to a standard transformation
 \begin{align}\label{E:integrand_scaling}
 	&\int\limits_{a_1}^{b_1} \; \int\limits_{a_2(x_1)}^{b_2(x_1)} \; \int\limits_{a_3(x_1,x_2)}^{b_3(x_1,x_2)} F(x_1,x_2,x_3)\, \text{d}x_1\text{d}x_2\text{d}x_3 \nonumber \\[1em]
 	= &\int\limits_{0}^{1}\int\limits_{0}^{1}\int\limits_{0}^{1} F(x_1,x_2,x_3) (b_1-a_1)(b_2-a_2)(b_3-a_3) \, \text{d}z_1\text{d}z_2\text{d}z_3 , \\[1em]
 	&\text{where}\qquad x_i = a_i + z_i(b_i-a_i).\nonumber
 \end{align}
 
-The integral itself was then calculated using a recursive adaptive three dimensional integration algorithm implemented in cubature (lähde TODO) library.
+The integral itself was then calculated using a recursive adaptive three dimensional integration algorithm implemented in the Cubature \cite{cubature} library.
 
-The total and inelastic cross sections $\sigma_{\text{tot}}$ and $\sigma_{\text{in}}$ were calculated from $\sigma_{\text{jet}}$ using equations \eqref{E:sigma_in_ei} and \eqref{E:sigma_tot_ei}. The exponential integral functions were evaluated using their series representations implemented in GSL (lähde TODO) library. Lastly the elastic cross section $\sigma_{\text{el}}$ was then calculated by subtracting $\sigma_{\text{in}}$ from $\sigma_{\text{tot}}$.
+The total and inelastic cross-sections $\sigma_{\text{tot}}$ and $\sigma_{\text{in}}$ were calculated from $\sigma_{\text{jet}}$ using Equations \eqref{E:sigma_in_ei} and \eqref{E:sigma_tot_ei}. The exponential integral functions were evaluated using their series representations implemented in the GSL \cite{gsl} library. The elastic cross-section $\sigma_{\text{el}}$ was then calculated by subtracting $\sigma_{\text{in}}$ from $\sigma_{\text{tot}}$.
 
 
 
-\subsection{Fitting transversal momentum cutoff}\label{SS:fitting}
+\section{Fitting transverse momentum cutoff}\label{SS:fitting}
 
-The lower transversal momentum cutoff $k_0$ was chosen such that the calculated total cross section $\sigma_{\text{tot}}$ would fit the experimental data (lähteet TODO). The fitting algorithm was based on secant method (lähde TODO): Two small initial trial values $x_0\neq x_1$ were chosen for $k_0$ by trial and error such that the integral would converge.  After the first two calculations of the total cross section $\sigma_{\text{tot}}$, the new trial values $x_i$, $i=2,3,\ldots$ would be calculated using recursive formula
+The lower transverse momentum cutoff $k_0$ was chosen such that the calculated total cross-section $\sigma_{\text{tot}}$ would coincide with the best fit to experimental data made by the COMPETE collaboration \cite{compete}. The fitting algorithm was based on the secant method: Two small initial trial values $x_0\neq x_1$ were chosen for $k_0$ by trial and error such that the integral would converge.  After the first two calculations of the total cross-section $\sigma_{\text{tot}}$, the new trial values $x_i$, $i=2,3,\ldots$ would be calculated using recursive formula
 \begin{align}
 	x_i = \frac{x_{i-2}\,\sigma_{\text{err}}(x_{i-1})-x_{i-1}\,\sigma_{\text{err}}(x_{i-2})}{\sigma_{\text{err}}(x_{i-1})-\sigma_{\text{err}}(x_{i-2})}, \qquad \sigma_{\text{err}}(k_0)\equiv \sigma_{\text{tot}}(k_0)-\sigma_{\text{data}},
 \end{align}
-where $\sigma_{\text{data}}$ would be the experimental data for total cross section at a given value of $s$. This procedure would be then continued until $\sigma_{\text{err}}(k_0)$ would be satisfyingly close to zero. After this fitting of the cutoff momentum we would then have already calculated the corresponding $\sigma_{\text{jet}}$, which could be further used to calculate $\sigma_{\text{in}}$ and finally $\sigma_{\text{el}}$.
+where $\sigma_{\text{data}}$ would be the experimental data fit for the total cross-section at a given value of $\sqrt{s}$. This procedure would be then continued until $\sigma_{\text{err}}(k_0)$ would be satisfyingly close to zero. After this fitting of the cutoff momentum we would then have already calculated the corresponding $\sigma_{\text{jet}}(s, k_0)$, which could be further used to calculate $\sigma_{\text{in}}$ and finally $\sigma_{\text{el}}$.
 
 
 
-\subsection{Contributions of manyfold jet productions}\label{SS:multiple_jets}
+\section{Contributions of multiple minijet production}\label{SS:multiple_jets}
 
-As hinted before in section \ref{S:malli}, in eikonal minijet model the inelastic cross section $\sigma_{\text{in}}$ can be interpreted as a sum of cross sections that correspond to the probabilities of observing multiple distinct jet production events. This can be seen by writing the summation in equation \eqref{E:sigma_in_as_series} explicitly:
+As hinted before in Chapter \ref{S:malli}, in the eikonal minijet model the inelastic cross-section $\sigma_{\text{in}}$ can be interpreted as a sum of cross-sections that correspond to the probabilities of observing multiple independent minijet production events. This can be seen by writing the summation in Equation \eqref{E:sigma_in_as_series} explicitly:
 \begin{equation}
 	\sigma_\text{in} =  \pi\int\limits_0^\infty \sum\limits_{n=1}^\infty P_n(b,s)\, \text{d}b^2 = \pi\int\limits_0^\infty P_1\, \text{d}b^2 + \pi\int\limits_0^\infty P_2\, \text{d}b^2 + \pi\int\limits_0^\infty P_3\, \text{d}b^2 +\ldots \; .
 \end{equation}
-This observation leads us to be interested in the quantity
-\begin{equation}\label{E:manyfold_scatt_prob}
-	G_n = \frac{\pi\int\limits_0^\infty P_n\, \text{d}b^2}{\sigma_\text{in}} = \frac{\pi}{\sigma_\text{in}}\int\limits_0^\infty \frac{(\sigma_\text{jet}A(b))^n}{n!}\,\text{e}^{-\sigma_\text{jet}A(b)} \, \text{d}b^2.
+In other words, $\sigma_{\text{in}}$ is due to the cases where at least one minijet-pair is formed. This observation leads us to study the quantity
+\begin{equation}\label{E:multiple_scatt_prob}
+	G_n(s, k_0) = \frac{\pi\int\limits_0^\infty P_n\, \text{d}b^2}{\sigma_\text{in}} = \frac{\pi}{\sigma_\text{in}}\int\limits_0^\infty \frac{(\sigma_\text{jet}(s, k_0)A(b))^n}{n!}\,\text{e}^{-\sigma_\text{jet}(s, k_0)A(b)} \, \text{d}b^2.
 \end{equation}
-The value of $G_n\in [0,1]$ denotes the contribution a single event with production of $n$ pairs of jets has on $\sigma_\text{in}$. It can also be interpreted as a probability that a single observed inelastic event is a production of $n$ pairs of jets. Values of $G_n$:s were integrated using adaptive integration routines in GSL library (lähde TODO).
+The value of $G_n\in [0,1]$ thus denotes the contribution a single event with production of $n$ pairs of minijets has on $\sigma_\text{in}$. It can also be interpreted as a probability that a single observed inelastic event corresponds to a production of $n$ pairs of minijets. The values of $G_n$:s were obtained using adaptive integration routines in the GSL library \cite{gsl}.
 
 
 
-\subsection{Conservation of momentum}\label{SS:MC}
+\section{Conservation of momentum?}\label{SS:MC}
 
-If in an inelastic proton--proton scattering there indeed happens a manyfold jet production, one could be conserned with the conservation of momentum. The sum of the momenta of the individual partons can not exceed the initial momentum of the proton they are from. To take this into account for example in \eqref{E:manyfold_scatt_prob}, one must limit the phase-space of each subsequent calculation of $\sigma_\text{jet}$. In calculating $G_n$, we should then calculate the $\sigma_\text{jet}^n$ in \eqref{E:manyfold_scatt_prob} as
+If multiple independent minijet production indeed takes place in an inelastic proton--proton scattering, one could be concerned with the conservation of momentum. Breaking of this would be an obvious sign of violating the assumed independence of parton--parton collisions. Clearly, the sum of the momenta of the individual partons cannot exceed the initial momenta of the protons they are from. To take this effect into account for example in \eqref{E:multiple_scatt_prob}, one must limit the phase space of each subsequent calculation of $\sigma_\text{jet}$. In calculating $G_n$, we should then calculate the $\sigma_\text{jet}^n$ in \eqref{E:multiple_scatt_prob} as
 \begin{align}\label{E:MC-integral}
 \sigma_\text{jet}^n = &\left(\prod\limits_{\alpha=1}^{n} \int\limits_{\Omega} \textstyle\text{d}k_{T,\alpha}^2\text{d}y_{1,\alpha}\text{d}y_{2,\alpha} \displaystyle\:\:  F\left(k_{T,\alpha}^2,y_{1,\alpha},y_{2,\alpha}\right)\right)\nonumber\\[0.6em]
 &\qquad\qquad\qquad\qquad\qquad\cdot\theta\left(1-\sum\limits_{\alpha=1}^{n}x_{1,\alpha}\right)\theta\left(1-\sum\limits_{\alpha=1}^{n}x_{2,\alpha}\right),
 \end{align}
-where $\theta$ is the Heaviside step function, and $x_1$ and $x_2$ depend on the integral variables via \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys}. The integration limits in \eqref{E:MC-integral} are dependent, the integrals can not be calculated separately, but they need to be calculated as a one, $3n$-dimensional integral. As the dimensionality of the integrals increases so rapidly, Monte Carlo methods are needed to solve \eqref{E:MC-integral} numerically.
+where $\theta$ is the Heaviside step function, and $x_1$ and $x_2$ depend on the integral variables via \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys}. The integration limits in \eqref{E:MC-integral} are now mutually dependent, so the integrals cannot be calculated separately, but as a one, $3n$-dimensional integral. As the dimensionality of the integrals increases so rapidly, Monte Carlo methods are needed to solve Equation \eqref{E:MC-integral} numerically. We also note that the factor 
+\begin{equation*}
+	\text{e}^{-\sigma_\text{jet}(s, k_0)A(b)} = \frac{1}{1+\sigma_\text{jet}(s, k_0)A(b) +\frac{1}{2!}(\sigma_\text{jet}(s, k_0)A(b))^2 + \ldots},
+\end{equation*}
+i.e. the probability for no minijet production, should also be modified accordingly, with $\sigma_\text{jet}^n(s, k_0)$ from Equation \eqref{E:MC-integral}.
 
 
 
 
-\section{results}
 
-\begin{figure}[htb!]
+\cleardoublepage
+\chapter{Results}
+
+\begin{figure}[b!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/ys_sigma_jets_FULL+SES.png}
-	\caption{Jet cross section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in partonic model of leading order pQCD, with a constant momentum cutoff $k_0 = 2\,\text{GeV}$.}
+	\caption{Minijet cross-section $\sigma_{\text{jet}}(s, k_0)$ calculated as a function of CMS energy $\sqrt{s}$ in leading order pQCD, with a constant momentum cutoff $k_0 = 2\,\text{GeV}$, and computed with the full bookkeeping \eqref{E:partonic_bookkeeping} and the SES approximation \eqref{E:integrated_sigma_jet_SES}.}
 	\label{F:FULL_vs_SES_const_kt0}
 \end{figure}
 
 \begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/sigma_jet_FULL+SES_new.png}
-	\caption{Jet cross section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in partonic model of leading order pQCD, with a momentum cutoff $k_0$ such that $\sigma_{\text{tot}}$ fits to data (see figure \ref{F:kt0_fitting}).}
+	\caption{Jet cross-section $\sigma_{\text{jet}}(s, k_0(\sqrt{s}))$ calculated as a function of CMS energy $\sqrt{s}$ in leading order pQCD, with a momentum cutoff $k_0(\sqrt{s})$ such that $\sigma_{\text{tot}}$ fits to data (see Figure \ref{F:kt0_fitting}).}
 	\label{F:FULL_vs_SES}
 \end{figure}
 
 \begin{figure}[htb!]
 	\centering
+	\includegraphics[width=\textwidth]{kuvat/xfxf.png}
+	\caption{Parton luminosities $x_1f_g(x_1,Q^2)\,x_2f_g(x_2,Q^2)$ (top left picture), $x_1f_g(x_1,Q^2)\,x_2f_{\text{u}}(x_2,Q^2)$ (top right picture), and $x_1f_{\text{u}}(x_1,Q^2)\,x_2f_{\text{u}}(x_2,Q^2)$ (bottom picture) calculated with CT14LO \cite{ct14lo} PDFs, at $\sqrt{s}=1\,\text{TeV}$ and $k_T=3\,\text{GeV}$, as a function of rapidities $y_1$ and $y_2$ using Equations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys}.}
+	\label{F:xfxf}
+\end{figure}
+
+\begin{figure}[htb!]
+	\centering
 	\includegraphics[width=\textwidth]{kuvat/osaprosessit.png}
-	\caption{The contribution of individual subprocesses (see table \ref{T:subprocesses}) on the jet cross section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in partonic model of leading order pQCD, with a momentum cutoff $k_0$ such that $\sigma_{\text{tot}}$ fits to data (see figure \ref{F:kt0_fitting}).}
+	\caption{The contributions of individual subprocesses (see Table \ref{T:subprocesses}) to the minijet cross-section $\sigma_{\text{jet}}$ calculated as a function of CMS energy $\sqrt{s}$ in leading order pQCD, with a momentum cutoff $k_0$ such that $\sigma_{\text{tot}}$ fits to data (see Figure \ref{F:kt0_fitting}). Each $\sigma_{\text{sub}}$ is calculated otherwise exactly like $\sigma_{\text{jet}}$, but with setting all other subprocess cross-sections to zero than the subprocess in question.}
 	\label{F:subprocess_contribution}
 \end{figure}
 
 \begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/kt0_vs_sqrt(s)_fittedtotot.png}
-	\caption{The fitted momentum cutoff $k_0$ as a function of CMS energy $\sqrt{s}$, from fitting the total cross section $\sigma_{\text{tot}}$ to the experimental data. The fitting procedure is explained in detail in section \ref{SS:fitting}. Notice the power-law -like behaviour.}
+	\caption{The fitted momentum cutoff $k_0$ as a function of CMS energy $\sqrt{s}$, from fitting the total cross-section $\sigma_{\text{tot}}$ to the experimental data with width parameters $\sigma=0.43$ (crosses and the green curve) and $\sigma=0.53$ (stars and the orange curve). The fitting procedure is explained in detail in Section \ref{SS:fitting}. Notice the power-law -like behaviour.}
 	\label{F:kt0_fitting}
 \end{figure}
 
 \begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/vaikutusalat_tot.png}
-	\caption{The calculated cross sections $\sigma_{\text{tot}}$, $\sigma_{\text{in}}$ and $\sigma_{\text{el}}$ as a functions of CMS energy $\sqrt{s}$, and the experimental data from lähteet TODO.}
+	\caption{The calculated cross-sections $\sigma_{\text{tot}}$ (pink curve), $\sigma_{\text{in}}$ (black curves), and $\sigma_{\text{el}}$ (blue curves) as functions of CMS energy $\sqrt{s}$. The solid lines are calculated using width parameter $\sigma = 0.53\,\text{fm}$ and the dotted lines using $\sigma = 0.43\,\text{fm}$. The experimental data is from  \cite{fit,data1,data2,data3,data4,data5}.}
 	\label{F:all_sigmas}
 \end{figure}
 
 \begin{figure}[htb!]
 	\centering
 	\includegraphics[width=\textwidth]{kuvat/histogram.png}
-	\caption{Probabilities $G_n$ of the production of $n$ jets for CMS energies $\sqrt{s}=200\,\text{GeV}, 550\,\text{GeV}, 1800\,\text{GeV} \;\text{and}\; 50000\,\text{GeV}$.}
+	\caption{Probabilities $G_n$ of the production of $n$ jets for CMS energies $\sqrt{s}=200\,\text{GeV}, 550\,\text{GeV}, 1800\,\text{GeV}, 8000\,\text{GeV}, 13000\,\text{GeV}, \;\text{and}\; 50000\,\text{GeV}$ with width parameters $\sigma = 0.43\,\text{fm}$ (purple curves) and $\sigma = 0.53\,\text{fm}$ (green curves).}
 	\label{F:multiple_jets}
 \end{figure}
 
-Calculating $\sigma_{\text{jet}}$ with full partonic bookkeeping makes a significant amount of calls to LHAPDF library, thus making calculations lenghty. Therefore we first wanted to estimate the error of using the single effective subprocess approximation described in section \ref{S:jet_production}. Figure \ref{F:FULL_vs_SES_const_kt0} represents $\sigma_{\text{jet}}$ calculated using both full partonic bookkeeping and the SES approximation with a constant cutoff momentum $k_0=2\,\text{GeV}$. Later the same comparison was made by using the cutoff momentums $k_0$ that were found by fitting the $\sigma_{\text{tot}}$ to data, as explained in section \ref{SS:numerical_sigma_jet}. The results of the latter calculation are represented in figure \ref{F:FULL_vs_SES}. Both figures \ref{F:FULL_vs_SES_const_kt0} and \ref{F:FULL_vs_SES} show a miniscule relative error in using SES approximation, though it undershoots the value of $\sigma_{\text{jet}}$. 
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/ngn.png}
+	\caption{Probabilities $G_n$ of the production of $n$ jets, multiplied by $n$, for CMS energies $\sqrt{s}=200\,\text{GeV}, 550\,\text{GeV}, 1800\,\text{GeV}, 8000\,\text{GeV}, 13000\,\text{GeV}, \;\text{and}\; 50000\,\text{GeV}$ with width parameters $\sigma = 0.43\,\text{fm}$ (purple curves) and $\sigma = 0.53\,\text{fm}$ (green curves). In each plot there is also the quantities $\left\langle n \right\rangle = \sum\limits_n n\cdot G_n$ given.}
+	\label{F:ngn}
+\end{figure}
 
-The SES approximation is based on the assumption that processes $gg\rightarrow gg$ and $gq\rightarrow gq$ dominate the jet production. To test this assumptions validity, we calculated the fractional contribution each subprocess on table \ref{T:subprocesses} has on $\sigma_{\text{jet}}$. These results are shown in figure \ref{F:subprocess_contribution}, from which we can read that the assumption holds very well on high energies, thus making SES a valid approximation.
+First, we wanted to estimate the error of using the single effective subprocess approximation described in Chapter \ref{S:jet_production} in calculating $\sigma_{\text{jet}}$. Figure \ref{F:FULL_vs_SES_const_kt0} shows $\sigma_{\text{jet}}$ calculated using both the full partonic bookkeeping and the SES approximation with a constant momentum cutoff $k_0=2\,\text{GeV}$. Next the same comparison was made by using the momentum cutoffs $k_0$ that were found by fitting the $\sigma_{\text{tot}}$ to data, as explained in Section \ref{SS:numerical_sigma_jet}. The results of the latter calculation are represented in Figure \ref{F:FULL_vs_SES}. Both Figures \ref{F:FULL_vs_SES_const_kt0} and \ref{F:FULL_vs_SES} show a minuscule relative error in using SES approximation, it undershoots the value of $\sigma_{\text{jet}}$ by at most $1.8\%$ in the $\sqrt{s}$-range studied. The relative error tolerance of the integration routine was $10^{-4}$, so the difference cannot be explained just due to numerical inaccuracy.
 
-After these calculations, we fitted the total cross section $\sigma_{\text{tot}}$ to the experimental data (lähteet TODO) using momentum cutoff $k_0$ as a fitting parameter. The procedure is explained in section \ref{SS:fitting}. The fitted $k_0$ as a function of CMS energy $\sqrt{s}$ is represented in the figure \ref{F:kt0_fitting}. The data points fell somewhat on a straight line on a logarithmic plot, suggesting that the momentum cutoff is ruled by a power law.
+The SES approximation is based on the assumption that processes $gg\rightarrow gg$ and $gq\rightarrow gq$ dominate the minijet production. These subprocess cross-sections have largest values, as can be seen from Figure \ref{F:SES_back}. The subprocess cross-sections are, in Equation \eqref{E:partonic_bookkeeping}, weighted by partonic luminosities of the form $x_1f_i(x_1,Q^2)\,x_2f_j(x_2,Q^2)$. The gluonic PDFs have such high values at high energies (see Figure \ref{F:pdfs}) that the gluonic processes clearly dominate over other processes. To demonstrate this effect, we calculated the luminosities $x_1f_i(x_1,Q^2)\,x_2f_j(x_2,Q^2)$ with $i=$g,u and $j=$g,u for values $\sqrt{s}=1\,\text{TeV}$ and $k_T=3\,\text{GeV}$, as a function of rapidities $y_1$ and $y_2$ using Equations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys}. The results are shown in Figure \ref{F:xfxf}. The shape of the plots in this figure can be understood with the help of Figure \ref{F:pdfs}: when $y_1=y_2=0$, $x_1=x_2=\frac{2k_T}{\sqrt{s}}=6\cdot10^{-3}$, where the gluonic PDFs have their global maximum, and up quark PDFs have a local minimum. Moving in any direction from this point decreases gluonic PDFs' values, hence the lone peak in $x_1f_g(x_1,Q^2)\,x_2f_g(x_2,Q^2)$. The Equations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys} are symmetric with respect to exchanging $y_1$ and $y_2$, and $x_1f_{\text{u}}(x_1,Q^2)\,x_2f_{\text{u}}(x_2,Q^2)$ is symmetric with respect to exchange of $x_1$ and $x_2$. In the positive quadrant, both quark PDF terms grow to form a peak, as $x_1$ grows from the PDF's local minimum and $x_2$ shrinks. In the quadrant where $y_1$ grows and $y_2$ shrinks (or other way around), both $x_1$ and $x_2$ grow and form a peak at the quark PDF's local maximum. The plot of the mixed term $x_1f_{g}(x_1,Q^2)\,x_2f_{\text{u}}(x_2,Q^2)$ follows the gluonic PDF's form as it has much higher values than the up quark PDF. Overall, from the Figure \ref{F:xfxf} we can clearly see that gluonic subprocesses' cross-sections get a very dominant weight in the whole integral domain in Equation \eqref{E:partonic_bookkeeping}. These two effects combined lead to the dominance of the processes $gg\rightarrow gg$ and $gq\rightarrow gq$ over all the others in the minijet production. To further demonstrate this effect, we calculated the fractional contribution from each subprocess of Table \ref{T:subprocesses} to $\sigma_{\text{jet}}$. These results are shown in Figure \ref{F:subprocess_contribution}, from which we can read that the gluon dominance is very clear at high energies.
 
-Next, we proceeded to calculate the cross sections $\sigma_{\text{in}}$ and $\sigma_{\text{el}}$ using the obtained momentum cutoffs (figure \ref{F:kt0_fitting}) as explained in \ref{SS:numerical_sigma_jet}. The results are shown on figure \ref{F:all_sigmas}. From these results we can see that, when the model parameter $k_0$ is tuned so that $\sigma_{\text{tot}}$ fits the experimental data, eikonal minijet model slightly undershoots the inelastic cross section $\sigma_{\text{in}}$. This difference could be explained by the contributions of the higher order pQCD corrections in $\sigma_{\text{jet}}$. In this model, the  $\sigma_{\text{in}}$ is a strictly increasing function of  $\sigma_{\text{jet}}$. The next to leading order terms (and further) raise the value of $\sigma_{\text{jet}}$, thus raising the value of $\sigma_{\text{in}}$. Even without taking this into account, model seems to give fairly good estimates on $\sigma_{\text{in}}$ and  $\sigma_{\text{el}}$.
+After these calculations, we fitted the total cross-section $\sigma_{\text{tot}}$ to the best fit of experimental data \cite{compete}:
+\begin{align*}
+	\sigma_{\text{tot, fit}}^{\bar{p}p,pp}(s) = 42.6\,(s)^{-0.46} \pm 33.4\,(s)^{-0.545} + 0.307\,\log^2\left(\frac{s}{29.1}\right) +35.5
+\end{align*} 
+using the momentum cutoff $k_0$ in $\sigma_{\text{jet}}(\sqrt{s},k_0)$ as a fitting parameter. The procedure is explained in Section \ref{SS:fitting}. The fitted $k_0$ as a function of the CMS energy $\sqrt{s}$ is represented in Figure \ref{F:kt0_fitting}. The data points fell somewhat on a straight line on a log-log plot, suggesting that the momentum cutoff is ruled by a power law $k_0\propto (\sqrt{s})^{0.19}$. Interestingly, this behaviour is qualitatively similar to what is predicted in the pQCD saturation model \cite{ekrt}.
 
-We then calculated the probabilities $G_n$ of the production of $n$ jets for some values of $\sqrt{s}$. The procedure used is explained in section \ref{SS:multiple_jets}. The results are given in figure \ref{F:multiple_jets}.
+Next, we proceeded to calculate the cross-sections $\sigma_{\text{in}}$ and $\sigma_{\text{el}}$ using the obtained momentum cutoffs (Figure \ref{F:kt0_fitting}) as explained in Chapter \ref{SS:numerical_sigma_jet}. The results are shown in Figure \ref{F:all_sigmas}. From these, we can see that, when the Gaussian width $\sigma = 0.43\,\femto\metre$ and when the model parameter $k_0$ is tuned so that $\sigma_{\text{tot}}$ fits the experimental data, the eikonal minijet model slightly undershoots the inelastic cross-section $\sigma_{\text{in}}$.
 
-Lastly, we calculated the probabilities $G_n$ taking momentum conservation into account with Monte Carlo integration as described in section \ref{SS:MC}. Because of the limited calcultional capacity, we only calculated the effect in the region $\sqrt{s}=100\,..\,1000\,\text{GeV}$ and up to 8-fold jet production. In this region, we found the effect negligible. This result is not surprising, as from figure \ref{F:multiple_jets} one can read that single dijet production dominates the $\sigma_{\text{in}}$ in this region.
+In the results calculated with $\sigma = 0.43 \,\text{fm}$ in Figure \ref{F:all_sigmas}, the problem is in the proportionality of $\sigma_{\text{in}}$ and $\sigma_{\text{el}}$ with respect to $\sigma_{\text{tot}}$. Therefore, this problem cannot be corrected by simply taking higher order pQCD corrections into $\sigma_{\text{jet}}$, as this would generally just raise the value of $\sigma_{\text{jet}}$. As can be seen from Equations \eqref{E:sigma_el}, \eqref{E:sigma_in}, and \eqref{E:sigma_tot}, raising the value of $\sigma_{\text{jet}}$ (thus raising the value of $\chi$) leads into raising values of all three cross-sections, $\sigma_{\text{in}}$, $\sigma_{\text{el}}$, and $\sigma_{\text{tot}}$, not into lowering $\sigma_{\text{el}}$ while raising $\sigma_{\text{in}}$ and keeping $\sigma_{\text{tot}}$ still, which would be needed. As a matter of fact, the contributions of higher order pQCD corrections have already been effectively taken into account by the fitting of $k_0$, because it forces the $\sigma_{\text{jet}}$ to take the appropriate value, no matter what terms lie in it.
+
+Another modification one could make to the eikonal minijet model would be to allow for a real part in $\chi$, i.e. considering also purely elastic events. As can be seen from Equation \eqref{E:sigma_in_from_profile}, this would keep the value of $\sigma_{\text{in}}$ unchanged, but, as can be seen from Equations \eqref{E:sigma_el_from_profile} and \eqref{E:sigma_tot_from_profile}, raise both $\sigma_{\text{tot}}$ and $\sigma_{\text{el}}$, thus making the proportionality issue even worse.
+
+To understand the effect of the width of the proton thickness function $T_n$ on the ratios  $\frac{\sigma_\text{in}}{\sigma_\text{tot}}$ and $\frac{\sigma_\text{el}}{\sigma_\text{tot}}$, let us consider a toy model, where $T_n$ is such that the partonic overlap function $A$ in Equation \eqref{E:convolution} becomes the Heaviside $\theta$ in the radial direction:
+\begin{equation}
+A(\mathbf{b}) = \frac{1}{\pi\sigma^2} \theta(\sigma-b)\qquad  \int A(\mathbf{b}) \,\text{d}^2\mathbf{b} = 1.
+\end{equation}
+Clearly, as can be seen from the Gaussian $A$, the width parameter $\sigma$ here is in direct correlation with that in $T_n$. Inserting this overlap function into the eikonal minijet model, Equations \eqref{E:sigma_el}, \eqref{E:sigma_in}, and \eqref{E:sigma_tot} yield straightforwardly ratios
+\begin{align}
+&\frac{\sigma_\text{in}}{\sigma_\text{tot}} = \frac{1}{2}(1+\text{e}^{-\frac{\sigma_{\text{jet}}(s,k_0)}{2\pi\sigma^2}}) \qquad \text{and}\\
+&\frac{\sigma_\text{el}}{\sigma_\text{tot}} = \frac{1}{2}(1-\text{e}^{-\frac{\sigma_{\text{jet}}(s,k_0)}{2\pi\sigma^2}}).
+\end{align}
+From these, we directly see that in order to raise $\frac{\sigma_\text{in}}{\sigma_\text{tot}}$ and lower $\frac{\sigma_\text{el}}{\sigma_\text{tot}}$, one has to raise the width parameter $\sigma$ relative to $\sigma_{\text{jet}}$. Then, since $\sigma_{\text{tot}} = \frac{\sigma_{\text{jet}}}{x}(1-\text{e}^{-x})$, where $x = \frac{\sigma_{\text{jet}}}{2\pi\sigma^2}$, we can see that the lowering of $x$ must be compensated with the lowering of $\sigma_{\text{jet}}$ to keep $\sigma_{\text{tot}}$ unchanged.
+
+We found by the method of trial and error that raising the width parameter $\sigma$ of the proton thickness functions $T_n$ to a value of $\sigma = 0.53 \,\text{fm}$ fits our model very well with the experimental data. Very interestingly, this value also nearly fits the error margins of the value $\sigma=(0.43\pm0.09)\,\text{fm}$ obtained from Ref. \cite{zeuksen_pap}. The cross-sections calculated with $\sigma = 0.53 \,\text{fm}$ are also shown in Figures \ref{F:FULL_vs_SES} and \ref{F:all_sigmas}, and the re-fitted $k_0$ is represented in Figure \ref{F:kt0_fitting}.
+
+Next we calculated the probabilities $G_n$ of the production of $n$ pairs of minijets for some selected values of $\sqrt{s}$ for both values $\sigma = 0.43 \,\text{fm}$ and $\sigma = 0.53 \,\text{fm}$ of the width parameter. The procedure used is explained in Section \ref{SS:multiple_jets}. The results are shown in Figure \ref{F:multiple_jets}. As expected, at lower energies most of the inelastic collisions produce only one pair of minijets, and then as the energy grows, the production of multiple pairs of minijets becomes more significant, while the one-pair production stays as the most probable one in all cases studied. There is, however, a significant difference in the results for different width parameter values. This is also reasonable, as can be seen from Figure \ref{F:kt0_fitting}, for narrower protons the fitting parameter $k_0$ is lower, leading to higher $\sigma_{\text{jet}}$, and higher probabilities for multiple minijet pairs produced.
+Looking at Figure \ref{F:multiple_jets} might be a bit misleading for intuition, as even though multiple minijet productions have low probability, they produce indeed many pairs of minijets. This shifts our attention to the quantity $n\cdot G_n$, as the expected value of minijetpairs produced in a single inelastic proton--proton collision can be calculated as $\left\langle n \right\rangle = \sum\limits_{n=1}^{\infty}n\cdot G_n = \frac{\sigma_{\text{jet}}}{\sigma_{\text{in}}}$. The quantities $n\cdot G_n$ as well as $\left\langle n \right\rangle$ for some selected values of $\sqrt{s}$ for both values $\sigma = 0.43 \,\text{fm}$ and $\sigma = 0.53 \,\text{fm}$ of the width parameter are shown in Figure \ref{F:ngn}. The observations made from Figure \ref{F:multiple_jets} are also valid for this figure. One should also note that changing the width parameter changes the expected value $\left\langle n \right\rangle$ very dramatically.
+
+We still have one more experimentally obtainable quantity we can validate the eikonal minijet model against, the slope parameter $B$ of $\frac{\text{d}\sigma_{\text{el}}}{\text{d}t} \propto \text{e}^{-B|t|}$. Approximating Equation \eqref{E:diff_sig_el} to the first order in the Mandelstam variable $t$ yields
+\begin{align}
+\frac{\text{d}\sigma_\text{el}}{\text{d}t} &\approx \pi \left(\int\limits_{0}^{\infty}\Gamma(\mathbf{b})\left(1-\frac{b^2|t|}{4}\right)b\,\text{d}b\right)^2 \nonumber\\[0.4em]
+&\approx \frac{\text{d}\sigma_\text{el}}{\text{d}t}\bigg\rvert_{t=0}  \left(1-|t|\left[\frac{1}{2}\frac{\int\limits_{0}^{\infty}\Gamma(\mathbf{b})b^3\,\text{d}b}{\int\limits_{0}^{\infty}\Gamma(\mathbf{b})b\,\text{d}b}\right]\right) \nonumber\\[0.4em]
+&\approx \frac{\text{d}\sigma_\text{el}}{\text{d}t}\bigg\rvert_{t=0} \text{e}^{-B|t|},
+\end{align}
+where we have defined the slope parameter
+\begin{equation}
+B\equiv \frac{1}{2}\frac{\int\limits_{0}^{\infty}\Gamma(\mathbf{b})b^3\,\text{d}b}{\int\limits_{0}^{\infty}\Gamma(\mathbf{b})b\,\text{d}b}.
+\end{equation}
+We calculated $B$ in the eikonal minijet model at various CMS energies $\sqrt{s}$ with the width parameters $\sigma = 0.43\,\text{fm}$ and $\sigma = 0.53\,\text{fm}$. These results are shown in Figure \ref{F:bsqrts}, along with experimental data from Refs. \cite{totemia,bd1,bd2,bd3,bd4,bd5,bd6,bd7}. The results calculated with the larger width parameter $\sigma = 0.53\,\text{fm}$ fit the experimental data, in fact, surprisingly well in the studied range, although the slope of $B$ in $\sqrt{s}$ seems to be slightly steeper in the experimental data than in the calculated results. Interestingly, this slope of $B$ seems to be approximately same with $\sigma = 0.43\,\text{fm}$ and $\sigma = 0.53\,\text{fm}$.
+\begin{figure}[htb!]
+	\centering
+	\includegraphics[width=\textwidth]{kuvat/bsqrts.png}
+	\caption{The slope parameter $B$ as a function of the CMS energy $\sqrt{s}$, calculated from the eikonal minijet model with width parameter $\sigma = 0.43\,\text{fm}$ (red plus signs) and $\sigma = 0.53\,\text{fm}$ (blue crosses). The experimental data (black stars) is from  \cite{totemia,bd1,bd2,bd3,bd4,bd5,bd6,bd7}. }
+	\label{F:bsqrts}
+\end{figure}
+The message of Figure \ref{F:bsqrts} is rather obvious: the width parameter $\sigma$ should apparently slightly still grow as a function of $\sqrt{s}$. Such fitting is, however, beyond the scope of this Master's thesis.
+
+Finally, we proceeded to calculate the probabilities $G_n$ with $\sigma=0.43\,\femto\metre$ taking also momentum conservation into account (Equation \eqref{E:MC-integral}) with Monte Carlo integration as described in Section \ref{SS:MC}. Because of the limited calculational capacity, we only calculated the effect in the region $\sqrt{s}=100\,..\,1000\,\text{GeV}$ and up to 8-fold minijet production, i.e. 24-dimensional integrals. In this region, we found the effect negligible, changing values of $G_n$ by at most $3\%$. This result is not surprising, as from Figure \ref{F:multiple_jets} one can read that single dijet production dominates the $\sigma_{\text{in}}$ in this region.
 
 
 
-\section{Conclusion}
 
-In this thesis we have derived the eikonal approximation for quantum scattering problem. In its framework we then studied an analytically simplistic model, the eikonal minijet model, for high energy proton--proton collisions. This model we then tested against experimental data gathered on topic to this day by numerical analysis. As a part of said numerical analysis, we also studied the validity of single effective subprocess approximation of the partonic model on high energies. We found the approximation to be highly accurate on the energy scales studied.
+\newpage
+\chapter{Conclusion}\label{S:conclusion}
 
-The eikonal minijet model depends on one parameter, the momentum cutoff $k_0$. This cutoff sets the perturbatively calculable hard subprocesses apart from the nonperturbative soft subprocesses, which we left untouched in this thesis. Using numerical analysis, we found $k_0$'s so that our calculated total cross sections for proton--proton collisions fit the experimental data in central momentum energy range $\sqrt{s}=0.1\,..\,100\,\text{TeV}$. With the model parameter fixed, we then proceeded to calculate predictions for inelastic scattering cross sections in said range. Results of these calculations are shown in figures \ref{F:kt0_fitting} and \ref{F:all_sigmas}. We found that despite its apparent simplisticity, the model fit the experimental data very well. 
+In this thesis, we have derived the eikonal approximation for a quantum scattering problem. In this framework, we then studied an analytically simplistic model, the eikonal minijet model, for describing the CMS-energy dependence of the cross-sections in high energy proton--proton collisions. We then tested this model against experimental data gathered so far. As a part of our numerical analysis, we also studied the validity of the single effective subprocess approximation for minijet production at high energies. We found the approximation to be highly accurate at the energy scales studied.
 
-The eikonal minijet model is based on the notion that inelastic proton--proton scattering on high energies can be treated perturbatively -- in the collision one or more distinct pairs of partons scatter from each other. Based on this we calculated within the framework of the model the probabilites of a single inelastic event to be a production of $n$ pairs of jets. These probabilities are shown in figure \ref{F:multiple_jets}. As expected, the greater the energy of the colliding protons, the more probable it is to have a manyfold jet production. 
+The eikonal minijet model depends, in the leading order QCD perturbation theory, on two parameters, the momentum cutoff $k_0$ and the Gaussian thickness parameter $\sigma$. The cutoff $k_0$ sets the perturbatively calculable hard subprocesses apart from the nonperturbative soft subprocesses which we left untouched in this thesis as we lowered $k_0$ to as small values as possible. Using numerical analysis and varying the thickness $\sigma$ from $0.43\femto\metre$ to $0.53\femto\metre$, we found $k_0$'s so that our calculated total cross-sections for proton--proton collisions fit the experimental data in the CMS energy range $\sqrt{s}=0.1\,..\,100\,\text{TeV}$. Interestingly, $k_0\gg \Lambda_{\text{QCD}}$ in all cases studied. With the model parameters fixed, we then proceeded to calculate predictions for inelastic scattering cross-sections in the mentioned range. Results of these calculations are shown in Figures \ref{F:kt0_fitting} and \ref{F:all_sigmas}. We found that despite its apparent simplicity, the model fit the experimental data surprisingly well. 
 
-As the center of momentum energy rises, the contribution of the manyfold jet production events in inelastic scattering cross section increases. This raises a question, how does the conservation of momenta fit to the picture. The sum of the momenta of the partons participating in jet productions can not be more than the initial momentum of the proton in question. To see if this plays a role in the probabilities of having manyfold jet productions, one has to do high-dimensional Monte Carlo integration. 
+The eikonal minijet model is based on the notion that inelastic proton--proton scattering on high energies can be treated perturbatively -- in the collision one or more distinct pairs of partons, minijets, scatter from each other. Based on this we calculated within the framework of the model the probabilities of inelastic events to be understood as productions of $n$ pairs of minijets. These probabilities are shown in Figure \ref{F:multiple_jets}. As expected, the greater the energy of the colliding protons, the more probable it is to have a multiple minijet production. In doing this, we updated and confirmed the results of Ref. \cite{xnw}.
 
-We calculated the effect of the momentum conservation on the probabilities of having manyfold jet productions in the region $\sqrt{s}=100\,..\,1000\,\text{GeV}$ up to 8-fold jet production, and found it negligible. This was somewhat expected, as in this region the one-fold jet production is very dominant. Studying the effect on higher energies was out of the scope of our work, as much more calculational capacity would be needed to run the increasingly high-dimensional Monte Carlo Integrals.
+As another test of the eikonal minijet model, we calculated the slope parameter $B$ of the elastic differential cross section in the CMS energy range $\sqrt{s}=0.1\,..\,10\,\text{TeV}$, and compared it to experimental data. These results are shown in Figure \ref{F:bsqrts}. Even in this test, the eikonal minijet model represented experimental data surprisingly well, in spite of its simplicity.
 
+A noteworthy detail of the model is that one does not need to impose strong ad hoc $\sqrt{s}$-scaling in the partonic overlap function $A$, even though protons appear to effectively widen at larger CMS energies. This effect is instead inherently taken care of via the fitting of the parameter $k_0$ and $\sigma_{\text{jet}}$ which follows from $k_0$. According to our results in Figure \ref{F:all_sigmas}, once a fitting width parameter $\sigma$ is found at some CMS energy, the same $\sigma$ works well at all the CMS energies studied. Even so, as can be seen from Figure \ref{F:bsqrts}, the eikonal minijet model could perhaps represent the experimental data even better if some $\sqrt{s}$-dependence would be introduced in the overlap function $A$, which leads one also to reconsider the factorization of $\sigma_{\text{jet}}$ from $A(b)$ assumed in Equation \eqref{E:eikonal_function_in_model}.
 
+As the centre of momentum energy rises, the contribution of the multiple minijet production events in inelastic scattering cross-section increases. This raises a question of how does the conservation of momenta fit into the picture. The sum of the momenta of the partons participating in jet productions cannot be more than the initial momenta of the protons in the collision. To see if this plays a role in the probabilities of having multiple minijet production, one has to perform high-dimensional Monte Carlo integration. We calculated the effect of the momentum conservation on the probabilities of having multiple minijet productions in the region $\sqrt{s}=100\,..\,1000\,\text{GeV}$, up to 8-fold jet production, and found it negligible. This was somewhat expected, as in this region the production of one pair of minijets is very dominant. Studying the effect on higher energies was out of the scope of our work, as much more calculational capacity would be needed to perform the increasingly high-dimensional Monte Carlo Integrals.
 
 \newpage
 \nocite{*}
 % --------------------------------------------------------------------------
 % LÄHTEET
 % --------------------------------------------------------------------------
-\bibliographystyle{finabbrv}   % <= Määritellään käytettävä viittausjärjestelmä.
+\bibliographystyle{unsrt}
 \bibliography{omabib}           % <= Määritellään käytettävä BibTeX-tietokanta.
 \label{lastpage}
 % --------------------------------------------------------------------------
@@ -809,13 +963,14 @@ We calculated the effect of the momentum conservation on the probabilities of ha
 % --------------------------------------------------------------------------
 \appendix
 \cleardoublepage
-\numberwithin{equation}{section}
 
-\section{QCD remarks}\label{A:QCD}
+\chapter{Quantum Chromodynamics tools}\label{A:QCD}
 
-\subsection{Gluon propagators}\label{AS:gluon_propagators}
+In this Chapter we show and derive some technical tools for our calculations. The discussion is inspired by \cite{pqcd}.
 
-The quantum chromodynamics is a non-Abelian gauge theory with a local SU(3) symmetry. The Lagrangian is written as (lähde TODO)
+\section{Gluon propagators}\label{AS:gluon_propagators}
+
+Quantum Chromodynamics is a non-Abelian gauge theory with a local SU(3) gauge symmetry. The Lagrangian is written as \cite{pqcd} \cite[15.2]{Peskin}
 \begin{align}\label{AE:lagrangian}
 	\mathcal{L} = -\frac{1}{4}\sum\limits_{\mu,\nu=0}^{3}\sum\limits_{a=1}^{8}F^{\mu\nu,a}F_{\mu\nu,a} + \sum\limits_{q}\left[i\sum\limits_{i,j=1}^{3}\left(\bar{\psi}_q\right)_i\cancel{D}_{ij}\left(\psi_q\right)_j-m_q\bar{\psi}_q\psi_q\right],
 \end{align}
@@ -823,21 +978,21 @@ where the SU(3) Maxwell's field tensor is
 \begin{equation}
 	F_{\mu\nu}^a = \partial_\mu A_\nu^a-\partial_\nu A_\mu^a-g_s\sum\limits_{b,c=1}^{8}f^{abc}A_\mu^bA_\nu^c,
 \end{equation}
-field $A^{\mu,a}$ is the gluon field with color $a$, $g_s$ is the strong coupling constant, $f^{abc}$ are the structure constants of SU(3), $\left(\psi_q\right)_j$ is a spinor with color $j$ corresponding to quark $q=u,d,c,s,t,b$, $m_q$ is the mass of the quark $q$, and covariant derivative $\cancel{D}_{ij}$ is
+field $A^{\mu,a}$ is the gluon field with colour $a$, $g_s$ is the strong coupling constant, $f^{abc}$ are the structure constants of SU(3), $\left(\psi_q\right)_j$ is a spinor with colour $j$ corresponding to a quark flavour $q=u,d,c,s,t,b$, and $m_q$ is the mass of the quark $q$. The covariant derivative $\cancel{D}_{ij}$ is
 \begin{equation}
 	\cancel{D}_{ij}=\sum\limits_{\mu=0}^{3}\gamma_\mu D^\mu_{ij} =\sum\limits_{\mu=0}^{3}\gamma_\mu\left(\partial^\mu(\mathbb{I}_3)_{ij}+ig_s\sum\limits_{a=1}^{8}A^{\mu,a}(t^a)_{ij}\right),
 \end{equation}
 where $t^a$ are the generators of SU(3).
 
-In the given form \eqref{AE:lagrangian} does not give unique solutions for gauge field $A^\mu$, but we have to fix a gauge condition. One such condition is 
-\begin{equation}
+For unique solutions involving the gauge field $A^\mu$, we have to fix a gauge condition. For exhaustive discussion on different gauges, see Ref. \cite{leibbrandt}. One such condition is 
+\begin{equation}\label{AE:lorentz_con}
 	\sum\limits_{\mu=0}^3 \partial_\mu A^\mu =0,
 \end{equation}
-which is called Lorentz gauge condition. It is implemented in the Lagrangian via Lagrange multiplier $\lambda$:
+which is called Lorenz gauge condition. It is implemented in the Lagrangian via the Lagrange multiplier $\lambda$:
 \begin{equation}
 	\mathcal{L'} = \mathcal{L} -\frac{1}{2\lambda}\sum\limits_{a=1}^8\left(\sum\limits_{\mu=0}^3 \partial_\mu A^{\mu,a}\right)\left(\sum\limits_{\mu=0}^3 \partial_\mu A^{\mu,a}\right).
 \end{equation}
-This gauge condition leads to following Feynman rule for gluon propagators:
+This gauge condition leads to following Feynman rule for gluon propagators \cite{pqcd,Peskin}:
 \begin{equation*}
 \begin{tabular}{cc}
 \begin{tabular}[c]{@{}l@{}}\begin{fmffile}{gprop}
@@ -849,17 +1004,17 @@ This gauge condition leads to following Feynman rule for gluon propagators:
 \marrow{b}{down}{bot}{$k$}{i1,o1}
 \end{fmfchar*}
 \end{fmffile}
-\end{tabular} & \begin{tabular}[c]{@{}l@{}} \\ $\displaystyle\qquad=-\frac{i\delta^{ab}}{k^2+i\epsilon}\left(g^{\mu\nu}-(1-\lambda)\frac{k^\mu k^\nu}{k^2}\right).$
+\end{tabular} & \begin{tabular}[c]{@{}l@{}} \\ $\displaystyle\qquad=-\frac{i\delta^{ab}}{k^2}\left(g^{\mu\nu}-(1-\lambda)\frac{k^\mu k^\nu}{k^2}\right).$
 \end{tabular} 
 \end{tabular}
 \end{equation*}
-Leaving $\lambda$ arbitrary is often referred as general covariant gauge, whereas choice $\lambda=0$ is called Landau gauge and $\lambda=1$ is called Feynman gauge.
+Leaving $\lambda$ arbitrary is often referred to as general covariant gauge, whereas the choice $\lambda=0$ is called Landau gauge and $\lambda=1$ Feynman gauge.
 
-Another choice would be axial gauge, where the gauge field $A^\mu$ satisfies
+Another choice could be an axial gauge, where the gauge field $A^\mu$ satisfies
 \begin{equation}
 \sum\limits_{\mu=0}^3 n_\mu A^\mu =0,
 \end{equation}
-for some arbitrary four-vector $n$. Similar to Lorentz condition, this condition can be implemented into Lagrangian via
+for some arbitrary four-vector $n$. Similar to the Lorenz condition \eqref{AE:lorentz_con}, this condition can be implemented into Lagrangian via
 \begin{equation}
 \mathcal{L'} = \mathcal{L} -\frac{1}{2\lambda}\sum\limits_{a=1}^8\left(\sum\limits_{\mu=0}^3 n_\mu A^{\mu,a}\right)\left(\sum\limits_{\mu=0}^3 n_\mu A^{\mu,a}\right).
 \end{equation}
@@ -879,15 +1034,32 @@ This gauge choice leads to following Feynman rule for gluon propagators:
 \end{tabular} 
 \end{tabular}
 \end{equation*}
-As the general axial gauge makes many calculations very complicated, one often makes further assumptions on the vector $n$. One popular restriction is $n^2=\lambda=0$, dubbed light-cone gauge. Note also that if in a given Feynman graph there are more than one gluons, they must each fulfill their gauge conditions separately. By making this observation, one can choose a different $n$ for each external leg, for example, to make calculations more practical. Although they are noticeably more inticate than Lorentz gauges, axial gauges have one clear superiority. In them, by construct, only transverse polarizations propagate. Thus no Faddeev-Popov ghosts emerge (lähde TODO). For this reason axial gauges are sometimes called physical gauges.
+As the general axial gauge makes many calculations very complicated due to the rapidly increasing number of terms, one often makes further assumptions on the vector $n$. One popular restriction is $n^2=\lambda=0$, dubbed light-cone gauge. Note also that if in a given Feynman graph there are more than one gluons, they must each fulfil their gauge conditions separately. By making this observation, one can choose a different $n$ for each external leg, for example, to make calculations more practical. Although they are noticeably more intricate than Lorenz gauges, axial gauges have one clear superiority. In them, by construction, only transverse polarisations propagate. Thus no Faddeev-Popov ghosts \cite{faddeev} emerge. For this reason, axial gauges are sometimes called physical gauges.\cite{leibbrandt, petja}
 
-\subsection{Polarization tensor in Lorentz gauge}\label{AS:axial_polarization_tensor}
+In this thesis the following convention for QCD Feynman rules \cite{pqcd,Peskin,risto} is used:
 
-Leaving all summations and color indices implicit, in Lorentz gauge of the QCD the Lagrangian for one gluon reads
+External lines of quarks or antiquarks with momentum $p$, spin $s$, and colour index $i=1,2,3$:\\
+\includegraphics[width=\textwidth]{kuvat/extqlines.png}\\
+where $u$ and $v$ are the quark spinors.
+
+External lines of gluons of momentum $k$, polarization $\lambda$ and colour index $a=1,\ldots,8$:\\
+\includegraphics[width=\textwidth]{kuvat/extglines.png}\\
+where $\epsilon$ is the polarization vector.
+
+Quark--gluon coupling, three-gluon coupling, and four-gluon coupling vertices:\\
+\includegraphics[width=\textwidth]{kuvat/qvert.png}\\
+\includegraphics[width=\textwidth]{kuvat/tgvert.png}\\
+\includegraphics[width=\textwidth]{kuvat/fgvert.png}\\
+where $g$ is the strong coupling constant, $T^a$ are the SU(3) generator matrices in fundamental representation, $\gamma^\mu$ are the Dirac $\gamma$ matrices, and $f^{abc}$ are the SU(3) structure constants.
+
+\clearpage
+\section{Polarisation tensor in Lorenz gauge}\label{AS:cov_polarization_tensor}
+
+Leaving all summations and colour indices implicit, in the Lorenz gauge the QCD gluon Lagrangian reads
 \begin{equation}
 \mathcal{L} = - \frac{1}{4}F^{\mu\nu}F_{\mu\nu} - \frac{1}{2\lambda}(\partial_\mu A^\mu)^2.
 \end{equation}
-Euler-Lagrange equation for one gluon then gets the form
+Euler-Lagrange Equation for the gluon field then gets the form
 \begin{equation}\label{AE:lorentz_ELE}
 \Box A^\nu -(1-\lambda)\partial^\nu\left(\partial_\mu A^\mu\right)= 0.
 \end{equation}
@@ -907,11 +1079,11 @@ As this must hold for any $\lambda$, the only possibility is that $C^\nu=0$. The
 \begin{equation}
 	\Box A^\nu = 0.
 \end{equation}
-The wave equation is solved by plane waves
+The wave Equation is solved by plane waves
 \begin{equation}\label{AE:plane_waves}
 	A^\nu = \epsilon^\nu(k)\text{e}^{-ik\cdot x}.
 \end{equation}
-On the other hand, the Euler-Lagrange equation \eqref{AE:lorentz_ELE} now leaves just
+On the other hand, the Euler-Lagrange Equation \eqref{AE:lorentz_ELE} now leaves just
 \begin{equation}
 (1-\lambda)\partial^\nu\left(\partial_\mu A^\mu\right)= 0 \; \; \forall \lambda,
 \end{equation}
@@ -919,7 +1091,7 @@ which implies that
 \begin{equation}
 	\partial_\mu A^\mu = D,
 \end{equation}
-where $D$ is a scalar constant in $x$. Now derivating equation \eqref{AE:plane_waves} leads to
+where $D$ is a scalar constant in $x$. Now differentiating Equation \eqref{AE:plane_waves} leads to
 \begin{align}
 	\partial_\mu A^\mu = \left(\partial_\mu \epsilon^\mu(k)\right)\text{e}^{-ik\cdot x} -ik\cdot \epsilon(k)\text{e}^{-ik\cdot x} = -ik\cdot \epsilon(k)\text{e}^{-ik\cdot x} = D.
 \end{align}
@@ -927,57 +1099,76 @@ For $D$ and $\epsilon(k)$ to be independent of $x$, this then implies that
 \begin{equation}\label{AE:pol_k}
 	D = k\cdot \epsilon(k) = 0.
 \end{equation}
+Thus, $\partial_\mu A^\mu=0$ and $k_\mu A^\mu=0$.
 
-Define now $\tilde{k}=(k^0,-\bar{k})$, a linearly independent vector with $k$. Require from polarization vectors $\epsilon(k)$ that 
+Gluon field $A^\mu$ transforms under gauge transformations as 
+\begin{equation}\label{AE:eka}
+	\tilde{A}^\mu = A^\mu - \partial^\mu\beta(x),
+\end{equation}
+where $\beta(x)$ is some arbitrary function of $x$. For the Lorenz condition $\partial_\mu A^\mu=0$ to hold, the function $\beta(x)$ must satisfy
+\begin{equation}\label{AE:toka}
+	\Box\beta(x)=0 \qquad \Leftrightarrow \qquad \beta(x) = B(k)\text{e}^{-ik\cdot x}.
+\end{equation}
+Remembering condition \eqref{AE:pol_k} and that $k^2=0$, we can write the polarization vector $\epsilon^\mu(k)$ as
+\begin{equation}\label{AE:kolmas}
+	\epsilon^\mu(k) = \alpha(k) k^\mu + \epsilon'^\mu(k),
+\end{equation}
+where $\alpha(k)$ is some real number and $k\cdot\epsilon'(k)=0$. Combining Equations \ref{AE:eka}, \ref{AE:toka}, and \ref{AE:kolmas} yields
+\begin{equation}
+	\tilde{A}^\mu = \left[(\alpha(k)+iB(k))k^\mu + \epsilon'^\mu(k)\right]\text{e}^{-ik\cdot x}.
+\end{equation}
+This can be interpreted as such that we always have some freedom in choosing the polarization vector, as we can then afterwards do a gauge transform such that the term $(\alpha(k)+iB(k))$ vanishes for one component of $\epsilon^\mu(k)$. Therefore let us choose the polarization vector $\epsilon^\mu(k)$ so that
+\begin{equation}\label{AE:pol_self}
+\epsilon^0 = 0, \quad\text{from which } \mathbf{k}\cdot \mathbf{\epsilon}=0,
+\end{equation}
+follows from the Equation \eqref{AE:pol_k}.
+
+Define now $\tilde{k}=(k^0,-\mathbf{k})$, a linearly independent vector of the vector $k=(k^0,\mathbf{k})$. Now \eqref{AE:pol_self} implies that
 \begin{equation}\label{AE:pol_k_tilde}
 	\tilde{k}\cdot\epsilon(k) =0.
 \end{equation}
-This together with \eqref{AE:pol_k} implies then that
-\begin{equation}\label{AE:pol_self}
-	\epsilon^0 = 0, \quad \epsilon \bar{k}\cdot \bar{\epsilon}=0.
-\end{equation}
-Let us then define polarization tensor $\mathcal{P}$ by
+Let us then define a polarisation tensor $\mathcal{P}$ by
 \begin{equation}\label{AE:pol_def}
 \mathcal{P}^{\mu\nu} = \sum\limits_{\lambda} \epsilon^\mu_\lambda(k)\epsilon^{*\nu}_\lambda(k),
 \end{equation}
-where summation is made over physical polarization states $\lambda=1,2$. Let the polarization vectors $\epsilon$ be normalized to unity, i.e.
+where the summation is taken over the physical polarisation states $\lambda=1,2$. Let the polarisation vectors $\epsilon$ be normalized to unity, i.e.
 \begin{equation}\label{AE:pol_unity}
 \epsilon_\lambda(k)\cdot \epsilon^{*}_\lambda(k)=-1.
 \end{equation}
-Now using the definition \eqref{AE:pol_def} and constraints \eqref{AE:pol_k}, \eqref{AE:pol_k_tilde} and \eqref{AE:pol_unity}, we get following identities for polarization tensor:
+Now using the definition \eqref{AE:pol_def} and constraints \eqref{AE:pol_k}, \eqref{AE:pol_k_tilde}, and \eqref{AE:pol_unity}, we get the following identities for the polarisation tensor:
 \begin{equation}\label{AE:pol_identities}
 g_{\mu\nu}\mathcal{P}^{\mu\nu}=-2, \quad k_{\mu}\mathcal{P}^{\mu\nu}=k_{\mu}k_{\nu}\mathcal{P}^{\mu\nu}= 0 , \quad \tilde{k}_{\mu}\mathcal{P}^{\mu\nu}=\tilde{k}_{\mu}\tilde{k}_{\nu}\mathcal{P}^{\mu\nu}= 0 .
 \end{equation}
-The polarization tensor is a second rank tensor, so it is uniquely fixed by two linearly independent vectors $\tilde{k}$ and $k$, and the metric $g$. Using this we can decompose it as
-\begin{equation}
+The polarisation tensor is a second rank tensor, so it is uniquely fixed by two linearly independent vectors $\tilde{k}$ and $k$, and the metric $g$. Using this we can decompose it as
+\begin{equation}\label{AE:pol_ten_dec}
 \mathcal{P}^{\mu\nu} = Ag^{\mu\nu} + Bk^{\mu}k^{\nu}+ C\tilde{k}^{\mu}\tilde{k}^{\nu} + D\tilde{k}^{\mu}k^{\nu} + Ek^{\mu}\tilde{k}^{\nu},
 \end{equation}
-where $A,B,C,D$ and $E$ are some scalars. The scalars can be determined by imposing the constraints \eqref{AE:pol_identities}. This yields us the form
+where $A,B,C,D,$ and $E$ are some scalars. The scalars can be determined by imposing the constraints \eqref{AE:pol_identities}. This yields us the form
 \begin{equation}
 \mathcal{P}^{\mu\nu} = -g^{\mu\nu} + \frac{1}{\tilde{k}\cdot k}\left(\tilde{k}^{\mu}k^{\nu} + k^{\mu}\tilde{k}^{\nu}\right).
 \end{equation}
 
+\clearpage
+\section{Polarisation tensor in axial gauge}\label{AS:axial_polarization_tensor}
 
-\subsection{Polarization tensor in axial gauge}\label{AS:axial_polarization_tensor}
-
-Again leaving all summations and color indices implicit, in axial gauge of the QCD the Lagrangian for one gluon reads
+Again leaving all summations and colour indices implicit, in an axial gauge the QCD Lagrangian for gluons reads
 \begin{equation}
 	\mathcal{L} = - \frac{1}{4}F^{\mu\nu}F_{\mu\nu} - \frac{1}{2\lambda}(n_\mu A^\mu)^2.
 \end{equation}
-Euler-Lagrange equation for one gluon then gets the form
+Euler-Lagrange Equation for the gluon field then gets the form
 \begin{equation}\label{AE:axial_ELE}
 	-\lambda\left(n\cdot A\right)n^\nu + \Box A^\nu -\partial^\nu\left(\partial_\mu A^\mu\right)= 0.
 \end{equation}
-Contraction with one-form $n_\nu$ then yields differential equation
+Contraction with one-form $n_\nu$ then yields a differential equation
 \begin{equation}
 -\lambda n^2\left(n\cdot A\right) + \Box \left(n\cdot A\right) -\left(n\cdot\partial\right)\left(\partial_\mu A^\mu\right)= 0.
 \end{equation}
-Fourier transforming this yields us the equivalent algebraic equation in momentum space
+Fourier transforming this yields us the equivalent algebraic Equation in momentum space
 \begin{align}\label{AE:fourier_trans_axial}
 -\lambda n^2\left(n_\mu \tilde{A}^\mu\right) + k^2 \left(n_\mu \tilde{A}^\mu\right) -\left(n\cdot k\right)\left(\partial_\mu \tilde{A}^\mu\right) &= 0 \\[1em]
 \Leftrightarrow  \qquad\qquad\qquad \qquad\qquad \left[(\lambda n^2-k^2)n_\mu + (n\cdot k)k_\mu\right]\tilde{A}^\mu &= 0.
 \end{align}
-Now as neither factor $(\lambda n^2-k^2)$ nor $(n\cdot k)$ vanishes generally, and vectors $n$ and $k$ are linearly independent, for equation \eqref{AE:fourier_trans_axial} to hold also
+Now as neither factor $(\lambda n^2-k^2)$ nor $(n\cdot k)$ vanishes generally, and vectors $n$ and $k$ are linearly independent, for Equation \eqref{AE:fourier_trans_axial} to hold also
 \begin{equation}
 	n\cdot \tilde{A} = 	k\cdot \tilde{A} = 0
 \end{equation}
@@ -993,35 +1184,62 @@ which is solved by plane waves
 \begin{equation}
 	A^\mu = \epsilon^\mu(k)\text{e}^{-ik\cdot x},
 \end{equation}
-where the polarization vector $\epsilon^\mu(k)$ can be chosen such that 
+where the polarisation vector $\epsilon^\mu(k)$ must, due to \eqref{AE:axial_lag_cons}, be chosen such that 
 \begin{equation}\label{AE:axial_pol_k}
 	k\cdot \epsilon(k) = 0. 
 \end{equation}
-This can be done because of how $A^\mu$ transforms under gauge transformations. Now the constraint \eqref{AE:axial_lag_cons} gives
+This can be done because of how $A^\mu$ transforms under gauge transformations (see Section \ref{AS:cov_polarization_tensor}). Now the constraint \eqref{AE:axial_lag_cons} gives also
 \begin{equation}\label{AE:axial_pol_n}
 	n\cdot A = \left(n\cdot \epsilon(k)\right)\text{e}^{-ik\cdot x} = 0 \quad \Leftrightarrow \quad n\cdot \epsilon(k) = 0.
 \end{equation}
 
-Let us, similar to what we did in Lorentz gauge, then define polarization tensor $\mathcal{P}$ by
+Let us, similar to what we did in the Lorenz gauge, then define polarisation tensor $\mathcal{P}$ by
 \begin{equation}\label{AE:axial_pol_def}
 	\mathcal{P}^{\mu\nu} = \sum\limits_{\lambda} \epsilon^\mu_\lambda(k)\epsilon^{*\nu}_\lambda(k),
 \end{equation}
-where summation is made over physical polarization states $\lambda=1,2$. Let the polarization vectors $\epsilon$ be normalized to unity, i.e.
+where the summation is taken over the physical polarisation states $\lambda=1,2$. Let the polarisation vectors $\epsilon$ be normalized to unity, i.e.
 \begin{equation}\label{AE:axial_pol_unity}
 	\epsilon_\lambda(k)\cdot \epsilon^{*}_\lambda(k)=-1.
 \end{equation}
-Now using the definition \eqref{AE:axial_pol_def} and constraints \eqref{AE:axial_pol_k}, \eqref{AE:axial_pol_n} and \eqref{AE:axial_pol_unity}, we get following identities for polarization tensor:
+Now using the definition \eqref{AE:axial_pol_def} and constraints \eqref{AE:axial_pol_k}, \eqref{AE:axial_pol_n}, and \eqref{AE:axial_pol_unity}, we get the following identities for the polarisation tensor:
 \begin{equation}\label{AE:axial_pol_identities}
 	g_{\mu\nu}\mathcal{P}^{\mu\nu}=-2, \quad k_{\mu}\mathcal{P}^{\mu\nu}=k_{\mu}k_{\nu}\mathcal{P}^{\mu\nu}= 0 , \quad n_{\mu}\mathcal{P}^{\mu\nu}=n_{\mu}n_{\nu}\mathcal{P}^{\mu\nu}= 0 .
 \end{equation}
-The polarization tensor is a second rank tensor, so it is uniquely fixed by two linearly independent vectors $n$ and $k$, and the metric $g$. Using this we can decompose it as
+Again, as in Equation \eqref{AE:pol_ten_dec}, we can decompose the polarization tensor as
 \begin{equation}
 	\mathcal{P}^{\mu\nu} = Ag^{\mu\nu} + Bk^{\mu}k^{\nu}+ Cn^{\mu}n^{\nu} + Dn^{\mu}k^{\nu} + Ek^{\mu}n^{\nu},
 \end{equation}
-where $A,B,C,D$ and $E$ are some scalars. The scalars can be determined by imposing the constraints \eqref{AE:axial_pol_identities}. This yields us the form
+where $A,B,C,D,$ and $E$ are some scalars. The scalars can be determined by imposing the constraints \eqref{AE:axial_pol_identities}. This yields us the form
 \begin{equation}
 \mathcal{P}^{\mu\nu} = -g^{\mu\nu} + \frac{1}{n\cdot k}\left(n^{\mu}k^{\nu} + k^{\mu}n^{\nu}\right) - \frac{n^2}{\left(n\cdot k\right)^2}k^{\mu}k^{\nu}.
 \end{equation}
+
+
+
+\cleardoublepage
+\chapter{Integrating in momentum fraction space}\label{A:x-space}
+
+One could be interested in changing the integrals in Equations \eqref{E:integrated_sigma_jet} and \eqref{E:integrated_sigma_jet_SES} into the momentum fraction space ($k_T^2,x_1,x_2$). For completeness, this approach is discussed below. Inverting the Equations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys} yields
+\begin{align}
+y_1 &= \log\left[\frac{\sqrt{s}}{2x_2k_T}\left(x_1x_2-\sqrt{x_1x_2\left(x_1x_2-\frac{4k_T^2}{s}\right)}\right)\right] \label{E:y1_from_ktandxs} ,\\[1em]
+y_2 &= \log\left[\frac{\sqrt{s}}{2x_2k_T}\left(x_1x_2+\sqrt{x_1x_2\left(x_1x_2-\frac{4k_T^2}{s}\right)}\right)\right] \label{E:y2_from_ktandxs} . 
+\end{align}
+Using these results the integration measures in Equations \eqref{E:integrated_sigma_jet} and \eqref{E:integrated_sigma_jet_SES} can be written with
+\begin{equation}\label{E:integration_measure_transform}
+\text{d}y_1\text{d}y_2 = \left|\frac{\partial(y_1,y_2)}{\partial(x_1,x_2)}\right|\text{d}x_1\text{d}x_2 = \frac{\text{d}x_1\text{d}x_2}{\sqrt{x_1x_2\left(x_1x_2-\frac{4k_T^2}{s}\right)}},
+\end{equation}
+in ($k_T^2,x_1,x_2$) space, where the integration limits are much simpler:
+\begin{align}
+k_0^2\leq\; &k_T^2 \leq \frac{s}{4} , \\
+\frac{4k_T^2}{s} \leq\; &x_1 \leq 1 ,\\
+\frac{4k_T^2}{sx_1} \leq\; &x_2 \leq 1 .
+\end{align}
+Some further thinking still needs to be done in changing the basis. The coordinate transformations \eqref{E:x1_from_ktandys} and \eqref{E:x2_from_ktandys} are not injective; they are symmetric under the exchange of $y_1$ and $y_2$. There is no such symmetry in \eqref{E:y1_from_ktandxs} and \eqref{E:y2_from_ktandxs}, $y_{1,2}(x_1,x_2)\neq y_{1,2}(x_2,x_1)$, but we could have chosen to write these equations the other way around with \eqref{E:y1_from_ktandxs} for $y_2$ and \eqref{E:y2_from_ktandxs} for $y_1$. Taking these considerations into account, to calculate the integral in the whole phase space, the transformation of the integral would need to be
+\begin{align}
+&\int F(y_1,y_2)\;\text{d}y_1\text{d}y_2  = \nonumber\\ &\int \Big(F(y_1(x_1,x_2),y_2(x_1,x_2))+F(y_2(x_1,x_2),y_1(x_1,x_2))\Big)\left|\frac{\partial(y_1,y_2)}{\partial(x_1,x_2)}\right|\text{d}x_1\text{d}x_2 .
+\end{align}
+This also demonstrates the usefulness of the rapidity basis in doing the phase space integrals
+
 
 
 \end{document}
